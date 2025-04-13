@@ -1,0 +1,20 @@
+{
+    "themes": {
+      "light": {
+        "--bg-color": "#1A1E37",
+        "--primary-bg-color": "#2F3247",
+        "--secondary-bg-color": "#3C3E51",
+        "--text-color": "#FFFFFF",
+
+        
+        "--primary-text-color": "#222222",
+        "--shadow-color": "#d1d1d1",
+        "--border-color": "#cccccc",
+        "--primary-border-color": "#e5e5e5",
+        "--secondary-border-color": "#f2f2f2",
+        "--hover-bg-color": "#e0e0e0",
+        "--tertiary": "rgba(78, 78, 78, 1)",
+        "--onTertiary": "rgba(182, 181, 181, 0.92)"
+      }
+    }
+  }
