@@ -10,6 +10,9 @@ type LayoutProps = {
 
 const Layout = ({ children }: LayoutProps) => {
     const [isSideBarOpen, setIsSideBarOpen] = useState(false);
+    const toggleSideBar = () => {
+        setIsSideBarOpen(!isSideBarOpen);
+    }
 
     useEffect(()=>{
         setIsSideBarOpen(true);
@@ -17,7 +20,7 @@ const Layout = ({ children }: LayoutProps) => {
 
     return (
         <div className="flex min-h-screen p-2 bg-background">
-            <SideBar isSideBarOpen={isSideBarOpen}/>
+            <SideBar isSideBarOpen={isSideBarOpen} toggleSideBar={toggleSideBar}/>
 
             <main className={`transition-all duration-300 w-screen overflow-y-hidden ${isSideBarOpen ? "ml-56" : "ml-16"}`}>
 
