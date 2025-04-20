@@ -121,13 +121,6 @@ const SideBar = ({
                 
                 {/* Navigation Items */}
                 <nav className="flex flex-col gap-2">
-                    <NavItem 
-                        icon={<FaHome size={20} />} 
-                        title="Home" 
-                        href="/home" 
-                        isSideBarOpen={isSideBarOpen}
-                    />
-                    
                     {/* Play with dropdown options */}
                     <NavItem 
                         icon={<BiSolidChess size={20} />} 

@@ -24,7 +24,7 @@ const Layout = ({ children }: LayoutProps) => {
 
             <main className={`transition-all duration-300 w-screen overflow-y-hidden ${isSideBarOpen ? "ml-56" : "ml-16"}`}>
 
-                <section className="w-full h-full">
+                <section className="w-full h-full pl-2">
                     {children}
                 </section>
             </main>
