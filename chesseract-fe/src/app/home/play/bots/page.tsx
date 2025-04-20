@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Controls from "@/components/game/Controls";
 import StandardBoard from "@/components/game/StandardBoard";
 import Timer from "@/components/game/Timer";
@@ -9,6 +9,7 @@ const Bot = () => {
     const [difficulty, setDifficulty] = useState("easy");
     const [timeControl, setTimeControl] = useState("3+0");
     const [isMyTurn, setIsMyTurn] = useState(true);
+    const containerRef = useRef<HTMLDivElement>(null);
 
     const startGame = () => {
         setGameStarted(true);
@@ -19,14 +20,14 @@ const Bot = () => {
     };
 
     return (
-        <div className="h-full w-full flex bg-surface rounded-md p-2 gap-2">
+        <div className="h-full w-full flex justify-around max-md:flex-col rounded-md p-2 gap-2">
             {/* Main Section */}
-            <div className="flex-1 flex flex-col items-start justify-center w-full h-full bg-background rounded-md p-2 gap-2">
+            <div className="flex flex-col justify-center w-full h-max md:h-full md:w-max rounded-md md:p-2 gap-2" ref={containerRef}>
                 <Timer 
                     timeControl={timeControl}
                     isRunning={!isMyTurn && gameStarted}
                 />
-                <StandardBoard 
+                <StandardBoard
                     isMyTurn={isMyTurn}
                     onTurnChange={toggleTurn}
                 />
@@ -37,7 +38,7 @@ const Bot = () => {
             </div>
 
             {/* Right Section */}
-            <div className="w-1/4 p-4 bg-background rounded-md flex flex-col gap-6">
+            <div className="md:w-1/4 w-full md:h-full max-w-md md:p-4 md:bg-surface rounded-md flex flex-col gap-6 place-self-center">
                 {!gameStarted ? (
                     <div>
                         {/* Difficulty Selection */}

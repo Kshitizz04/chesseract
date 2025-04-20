@@ -39,7 +39,7 @@ const Timer = ({ isRunning, timeControl }: TimerProps) => {
     };
 
     return (
-        <div className="p-2 bg-surface rounded-md text-center">
+        <div className="p-2 bg-surface rounded-md text-center w-full max-w-md max-md:place-self-center">
             <h3 className="text-lg font-bold">{formatTime(timeLeft)}</h3>
         </div>
     );

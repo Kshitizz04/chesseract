@@ -22,9 +22,9 @@ const Layout = ({ children }: LayoutProps) => {
         <div className="flex min-h-screen p-2 bg-background">
             <SideBar isSideBarOpen={isSideBarOpen} toggleSideBar={toggleSideBar}/>
 
-            <main className={`transition-all duration-300 w-screen overflow-y-hidden ${isSideBarOpen ? "ml-56" : "ml-16"}`}>
+            <main className={`transition-all duration-300 w-screen overflow-y-hidden ${isSideBarOpen ? "md:ml-56" : "md:ml-16"}`}>
 
-                <section className="w-full h-full pl-2">
+                <section className="w-full h-full md:pl-2">
                     {children}
                 </section>
             </main>
