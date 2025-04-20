@@ -1,26 +1,33 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --color-background: #1A1E37 ;           
+  --color-surface: #2F3247 ;     
+  --color-secondary-surface: #3C3E51 ;  
+  --color-on-surface: #FFFFFF ;            
+  --primary-text-color: hsl(0, 0%, 13%) ;     /* #222222 */
+  --shadow-color: hsl(0, 0%, 82%);            /* #d1d1d1 */
+  --border-color: hsl(0, 0%, 80%);            /* #cccccc */
+  --primary-border-color: hsl(0, 0%, 90%);    /* #e5e5e5 */
+  --secondary-border-color: hsl(0, 0%, 95%);  /* #f2f2f2 */
+  --hover-bg-color: hsl(0, 0%, 88%);          /* #e0e0e0 */
+  --tertiary: hsla(0, 0%, 31%, 1);            /* rgba(78, 78, 78, 1) */
+  --onTertiary: hsla(0, 0%, 71%, 0.92);       /* rgba(182, 181, 181, 0.92) */
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+  user-select: none;
+  font-family: "Nunito", sans-serif;
+  outline: none;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-background);
+  color: var(--color-on-surface);
+}
+
+::-webkit-scrollbar {
+  display: none;
 }

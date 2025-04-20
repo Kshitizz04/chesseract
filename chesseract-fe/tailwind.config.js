@@ -10,21 +10,6 @@ module.exports = {
     theme: {
       extend: {
         colors: {
-          'bg-color': 'var(--bg-color)',
-          'bg-color-70': 'rgba(var(--bg-color-rgb), 0.7)',
-          'text-color': 'var(--text-color)',
-          'primary-text-color': 'var(--primary-text-color)',
-          'primary-bg-color': 'var(--primary-bg-color)',
-          'secondary-bg-color': 'var(--secondary-bg-color)',
-          'shadow-color': 'var(--shadow-color)',
-          'border-color': 'var(--border-color)',
-          'hover-bg-color': 'var(--hover-bg-color)',
-          'bg-color-1': 'var(--bg-color-1)',
-          'bg-color-2': 'var(--bg-color-2)',
-          'primary-border-color': 'var(--primary-border-color)', // Lighter border
-          'secondary-border-color': 'var(--secondary-border-color)',
-          'tertiary': 'var(--tertiary)',
-          'onTertiary': 'var(--onTertiary)'
         },
         boxShadow: {
           // Add custom shadow using CSS variable for dynamic theming
