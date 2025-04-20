@@ -31,3 +31,16 @@ body {
 ::-webkit-scrollbar {
   display: none;
 }
+
+@keyframes slowGrow {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.5);
+  }
+}
+
+.animate-slow-grow {
+  animation: slowGrow 3s ease-in-out infinite alternate;
+}

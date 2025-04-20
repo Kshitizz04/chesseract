@@ -1,7 +1,6 @@
-import { GiChessKnight } from "react-icons/gi";
+import { useState } from "react";
 import { FaHome, FaUsers, FaTrophy, FaChess } from "react-icons/fa";
-import { RiMentalHealthFill } from "react-icons/ri";
-import { HiMenuAlt2, HiOutlineChevronLeft } from "react-icons/hi";
+import { HiMenuAlt2, HiOutlineChevronLeft, HiChevronDown, HiChevronUp } from "react-icons/hi";
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { BiSolidChess } from "react-icons/bi";
@@ -17,22 +16,76 @@ interface NavItemProps {
     title: string;
     href: string;
     isSideBarOpen: boolean;
+    children?: React.ReactNode;
 }
 
-const NavItem = ({ icon, title, href, isSideBarOpen }: NavItemProps) => {
+const NavItem = ({ icon, title, href, isSideBarOpen, children }: NavItemProps) => {
+    const pathname = usePathname();
+    const isActive = pathname === href || pathname.startsWith(`${href}/`);
+    const [isOpen, setIsOpen] = useState(false);
+    const hasChildren = Boolean(children);
+
+    const handleMouseEnter = () => {
+        if (hasChildren) setIsOpen(true);
+    };
+
+    const handleMouseLeave = () => {
+        if (hasChildren) setIsOpen(false);
+    };
+
+    return (
+        <div 
+            className="relative" 
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+        >
+            <Link 
+                href={hasChildren ? "#" : href} 
+                onClick={(e) => {
+                    if (hasChildren) {
+                        e.preventDefault();
+                        setIsOpen(!isOpen);
+                    }
+                }}
+                className={`flex items-center gap-3 py-3 rounded-md transition-all
+                    ${isActive ? 'bg-background' : 'hover:bg-secondary-surface'}
+                    ${isSideBarOpen ? 'px-4' : 'justify-center'}
+                `}
+            >
+                <div className="text-xl">{icon}</div>
+                {isSideBarOpen && (
+                    <>
+                        <span className="transition-all flex-1">{title}</span>
+                        {hasChildren && (
+                            <div className="text-sm">
+                                {isOpen ? <HiChevronUp /> : <HiChevronDown />}
+                            </div>
+                        )}
+                    </>
+                )}
+            </Link>
+            
+            {/* Dropdown menu */}
+            {hasChildren && isOpen && isSideBarOpen && (
+                <div className="pl-8 mt-1 space-y-1 border-l-2 border-secondary-surface">
+                    {children}
+                </div>
+            )}
+        </div>
+    );
+};
+
+const DropdownItem = ({ title, href }: { title: string; href: string }) => {
     const pathname = usePathname();
     const isActive = pathname === href;
     
     return (
         <Link 
-            href={href} 
-            className={`flex items-center gap-3 py-3 rounded-md transition-all
-                ${isActive ? 'bg-secondary-surface' : 'hover:bg-secondary-surface'}
-                ${isSideBarOpen ? 'px-4' : 'justify-center'}
-            `}
+            href={href}
+            className={`block py-2 px-3 rounded-md text-sm transition-all
+                ${isActive ? 'bg-background' : 'hover:bg-secondary-surface'}`}
         >
-            <div className="text-xl">{icon}</div>
-            {isSideBarOpen && <span className="transition-all">{title}</span>}
+            {title}
         </Link>
     );
 };
@@ -42,15 +95,6 @@ const SideBar = ({
   toggleSideBar
 }: SideBarProps) => {
 
-    const navItems = [
-        { icon: <FaHome size={20} />, title: 'Home', href: '/home' },
-        { icon: <BiSolidChess size={20} />, title: 'Play', href: '/home/play' },
-        { icon: <FaChess size={20} />, title: 'Variants', href: '/home/variants' },
-        { icon: <HiPuzzlePiece size={20} />, title: 'Puzzles', href: '/home/puzzles' },
-        { icon: <FaTrophy size={20} />, title: 'Leaderboard', href: '/home/leaderboard' },
-        { icon: <FaUsers size={20} />, title: 'Friends', href: '/home/friends' },
-    ];
-
     return (
         <aside
             className={`md:block hidden transition-all duration-300 bg-background fixed h-full
@@ -59,7 +103,7 @@ const SideBar = ({
         >
             <div className="bg-surface rounded-md w-full h-full flex flex-col p-4">
                 {/* Logo and Toggle */}
-                <div className="flex items-center items-center mb-8 mt-2 gap-2">
+                <div className="flex items-center mb-8 mt-2 gap-2">
                     <button 
                         onClick={toggleSideBar}
                         className="p-1 rounded-md hover:bg-surface-hover"
@@ -77,15 +121,57 @@ const SideBar = ({
                 
                 {/* Navigation Items */}
                 <nav className="flex flex-col gap-2">
-                    {navItems.map((item, index) => (
-                        <NavItem 
-                            key={index}
-                            icon={item.icon}
-                            title={item.title}
-                            href={item.href}
-                            isSideBarOpen={isSideBarOpen}
-                        />
-                    ))}
+                    <NavItem 
+                        icon={<FaHome size={20} />} 
+                        title="Home" 
+                        href="/home" 
+                        isSideBarOpen={isSideBarOpen}
+                    />
+                    
+                    {/* Play with dropdown options */}
+                    <NavItem 
+                        icon={<BiSolidChess size={20} />} 
+                        title="Play" 
+                        href="/home/play" 
+                        isSideBarOpen={isSideBarOpen}
+                    >
+                        <DropdownItem title="Online" href="/home/play/online" />
+                        <DropdownItem title="Computers" href="/home/play/bots" />
+                        <DropdownItem title="Friends" href="/home/play/friends" />
+                    </NavItem>
+                    
+                    <NavItem 
+                        icon={<FaChess size={20} />} 
+                        title="Variants" 
+                        href="/home/variants" 
+                        isSideBarOpen={isSideBarOpen}
+                    />
+                    
+                    {/* Puzzles with dropdown options */}
+                    <NavItem 
+                        icon={<HiPuzzlePiece size={20} />} 
+                        title="Puzzles" 
+                        href="/home/puzzles" 
+                        isSideBarOpen={isSideBarOpen}
+                    >
+                        <DropdownItem title="Puzzle Rush" href="/home/puzzles/puzzle-rush" />
+                        <DropdownItem title="Puzzle Battle" href="/home/puzzles/puzzle-battle" />
+                        <DropdownItem title="Daily Puzzle" href="/home/puzzles/daily-puzzle" />
+                    </NavItem>
+                    
+                    <NavItem 
+                        icon={<FaTrophy size={20} />} 
+                        title="Leaderboard" 
+                        href="/home/leaderboard" 
+                        isSideBarOpen={isSideBarOpen}
+                    />
+                    
+                    <NavItem 
+                        icon={<FaUsers size={20} />} 
+                        title="Friends" 
+                        href="/home/friends" 
+                        isSideBarOpen={isSideBarOpen}
+                    />
                 </nav>
             </div>
         </aside>
