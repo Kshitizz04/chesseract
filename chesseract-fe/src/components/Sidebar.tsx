@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FaHome, FaUsers, FaTrophy, FaChess } from "react-icons/fa";
+import { FaUsers, FaTrophy, FaChess } from "react-icons/fa";
 import { HiMenuAlt2, HiOutlineChevronLeft, HiChevronDown, HiChevronUp } from "react-icons/hi";
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -47,8 +47,8 @@ const NavItem = ({ icon, title, href, isSideBarOpen, children }: NavItemProps) =
                         setIsOpen(!isOpen);
                     }
                 }}
-                className={`flex items-center gap-3 py-3 rounded-md transition-all
-                    ${isActive ? 'bg-background' : 'hover:bg-secondary-surface'}
+                className={`flex items-center gap-3 py-3 rounded-md transition-all hover:bg-accent-100 hover:text-accent-200
+                    ${isActive && 'bg-accent-100 text-accent-200'}
                     ${isSideBarOpen ? 'px-4' : 'justify-center'}
                 `}
             >
@@ -67,7 +67,7 @@ const NavItem = ({ icon, title, href, isSideBarOpen, children }: NavItemProps) =
             
             {/* Dropdown menu */}
             {hasChildren && isOpen && isSideBarOpen && (
-                <div className="pl-8 mt-1 space-y-1 border-l-2 border-secondary-surface">
+                <div className="pl-8 mt-1 space-y-1 border-l-2 border-accent-200">
                     {children}
                 </div>
             )}
@@ -82,8 +82,8 @@ const DropdownItem = ({ title, href }: { title: string; href: string }) => {
     return (
         <Link 
             href={href}
-            className={`block py-2 px-3 rounded-md text-sm transition-all
-                ${isActive ? 'bg-background' : 'hover:bg-secondary-surface'}`}
+            className={`block py-2 px-3 rounded-md text-sm transition-all hover:bg-accent-100 hover:text-accent-200
+                ${isActive && 'bg-accent-100 text-accent-200'}`}
         >
             {title}
         </Link>
@@ -97,16 +97,16 @@ const SideBar = ({
 
     return (
         <aside
-            className={`md:block hidden transition-all duration-300 bg-background fixed h-full
+            className={`md:block hidden transition-all duration-300 fixed h-full text-text-200
                     ${isSideBarOpen ? "w-56" : "w-16"}
                 `}
         >
-            <div className="bg-surface rounded-md w-full h-full flex flex-col p-4">
+            <div className="bg-bg-200 rounded-md w-full h-full flex flex-col p-4">
                 {/* Logo and Toggle */}
                 <div className="flex items-center mb-8 mt-2 gap-2">
                     <button 
                         onClick={toggleSideBar}
-                        className="p-1 rounded-md hover:bg-surface-hover"
+                        className="p-1 rounded-md hover:bg-bg-200-hover"
                         aria-label={isSideBarOpen ? "Close sidebar" : "Open sidebar"}
                     >
                         {isSideBarOpen ? (

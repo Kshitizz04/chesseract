@@ -22,12 +22,12 @@ const ResultModal = ({ result, message, onClose }: ResultModalProps) => {
     };
 
     return (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 text-text-color">
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 text-200">
             <div className="relative bg-glass-bg/50 rounded-md shadow-sm shadow-shadow-color w-96 h-96 text-center p-6 pt-12">
                 {/* Close Button */}
                 <button
                     onClick={onClose}
-                    className="absolute top-1 right-1 bg-button hover:bg-button-hover rounded-full transition duration-200 cursor-pointer"
+                    className="absolute top-1 right-1 bg-primary-100 hover:bg-primary-200 rounded-full transition duration-200 cursor-pointer"
                     aria-label="Close Modal"
                 >
                     <IoIosCloseCircleOutline size={30}/>

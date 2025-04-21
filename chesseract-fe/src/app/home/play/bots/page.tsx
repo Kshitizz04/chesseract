@@ -60,7 +60,7 @@ const Bot = () => {
             </div>
 
             {/* Right Section */}
-            <div className="md:w-1/4 w-full md:h-full max-w-md md:p-4 md:bg-surface rounded-md flex flex-col gap-6 place-self-center">
+            <div className="md:w-1/4 w-full md:h-full max-w-md md:p-4 md:bg-bg-200 rounded-md flex flex-col gap-6 place-self-center">
                 {!gameStarted ? (
                     <div>
                         {/* Difficulty Selection */}
@@ -70,10 +70,10 @@ const Bot = () => {
                                 <button
                                     key={level}
                                     onClick={() => setDifficulty(level)}
-                                    className={`p-2 cursor-pointer w-full rounded-md hover:bg-button-hover ${
+                                    className={`p-2 cursor-pointer w-full rounded-md hover:bg-primary-200 ${
                                         difficulty === level
-                                            ? "bg-button-hover"
-                                            : "bg-button"
+                                            ? "bg-primary-200"
+                                            : "bg-primary-100"
                                     }`}
                                 >
                                     {level.charAt(0).toUpperCase() + level.slice(1)}
@@ -92,10 +92,10 @@ const Bot = () => {
                                         <button
                                             key={control}
                                             onClick={() => setTimeControl(control)}
-                                            className={`p-2 cursor-pointer w-full rounded-md hover:bg-button-hover ${
+                                            className={`p-2 cursor-pointer w-full rounded-md hover:bg-primary-200 ${
                                                 timeControl === control
-                                                    ? "bg-button-hover"
-                                                    : "bg-button"
+                                                    ? "bg-primary-200"
+                                                    : "bg-primary-100"
                                             }`}
                                         >
                                             {control}
@@ -112,10 +112,10 @@ const Bot = () => {
                                         <button
                                             key={control}
                                             onClick={() => setTimeControl(control)}
-                                            className={`p-2 cursor-pointer w-full rounded-md hover:bg-button-hover ${
+                                            className={`p-2 cursor-pointer w-full rounded-md hover:bg-primary-200 ${
                                                 timeControl === control
-                                                    ? "bg-button-hover"
-                                                    : "bg-button"
+                                                    ? "bg-primary-200"
+                                                    : "bg-primary-100"
                                             }`}
                                         >
                                             {control}
@@ -132,10 +132,10 @@ const Bot = () => {
                                         <button
                                             key={control}
                                             onClick={() => setTimeControl(control)}
-                                            className={`p-2 cursor-pointer w-full rounded-md hover:bg-button-hover ${
+                                            className={`p-2 cursor-pointer w-full rounded-md hover:bg-primary-200 ${
                                                 timeControl === control
-                                                    ? "bg-button-hover"
-                                                    : "bg-button"
+                                                    ? "bg-primary-200"
+                                                    : "bg-primary-100"
                                             }`}
                                         >
                                             {control}
@@ -148,7 +148,7 @@ const Bot = () => {
                         {/* Play Button */}
                         <button
                             onClick={startGame}
-                            className="mt-6 w-full p-2 bg-button hover:bg-button-hover cursor-pointer text-white rounded-md"
+                            className="mt-6 w-full p-2 bg-primary-100 hover:bg-primary-200 cursor-pointer text-white rounded-md"
                         >
                             Play
                         </button>
