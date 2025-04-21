@@ -3,15 +3,26 @@ import { useEffect, useRef, useState } from "react";
 import Controls from "@/components/game/Controls";
 import StandardBoard from "@/components/game/StandardBoard";
 import Timer from "@/components/game/Timer";
+import ResultModal from "@/components/modals/ResultModal";
 
 const Bot = () => {
     const [gameStarted, setGameStarted] = useState(false);
     const [difficulty, setDifficulty] = useState("easy");
     const [timeControl, setTimeControl] = useState("3+0");
     const [isMyTurn, setIsMyTurn] = useState(true);
-    const containerRef = useRef<HTMLDivElement>(null);
+    const [result, setResult] = useState<{result: 0 | 1 | 2, message:string} | null>(null);
+    const [myColor, setMyColor] = useState<"w" | "b">("w");
+
+    useEffect(()=>{
+        if(myColor === "w"){
+            setIsMyTurn(true)
+        }else{
+            setIsMyTurn(false)
+        }
+    },[myColor])
 
     const startGame = () => {
+        Math.floor(Math.random() * 2) === 0 ? setMyColor("w") : setMyColor("b");
         setGameStarted(true);
     };
 
@@ -19,21 +30,32 @@ const Bot = () => {
         setIsMyTurn((prev) => !prev);
     };
 
+    const setResultMessage = (result: 0 | 1 | 2, message: string) => {
+        setResult({result, message});
+        setGameStarted(false);
+    }
+
     return (
         <div className="h-full w-full flex justify-around max-md:flex-col rounded-md p-2 gap-2">
             {/* Main Section */}
-            <div className="flex flex-col justify-center w-full h-max md:h-full md:w-max rounded-md md:p-2 gap-2" ref={containerRef}>
+            <div className="flex flex-col justify-center w-full h-max md:h-full md:w-max rounded-md md:p-2 gap-2">
                 <Timer 
                     timeControl={timeControl}
                     isRunning={!isMyTurn && gameStarted}
+                    setResult={setResultMessage}
+                    isOpponent={true}
                 />
                 <StandardBoard
                     isMyTurn={isMyTurn}
                     onTurnChange={toggleTurn}
+                    setResult={setResultMessage}
+                    myColor={myColor}
                 />
                 <Timer 
                     timeControl={timeControl}
                     isRunning={isMyTurn && gameStarted}
+                    setResult={setResultMessage}
+                    isOpponent={false}
                 />
             </div>
 
@@ -135,7 +157,7 @@ const Bot = () => {
                     <Controls />
                 )}
             </div>
-
+            {result && <ResultModal result={result.result} message={result.message} onClose={() => setResult(null)} />}
         </div>
     );
 };

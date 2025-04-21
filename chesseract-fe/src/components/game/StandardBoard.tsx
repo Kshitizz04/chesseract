@@ -7,16 +7,17 @@ import { Piece, Square } from 'react-chessboard/dist/chessboard/types';
 interface StandardBoardProps {
     isMyTurn: boolean;
     onTurnChange: () => void;
+    setResult: (result: 0 | 1 | 2, message: string) => void;
+    myColor: "w" | "b";
 }
 
 const engine = new Engine();
 const chess = new Chess();
  
-const StandardBoard = ({isMyTurn, onTurnChange}:StandardBoardProps) => {
+const StandardBoard = ({isMyTurn, onTurnChange, setResult, myColor}:StandardBoardProps) => {
     const [boardWidth, setBoardWidth] = useState(500);
     const [position, setPosition] = useState('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1')
     const [optionSquares,setOptionSquares]=useState({})
-    const [result, setResult] = useState("")
 
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -36,6 +37,14 @@ const StandardBoard = ({isMyTurn, onTurnChange}:StandardBoardProps) => {
         };
     },[]);
 
+    useEffect(()=>{
+        if(!isMyTurn){
+            setTimeout(() => {
+                findBestMove();
+            }, 2000);
+        }
+    })
+
     function findBestMove() {
         engine.evaluatePosition(chess.fen(), 2);
     
@@ -45,10 +54,10 @@ const StandardBoard = ({isMyTurn, onTurnChange}:StandardBoardProps) => {
                 chess.move(bestMove);
                 if(chess.isGameOver()){
                     if(chess.isThreefoldRepetition() || chess.isStalemate() || chess.isInsufficientMaterial()){
-                        setResult("draw")
+                        setResult(2, "draw")
                     }
                     if(chess.isCheckmate()){
-                        chess.turn()==='b'? setResult("White won") : setResult("Black won");
+                        chess.turn()=== myColor? setResult(0, "Opponent won by checkmate") : setResult(1, "You won by checkmate!!");
                     }
                 }
                 setPosition(chess.fen())
@@ -68,17 +77,14 @@ const StandardBoard = ({isMyTurn, onTurnChange}:StandardBoardProps) => {
             chess.move({from:source,to: target});
             if(chess.isGameOver()){
                 if(chess.isThreefoldRepetition() || chess.isStalemate() || chess.isInsufficientMaterial()){
-                    setResult("draw")
+                    setResult(2, "draw")
                 }
                 if(chess.isCheckmate()){
-                    chess.turn()==='b'? setResult("White won") : setResult("Black won");
+                    chess.turn()===myColor ? setResult(0, "Opponent won by checkmate") : setResult(1, "You won by checkmate!!");
                 }
             }
             setPosition(chess.fen())
             onTurnChange()
-            setTimeout(() => {
-                findBestMove();
-            }, 3000);
             return true;
         }catch(e){ 
             return false;
@@ -102,6 +108,7 @@ const StandardBoard = ({isMyTurn, onTurnChange}:StandardBoardProps) => {
                 customSquareStyles={{...optionSquares}}
                 animationDuration={100}
                 arePremovesAllowed={true}
+                boardOrientation={myColor === "w" ? "white" : "black"}
             />
         </div>
     );
