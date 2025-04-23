@@ -5,7 +5,7 @@ import { CustomError } from '../../utils/CustomError.ts';
 import bcrypt from 'bcryptjs';
 import jwt, { Secret } from 'jsonwebtoken';
 import { JWT_EXPIRES_IN, JWT_SECRET } from '../../config/env.ts';
-import { SignUpRequestBody, SignUpResponse } from './auth.types.ts';
+import { SignInRequestBody, SignUpRequestBody, SignUpResponse } from './auth.types.ts';
 
 export const signUp = async (req: Request<SignUpRequestBody>, res: Response<SignUpResponse>, next: NextFunction) => {
     const session = await mongoose.startSession();
@@ -47,8 +47,31 @@ export const signUp = async (req: Request<SignUpRequestBody>, res: Response<Sign
     }
 }
 
-export const signIn = async (req: Request, res: Response, next: NextFunction) => {
+export const signIn = async (req: Request<SignInRequestBody>, res: Response<SignUpResponse>, next: NextFunction) => {
+    try{
+        const { email, password } = req.body;
+        const existingUser = await User.findOne({ email });
+        if(!existingUser){
+            const error = new CustomError('User does not exist', 404);
+            throw error;
+        }
 
+        const isPasswordCorrect = await bcrypt.compare(password, existingUser.password);
+        if(!isPasswordCorrect){
+            const error = new CustomError('Invalid password', 401);
+            throw error;
+        }
+
+        const token = jwt.sign({userId: existingUser._id}, JWT_SECRET as Secret, {expiresIn: "3d"});
+
+        res.status(200).json({
+            success: true,
+            message: "User signed in",
+            data: {token, user:existingUser},
+        });
+    }catch(err){
+        next(err);
+    }
 }
 
 export const signOut = async (req: Request, res: Response, next: NextFunction) => {

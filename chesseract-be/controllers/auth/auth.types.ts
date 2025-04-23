@@ -17,3 +17,8 @@ export interface SignUpResponse extends CommonResponse<SignUpResponseData> {
     message: string;
     data: SignUpResponseData;
 }
+
+export interface SignInRequestBody {
+    email: string;
+    password: string;
+}
