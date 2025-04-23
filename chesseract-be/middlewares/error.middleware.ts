@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { CustomError } from '../Types';
+import { CustomError } from '../utils/CustomError.ts';
 
 const errorMiddleware = (err: CustomError, req: Request, res: Response, next: NextFunction) => {
     try{
@@ -10,15 +10,13 @@ const errorMiddleware = (err: CustomError, req: Request, res: Response, next: Ne
         // Mongoose bad ObjectId error
         if(err.name === "CastError"){
             const message = "Resource not found";
-            error = new Error(message);
-            error.statusCode = 404;
+            error = new CustomError(message, 404);
         }
 
         // Mongoose duplicate key error
         if(err.statusCode === 11000){
             const message = "Duplicate field value entered";
-            error = new Error(message);
-            error.statusCode = 400;
+            error = new CustomError(message, 400);
         }
 
         // Mongoose validation error
