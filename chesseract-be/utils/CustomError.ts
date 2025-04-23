@@ -1,6 +1,6 @@
 export interface ICustomError extends Error {
     statusCode: number;
-  }
+}
   
 export class CustomError extends Error implements ICustomError {
     statusCode: number;
