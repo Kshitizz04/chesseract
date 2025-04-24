@@ -50,6 +50,7 @@ const Bot = () => {
                     onTurnChange={toggleTurn}
                     setResult={setResultMessage}
                     myColor={myColor}
+                    difficulty={difficulty}
                 />
                 <Timer 
                     timeControl={timeControl}

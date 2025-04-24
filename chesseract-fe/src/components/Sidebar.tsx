@@ -99,13 +99,13 @@ const SideBar = ({
 
     return (
         <aside
-            className={`md:block hidden transition-all duration-300 fixed h-full text-text-200
-                    ${isSideBarOpen ? "w-56" : "w-16"}
+            className={`md:block hidden transition-all duration-300 fixed h-screen text-text-200 p-2
+                    ${isSideBarOpen ? "w-56" : "w-18"}
                 `}
         >
-            <div className="bg-bg-200 rounded-md w-full h-full flex flex-col p-4">
+            <div className="bg-bg-200 rounded-md w-full h-full flex flex-col p-2">
                 {/* Logo and Toggle */}
-                <div className="flex items-center mb-8 mt-2 gap-2">
+                <div className={`flex items-center mb-8 mt-2 gap-2 ${!isSideBarOpen && 'justify-center'}`}>
                     <button 
                         onClick={toggleSideBar}
                         className="p-1 rounded-md hover:bg-bg-200-hover"
