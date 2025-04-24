@@ -4,6 +4,8 @@ import React, { use, useState } from "react";
 import signIn from "@/services/auth/signin";
 import { validateEmail } from "@/utils/validators";
 import { useToast } from "@/contexts/ToastContext";
+import { setLocalStorage } from "@/utils/localstorage";
+import { useRouter } from "next/navigation";
 
 const SignIn = () => {
     const [email, setEmail] = useState("");
@@ -11,6 +13,8 @@ const SignIn = () => {
     const [emailError, setEmailError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const {showToast} = useToast();
+
+    const router = useRouter();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -27,7 +31,9 @@ const SignIn = () => {
             console.log("Response:", response);
             if (response.success) {
                 showToast("Sign-in successful!", "success");
-                // Handle successful sign-in (e.g., redirect or show success message)
+                setLocalStorage("token", response.data?.token);
+                setLocalStorage("user", response.data?.user);
+                router.push("/home");
             } else {
                 const error = response.error || "An error occurred";
                 showToast(error, "error");
