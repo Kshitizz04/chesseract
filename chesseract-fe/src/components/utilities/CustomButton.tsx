@@ -1,22 +1,18 @@
-import React from 'react'
-
-interface CustomButtonProps {
-    label?: string;
-    onClick: () => void;
-    disabled?: boolean;
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+    children: React.ReactNode;
+    onCLick?: () => void;
     className?: string;
 }
-
-const CustomButton = ({label="", onClick, disabled=false, className=""}:CustomButtonProps) => {
+const Button = ({ children, onCLick, className, ...props }: ButtonProps) => {
     return (
-        <button
-            onClick={() => {}}
-            className={`p-2 cursor-pointer rounded-md hover:bg-primary-200 bg-primary-100 ${className}`}
-            disabled={disabled}
+        <button onClick={onCLick} {...props}
+            className={`p-2 cursor-pointer w-full rounded-sm hover:text-accent-200
+                ${className}
+            `}
         >
-            {label}
+            {children}
         </button>
     )
 }
 
-export default CustomButton
+export default Button

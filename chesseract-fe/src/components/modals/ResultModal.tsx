@@ -1,5 +1,7 @@
 import React from "react";
 import { IoIosCloseCircleOutline } from "react-icons/io";
+import CustomModal from "./CustomModal";
+import CustomButton from "../utilities/CustomButton";
 
 interface ResultModalProps {
     result: 0 | 1 | 2; // 0 = lost, 1 = won, 2 = drawn
@@ -22,22 +24,20 @@ const ResultModal = ({ result, message, onClose }: ResultModalProps) => {
     };
 
     return (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 text-200">
-            <div className="relative bg-glass-bg/50 rounded-md shadow-sm shadow-shadow-color w-96 h-96 text-center p-6 pt-12">
-                {/* Close Button */}
-                <button
-                    onClick={onClose}
-                    className="absolute top-1 right-1 bg-primary-100 hover:bg-primary-200 rounded-full transition duration-200 cursor-pointer"
-                    aria-label="Close Modal"
+        <CustomModal onClose={onClose}>
+            <div className="w-full h-full flex flex-col items-center justify-between px-2">
+                <div className="flex flex-col items-center justify-center">
+                    <h2 className="text-2xl font-bold mb-4">{getTitle()}</h2>
+                    <p className="mb-6">{message}</p>
+                </div>
+                <CustomButton
+                    onClick={()=>{}}
+                    className="m-2 bg-bg-100"
                 >
-                    <IoIosCloseCircleOutline size={30}/>
-                </button>
-
-                {/* Modal Content */}
-                <h2 className="text-2xl font-bold mb-4">{getTitle()}</h2>
-                <p className="mb-6">{message}</p>
+                    Play Again
+                </CustomButton>
             </div>
-        </div>
+        </CustomModal>
     );
 };
 
