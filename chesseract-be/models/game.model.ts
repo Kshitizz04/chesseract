@@ -4,11 +4,15 @@ export interface IGame extends Document {
     whitePlayer: Types.ObjectId;
     blackPlayer: Types.ObjectId;
     moves: string[]; // UCI or SAN notation
-    result: '1-0' | '0-1' | '1/2-1/2' | '*';
-    timeControl: string; // e.g. '5+0', '3+2'
-    startTime: Date;
     winner?: 'white' | 'black' | 'draw';
-    fenAfterEachMove?: string[];
+    fen?: string; // FEN string representing the current position
+    pgn?: string; // PGN string representing the game
+    status: 'ongoing' | 'finished' | 'abandoned';
+    timeControl: {
+        initial: number; // initial time in seconds
+        increment: number; // increment time in seconds
+    };
+    resultReason?: 'checkmate' | 'stalemate' | 'timeout' | 'resignation' | 'draw by agreement' | 'insufficient material' | 'threefold repetition' | 'fifty-move rule' | 'disconnection' | 'other';
   }
 
 const gameSchema = new Schema<IGame>({
@@ -22,27 +26,19 @@ const gameSchema = new Schema<IGame>({
         ref: 'User', 
         required: true 
     },
-    moves: [{ type: String }], // e.g., ["e4", "e5", "Nf3", "Nc6"]
-    result: { 
-        type: String, 
-        enum: ['1-0', '0-1', '1/2-1/2', '*'], 
-        default: '*' 
-    },
-    timeControl: { 
-        type: String, 
-        required: true 
-    }, // like '3+2'
-    startTime: { 
-        type: Date, 
-        default: Date.now 
-    },
     winner: { 
         type: String, 
         enum: ['white', 'black', 'draw'] 
     },
-    fenAfterEachMove: [{ 
-        type: String 
-    }],
+    moves: [{ type: String }], // e.g., ["e4", "e5", "Nf3", "Nc6"]
+    fen: {type: String},
+    pgn: {type: String},
+    status: {type: String, enum: ['ongoing', 'finished', 'abandoned'], default: 'ongoing'},
+    timeControl: {
+        initial: { type: Number, required: true },
+        increment: { type: Number, required: true },
+    },
+    resultReason: {type: String, enum: ['checkmate', 'stalemate', 'timeout', 'resignation', 'draw by agreement', 'insufficient material', 'threefold repetition', 'fifty-move rule', 'disconnection', 'other']},
 }, {timestamps: true});
 
 const Game = mongoose.model("Game", gameSchema);

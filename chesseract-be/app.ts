@@ -9,12 +9,14 @@ import gameRouter from "./routes/game.routes.ts";
 import authRouter from "./routes/auth.routes.ts";
 import connectToDatabase from "./database/mongodb.ts";
 import errorMiddleware from "./middlewares/error.middleware.ts";
+import arcjetMiddleware from "./middlewares/arcjet.middleware.ts";
 
 const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(arcjetMiddleware); 
 app.use(
   cors({
       origin: "http://localhost:3000", // Allow requests from this origin

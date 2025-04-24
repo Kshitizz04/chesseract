@@ -1,12 +1,34 @@
 import mongoose, { Schema, Document, Types } from "mongoose";
 
+interface stat {
+    wins: number;
+    losses: number;
+    draws: number;
+    gamesPlayed: number;
+    highestRating: number;
+    lowestRating: number;
+}
+
 export interface IUser extends Document {
     username: string;
     email: string;
     password: string;
     fullname?: string;
-    rating: number;
-    games: Types.ObjectId[];
+    rating: {
+        bullet: number;
+        blitz: number;
+        rapid: number;
+    },
+    profilePicture?: string;
+    bio?: string;
+    isOnline: boolean;
+    country: string;
+    stats: {
+        bullet: stat,
+        blitz: stat,
+        rapid: stat,
+    },
+    friends: Types.ObjectId[];
     createdAt: Date;
 }
 
@@ -39,15 +61,41 @@ const userSchema = new Schema<IUser>({
         trim: true,
     },
     rating:{
-        type: Number,
-        default: 1200,
-        min: [0, "Rating should be at least 0"],
-        max: [3200, "Rating should not exceed 3000"],
+        bullet: {type: Number, default: 1200, min: 0},
+        blitz: {type: Number, default: 1200, min: 0},
+        rapid: {type: Number, default: 1200, min: 0},
     },
-    games: [{
-        type: Schema.Types.ObjectId,
-        ref: "Game",
-    }],
+    profilePicture:{type: String},
+    bio: {type: String},
+    isOnline: {type: Boolean, default: false},
+    country: {type: String, default: "Unknown"},
+    stats:{
+        bullet:{
+            wins:{type: Number, default: 0},
+            losses:{type: Number, default: 0},
+            draws:{type: Number, default: 0},
+            gamesPlayed:{type: Number, default: 0},
+            highestRating:{type: Number, default: 1200, min: 0},
+            lowestRating:{type: Number, default: 1200, min: 0},
+        },
+        blitz:{
+            wins:{type: Number, default: 0},
+            losses:{type: Number, default: 0},
+            draws:{type: Number, default: 0},
+            gamesPlayed:{type: Number, default: 0},
+            highestRating:{type: Number, default: 1200,min: 0},
+            lowestRating:{type: Number, default: 1200,min: 0},
+        },
+        rapid:{
+            wins:{type: Number, default: 0},
+            losses:{type: Number, default: 0},
+            draws:{type: Number, default: 0},
+            gamesPlayed:{type: Number, default: 0},
+            highestRating:{type: Number, default: 1200,min: 0},
+            lowestRating:{type: Number, default: 1200,min: 0},
+        },
+    },
+    friends: [{type: Schema.Types.ObjectId, ref: "User"}],
 }, {timestamps: true});
 
 const User = mongoose.model("User", userSchema);
