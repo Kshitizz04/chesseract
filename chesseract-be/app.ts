@@ -1,5 +1,6 @@
 import express from "express";
 import cookieParser from "cookie-parser";
+import cors from "cors";
 
 import {PORT} from "./config/env.ts";
 
@@ -14,6 +15,12 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(
+  cors({
+      origin: "http://localhost:3000", // Allow requests from this origin
+      credentials: true, // Allow cookies to be sent with requests
+  })
+);
 
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/users', userRouter);
