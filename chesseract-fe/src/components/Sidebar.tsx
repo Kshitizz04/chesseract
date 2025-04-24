@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { BiSolidChess } from "react-icons/bi";
 import { HiPuzzlePiece } from "react-icons/hi2";
+import Image from "next/image";
+import logo from "../../public/logo-light.svg";
 
 interface SideBarProps {
     isSideBarOpen: boolean;
@@ -115,6 +117,13 @@ const SideBar = ({
                             <HiMenuAlt2 size={20} />
                         )}
                     </button>
+
+                    {/* <Image
+                        src={logo}  
+                        alt="Chesseract Logo"
+                        width={isSideBarOpen ? 40 : 30}
+                        height={isSideBarOpen ? 40 : 30}
+                    /> */}
                     
                     <h1 className={`text-xl font-bold ${!isSideBarOpen && 'hidden'}`}>Chesseract</h1>
                 </div>
