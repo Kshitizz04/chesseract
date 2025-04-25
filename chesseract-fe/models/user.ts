@@ -6,4 +6,5 @@ export interface IUser extends Document {
     rating: number;
     games: [];
     createdAt: Date;
+    _id:number;
 }

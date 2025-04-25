@@ -33,6 +33,7 @@ const SignIn = () => {
                 showToast("Sign-in successful!", "success");
                 setLocalStorage("token", response.data?.token);
                 setLocalStorage("user", response.data?.user);
+                setLocalStorage("userId", response.data?.user._id);
                 router.push("/home");
             } else {
                 const error = response.error || "An error occurred";

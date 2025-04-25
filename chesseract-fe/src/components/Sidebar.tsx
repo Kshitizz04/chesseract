@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaUsers, FaTrophy, FaChess } from "react-icons/fa";
 import { HiMenuAlt2, HiOutlineChevronLeft, HiChevronDown, HiChevronUp } from "react-icons/hi";
 import Link from 'next/link';
@@ -6,6 +6,9 @@ import { usePathname } from 'next/navigation';
 import { BiSolidChess } from "react-icons/bi";
 import { HiPuzzlePiece } from "react-icons/hi2";
 import logo from "../../public/logo-light.svg";
+import { IoMdSettings } from "react-icons/io";
+import { getLocalStorage } from "@/utils/localstorage";
+import Avatar from './utilities/Avatar';
 
 interface SideBarProps {
     isSideBarOpen: boolean;
@@ -18,6 +21,11 @@ interface NavItemProps {
     href: string;
     isSideBarOpen: boolean;
     children?: React.ReactNode;
+}
+
+interface UserData {
+    username: string;
+    profilePicture?: string;
 }
 
 const NavItem = ({ icon, title, href, isSideBarOpen, children }: NavItemProps) => {
@@ -95,6 +103,13 @@ const SideBar = ({
   isSideBarOpen,
   toggleSideBar
 }: SideBarProps) => {
+    const [userData, setUserData] = useState<UserData | null>(null);
+
+    useEffect(() => {
+        const data = getLocalStorage('user');
+        console.log("data", data);
+        setUserData(data as UserData);
+    }, []);
 
     return (
         <aside
@@ -166,7 +181,25 @@ const SideBar = ({
                         href="/home/friends" 
                         isSideBarOpen={isSideBarOpen}
                     />
+
                 </nav>
+                <div className="mt-auto mb-5 pt-4 border-t border-accent-200">
+                    <NavItem 
+                        icon={<IoMdSettings size={20} />} 
+                        title="Settings" 
+                        href="/home/settings" 
+                        isSideBarOpen={isSideBarOpen}
+                    />
+
+                    <div className={`mt-1 flex items-center gap-3 p-2 rounded-md bg-bg-200-hover ${!isSideBarOpen && 'justify-center'}`}>
+                        <Avatar 
+                            username={userData?.username || "User"}
+                            profileImage={userData?.profilePicture}
+                            showUsername={isSideBarOpen}
+                            size={isSideBarOpen ? 40 : 30}
+                        />
+                    </div>
+                </div>
             </div>
         </aside>
     );
