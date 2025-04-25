@@ -10,11 +10,12 @@ interface StandardBoardProps {
     setResult: (result: 0 | 1 | 2, message: string) => void;
     myColor: "w" | "b";
     difficulty?: string;
+    gameStarted: boolean
 }
 
 const chess = new Chess();
  
-const StandardBoard = ({isMyTurn, onTurnChange, setResult, myColor, difficulty="easy"}:StandardBoardProps) => {
+const StandardBoard = ({isMyTurn, onTurnChange, setResult, myColor, difficulty="easy", gameStarted}:StandardBoardProps) => {
     const [boardWidth, setBoardWidth] = useState(500);
     const [position, setPosition] = useState('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1')
     const [optionSquares,setOptionSquares]=useState({})
@@ -154,7 +155,7 @@ const StandardBoard = ({isMyTurn, onTurnChange, setResult, myColor, difficulty="
     }
 
     return ( 
-        <div className='w-full h-max md:h-full md:w-max' ref={containerRef}>
+        <div className={`w-full h-max md:h-full md:w-max ${!gameStarted && 'pointer-events-none'}`} ref={containerRef}>
             <Chessboard 
                 id="standard-board"
                 boardWidth={boardWidth}
@@ -167,6 +168,7 @@ const StandardBoard = ({isMyTurn, onTurnChange, setResult, myColor, difficulty="
                 animationDuration={100}
                 arePremovesAllowed={true}
                 boardOrientation={myColor === "w" ? "white" : "black"}
+                showBoardNotation={true}
             />
         </div>
     );
