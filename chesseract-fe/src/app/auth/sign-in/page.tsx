@@ -6,6 +6,7 @@ import { validateEmail } from "@/utils/validators";
 import { useToast } from "@/contexts/ToastContext";
 import { setLocalStorage } from "@/utils/localstorage";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const SignIn = () => {
     const [email, setEmail] = useState("");
@@ -92,10 +93,11 @@ const SignIn = () => {
                         required
                     />
                 </div>
+
                 <button
                     type="submit"
                     disabled={loading}
-                    className={`w-full p-2 text-white rounded-md ${
+                    className={`w-full p-2 text-white rounded-md mb-4 ${
                         loading
                             ? "bg-primary-200 cursor-not-allowed text-accent-200"
                             : "bg-primary-100 hover:bg-primary-200"
@@ -103,6 +105,13 @@ const SignIn = () => {
                 >
                     {loading ? "Signing In..." : "Sign In"}
                 </button>
+
+                <div className="text-center text-sm">
+                    Don't have an account?{" "}
+                    <Link href="/auth/sign-up" className="text-accent-200 hover:underline">
+                        Sign Up
+                    </Link>
+                </div>
             </form>
         </div>
     );
