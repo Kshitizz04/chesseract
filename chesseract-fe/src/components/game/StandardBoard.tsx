@@ -1,26 +1,28 @@
+import { ChessEngine } from '@/Engine';
 import { Chess } from 'chess.js';
-import { useEffect, useRef, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useMemo, useRef, useState } from 'react';
 import { Chessboard } from 'react-chessboard';
 import { Piece, Square } from 'react-chessboard/dist/chessboard/types';
-import chessEngine from '@/Engine';
 
 interface StandardBoardProps {
-    isMyTurn: boolean;
-    onTurnChange: () => void;
+    position: string;
+    setPosition:Dispatch<SetStateAction<string>>
+    chess: Chess;
     setResult: (result: 0 | 1 | 2, message: string) => void;
     myColor: "w" | "b";
     difficulty?: string;
-    gameStarted: boolean
+    gameStarted: boolean;
+    isViewingHistory?: boolean;
+    historyFen?: string;
 }
-
-const chess = new Chess();
  
-const StandardBoard = ({isMyTurn, onTurnChange, setResult, myColor, difficulty="easy", gameStarted}:StandardBoardProps) => {
+const StandardBoard = ({position, setPosition, chess, setResult, myColor, difficulty="easy", gameStarted, isViewingHistory, historyFen}:StandardBoardProps) => {
     const [boardWidth, setBoardWidth] = useState(500);
-    const [position, setPosition] = useState('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1')
     const [optionSquares,setOptionSquares]=useState({})
+    const [isMyTurn, setIsMyTurn] = useState(myColor === "w")
 
     const containerRef = useRef<HTMLDivElement>(null);
+    const chessEngine = useMemo(() => new ChessEngine(), []);
     const difficultyToSkillLevel = {
         "easy": 1,
         "medium": 3,
@@ -32,6 +34,10 @@ const StandardBoard = ({isMyTurn, onTurnChange, setResult, myColor, difficulty="
         const skillLevel = difficultyToSkillLevel[difficulty as keyof typeof difficultyToSkillLevel] || 10;
         chessEngine.setSkillLevel(skillLevel);
     }, [difficulty]);
+
+    useEffect(()=>{
+        setIsMyTurn(myColor === chess.turn())
+    }, [position, myColor])
 
     useEffect(() => {
         const handleResize = () => {
@@ -50,16 +56,14 @@ const StandardBoard = ({isMyTurn, onTurnChange, setResult, myColor, difficulty="
     },[]);
 
     useEffect(()=>{
-        if(!isMyTurn){
+        if(!isMyTurn && gameStarted){
             setTimeout(() => {
                 findBestMove();
-            }, 2000);
+            }, 1500);
         }
-    },[isMyTurn])
+    },[isMyTurn, gameStarted])
 
     async function findBestMove() {
-        console.log("Finding best move with Stockfish");
-        
         try {
             // Get the best move from our engine service
             const bestMoveInfo = await chessEngine.findBestMove(chess.fen(), 1000);
@@ -83,9 +87,6 @@ const StandardBoard = ({isMyTurn, onTurnChange, setResult, myColor, difficulty="
                         setResult(0, "You lost by checkmate");
                     }
                 }
-                
-                // Pass the turn back to the player
-                onTurnChange();
             } catch (error) {
                 console.error("Invalid move suggested by engine:", error);
             }
@@ -130,7 +131,9 @@ const StandardBoard = ({isMyTurn, onTurnChange, setResult, myColor, difficulty="
     // }
 
     const handleDrop = (source:Square,target:Square,piece:Piece)=>{
-        console.log("handle drop", source, target, piece)
+        if(myColor !== piece.charAt(0).toLowerCase()){
+            return false;
+        }
         setOptionSquares({})
         try{
             chess.move({from:source,to: target});
@@ -143,7 +146,6 @@ const StandardBoard = ({isMyTurn, onTurnChange, setResult, myColor, difficulty="
                 }
             }
             setPosition(chess.fen())
-            onTurnChange()
             return true;
         }catch(e){ 
             return false;
@@ -151,15 +153,19 @@ const StandardBoard = ({isMyTurn, onTurnChange, setResult, myColor, difficulty="
     }
 
     const handleClick = (square:Square)=>{
+        const piece = chess.get(square);
+        if(!piece || myColor !== piece.color){
+            return false;
+        }
         console.log("handle click", square)
     }
 
     return ( 
-        <div className={`w-full h-max md:h-full md:w-max ${!gameStarted && 'pointer-events-none'}`} ref={containerRef}>
+        <div className={`w-full h-max md:h-full md:w-max ${(!gameStarted || isViewingHistory) && 'pointer-events-none'}`} ref={containerRef}>
             <Chessboard 
                 id="standard-board"
                 boardWidth={boardWidth}
-                position={position}
+                position={isViewingHistory ? historyFen : position}
                 onPieceDrop={handleDrop}
                 onSquareClick={handleClick}
                 customDarkSquareStyle={{backgroundColor:'#B7C0D8'}}

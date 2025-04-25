@@ -107,7 +107,6 @@ const SideBar = ({
 
     useEffect(() => {
         const data = getLocalStorage('user');
-        console.log("data", data);
         setUserData(data as UserData);
     }, []);
 

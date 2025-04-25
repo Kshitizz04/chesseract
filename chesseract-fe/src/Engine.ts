@@ -14,7 +14,7 @@ interface PositionEvaluation {
   bestLine: string[];
 }
 
-class ChessEngine {
+export class ChessEngine {
   private engine: Worker | null = null;
   private isReady: boolean = false;
   private analysisCallbacks: Map<string, (data: any) => void> = new Map();
@@ -269,6 +269,6 @@ class ChessEngine {
 }
 
 // Create singleton instance
-const chessEngine = new ChessEngine();
+// const chessEngine = new ChessEngine();
 
-export default chessEngine;
+// export default chessEngine;
