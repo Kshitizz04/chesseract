@@ -9,6 +9,8 @@ import logo from "../../public/logo-light.svg";
 import { IoMdSettings } from "react-icons/io";
 import { getLocalStorage } from "@/utils/localstorage";
 import Avatar from './utilities/Avatar';
+import { MdDarkMode, MdLightMode } from "react-icons/md";
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface SideBarProps {
     isSideBarOpen: boolean;
@@ -104,6 +106,7 @@ const SideBar = ({
   toggleSideBar
 }: SideBarProps) => {
     const [userData, setUserData] = useState<UserData | null>(null);
+    const { theme, toggleTheme } = useTheme();
 
     useEffect(() => {
         const data = getLocalStorage('user');
@@ -183,6 +186,32 @@ const SideBar = ({
 
                 </nav>
                 <div className="mt-auto mb-5 pt-4 border-t border-accent-200">
+                    <div
+                        className={`flex items-center gap-3 py-3 rounded-md transition-all hover:bg-accent-100 hover:text-accent-200
+                            ${isSideBarOpen ? 'px-4' : 'justify-center'}
+                        `}
+                        onClick={() => toggleTheme()}
+                    >
+                        <div className="text-xl">
+                            {theme==="dark" ? <MdDarkMode/> : <MdLightMode/>}
+                        </div>
+                        {isSideBarOpen && (
+                            <span className="transition-all flex-1">{theme === "dark" ? 'Dark mode' : 'Light mode'}</span>
+                        )}
+                        {isSideBarOpen && (
+                            <div className="relative inline-flex items-center cursor-pointer" onClick={(e) => {e.stopPropagation(); toggleTheme()}}>
+                                <input 
+                                    type="checkbox" 
+                                    value="" 
+                                    id="theme-toggle" 
+                                    className="sr-only peer"
+                                    checked={theme === 'dark'}
+                                    readOnly
+                                />
+                                <div className="w-9 h-5 bg-bg-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-accent-200"></div>
+                            </div>
+                        )}
+                    </div>
                     <NavItem 
                         icon={<IoMdSettings size={20} />} 
                         title="Settings" 
