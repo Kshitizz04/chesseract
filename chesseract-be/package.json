@@ -4,8 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "node server.ts",
-    "dev": "nodemon server.ts"
+    "start": "node app.ts",
+    "dev": "nodemon app.ts"
   },
   "dependencies": {
     "@arcjet/inspect": "^1.0.0-beta.6",
