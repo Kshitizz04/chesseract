@@ -33,7 +33,7 @@ export class ChessEngine {
   private initializeEngine(): void {
     try {
       // Create a web worker for Stockfish - dynamic creation
-      this.engine = new Worker(new URL('/stockfish.js', window.location.origin));
+      this.engine = new window.Worker(new URL('/stockfish.js', window.location.origin));
       
       this.engine.onmessage = (event: MessageEvent) => {
         const message = event.data;

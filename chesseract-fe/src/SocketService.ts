@@ -68,8 +68,14 @@ class SocketService {
   }
 
   // Find a match
-  public findMatch(userId: string, rating?: number): void {
-    this.emit('find_match', { userId, rating });
+  public findMatch(userData: {
+    userId: string, 
+    username: string,
+    profilePicture: string,
+    rating: number,
+    timeControl: { initial: number, increment: number }
+  }): void {
+    this.emit('find_match', userData);
   }
 
   // Make a move in a game

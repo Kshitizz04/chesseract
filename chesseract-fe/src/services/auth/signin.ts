@@ -1,5 +1,5 @@
 import API_ENDPOINTS from "../../../config/apiConfig";
-import { IUser } from "../../../models/user";
+import { IUser } from "../../models/user";
 
 interface SignInData {
     email: string;

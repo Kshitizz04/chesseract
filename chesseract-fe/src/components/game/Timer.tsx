@@ -17,7 +17,7 @@ const Timer = ({ isRunning, timeControl, setResult, isOpponent, name, profileIma
 
     useEffect(() => {
         // Parse the initial time from the timeControl prop
-        const initialMinutes = parseInt(timeControl.split("+")[0]);
+        const initialMinutes = parseInt(timeControl.split("|")[0]);
         setTimeLeft(initialMinutes * 60);
     }, [timeControl]);
 

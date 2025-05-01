@@ -6,7 +6,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 const Button = ({ children, onCLick, className, ...props }: ButtonProps) => {
     return (
         <button onClick={onCLick} {...props}
-            className={`p-2 cursor-pointer w-full rounded-sm hover:text-accent-200
+            className={`p-2 cursor-pointer w-full rounded-sm hover:text-accent-200 bg-bg-300
                 ${className}
             `}
         >

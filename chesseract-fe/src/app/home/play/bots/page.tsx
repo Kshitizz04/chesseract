@@ -1,11 +1,11 @@
 "use client"
 import { useEffect, useRef, useState } from "react";
 import Controls from "@/components/game/Controls";
-import StandardBoard from "@/components/game/StandardBoard";
+import BotBoard from "@/components/game/BotBoard";
 import ResultModal from "@/components/modals/ResultModal";
 import botAvatar from "@/assets/bot.png";
 import { getLocalStorage } from "@/utils/localstorage";
-import { IUser } from "../../../../../models/user";
+import { IUser } from "../../../../models/user";
 import Avatar from "@/components/utilities/Avatar";
 import Button from "@/components/utilities/CustomButton";
 import { Chess } from "chess.js";
@@ -61,7 +61,7 @@ const Bot = () => {
                     />
                     <p>{`(${difficulty.rating})`}</p>
                 </div>
-                <StandardBoard
+                <BotBoard
                     position={currentPosition}
                     setPosition={setCurrentPosition}
                     chess={chessRef.current}
