@@ -62,11 +62,6 @@ class SocketService {
     this.socket.off(event);
   }
 
-  // Join a room (game room, etc.)
-  public joinGame(gameId: string, userId: string): void {
-    this.emit('join_game', { gameId, userId });
-  }
-
   // Find a match
   public findMatch(userData: {
     userId: string, 
@@ -78,14 +73,28 @@ class SocketService {
     this.emit('find_match', userData);
   }
 
-  // Make a move in a game
-  public makeMove(gameId: string, userId: string, move: { from: string, to: string }, fen?: string): void {
-    this.emit('make_move', { gameId, userId, move, fen });
+  // Join a game
+  public joinGame(gameId: string, userId: string): void {
+    if (!this.socket) return;
+    this.socket.emit('join_game', { gameId, userId });
   }
 
-  // Send chat message
-  public sendGameMessage(gameId: string, userId: string, username: string, message: string): void {
-    this.emit('game_message', { gameId, userId, username, message });
+  // Make a move in a game
+  public makeMove(gameId: string, move: { from: string, to: string, promotion?: string }, fen: string): void {
+    if (!this.socket) return;
+    this.socket.emit('move', { gameId, move, fen });
+  }
+
+  // Report game over
+  public reportGameOver(gameId: string, winner: 'white' | 'black' | 'draw', reason: string, fen: string, pgn: string): void {
+    if (!this.socket) return;
+    this.socket.emit('game_over', { gameId, winner, reason, fen, pgn });
+  }
+
+  // Resign from a game
+  public resignGame(gameId: string, userId: string, color: 'white' | 'black'): void {
+    if (!this.socket) return;
+    this.socket.emit('resign', { gameId, userId, color });
   }
 
   // Get socket id

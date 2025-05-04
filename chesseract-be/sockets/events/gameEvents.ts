@@ -1,8 +1,14 @@
 import { Server, Socket } from "socket.io";
 import Game from "../../models/game.model.ts";
 
+//listening to join_game, move, game_over, resign, chat_message, disconnect
+//emitting game_start, opponent_move, game_ended, opponent_resigned, opponent_disconnected
+
 // Track which players are in which games
 const playerGameMap = new Map<string, string>(); // socketId -> gameId
+
+// Track players ready in each game
+const gameReadyPlayers = new Map<string, Set<string>>(); // gameId -> Set of socketIds
 
 export default function registerGameEvents(io: Server, socket: Socket): void {
   // Join a specific game room
@@ -26,16 +32,18 @@ export default function registerGameEvents(io: Server, socket: Socket): void {
       playerGameMap.set(socket.id, gameId);
       
       console.log(`User ${userId} (${socket.id}) joined game ${gameId}`);
+
+      // Add player to ready set
+      if (!gameReadyPlayers.has(gameId)) {
+        gameReadyPlayers.set(gameId, new Set());
+      }
+      gameReadyPlayers.get(gameId)!.add(socket.id);
       
-      // Notify the room that player has joined
-      socket.to(gameId).emit("opponent_joined", { userId });
-      
-      // Tell the joining player if their opponent is already in the room
-      const roomInfo = io.sockets.adapter.rooms.get(gameId);
-      if (roomInfo && roomInfo.size > 1) {
-        socket.emit("opponent_present", true);
-      } else {
-        socket.emit("opponent_present", false);
+      // Check if both players are ready
+      if (gameReadyPlayers.get(gameId)!.size === 2) {
+        // Both players ready, start the game
+        io.to(gameId).emit("game_start", { gameId });
+        console.log(`Game ${gameId} started with both players ready`);
       }
       
     } catch (error) {
@@ -61,16 +69,15 @@ export default function registerGameEvents(io: Server, socket: Socket): void {
   // Handle game over event - winner reports the result
   socket.on("game_over", async (data: {
     gameId: string,
-    userId: string, // Winner/reporter ID
     winner: 'white' | 'black' | 'draw',
     reason: string,
-    moves?: string[],
-    fen?: string,
-    pgn?: string
+    fen: string,
+    pgn: string,
+    moves: string[]
   }) => {
-    const { gameId, userId, winner, reason, moves, fen, pgn } = data;
+    const { gameId, winner, reason, moves, fen, pgn } = data;
     
-    console.log(`Game over reported for ${gameId} by ${userId}: ${winner} wins by ${reason}`);
+    console.log(`Game over reported for ${gameId}, ${winner} wins by ${reason}`);
     
     try {
       // Update the game in the database

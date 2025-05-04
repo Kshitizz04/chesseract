@@ -11,6 +11,7 @@ import StandardBoard from "@/components/game/StandardBoard";
 import TimeSelector from "@/components/game/TimeSelector";
 import { useToast } from "@/contexts/ToastContext";
 import SocketService from "@/SocketService";
+import FindingMatchModal from "@/components/modals/FindingMatchModal";
 
 const Online = () => {
     const [gameStarted, setGameStarted] = useState(false);
@@ -24,7 +25,7 @@ const Online = () => {
     const [findingMatch, setFindingMatch] = useState(false);
     const [time, setTime] = useState<{type:"bullet" | "blitz" | "rapid", time: string}>({type: "rapid", time: "10|0"});
     const [currentGameId, setCurrentGameId] = useState<string | null>(null);
-    const [playerColor, setPlayerColor] = useState<"w" | "b" | null>(null);
+    const [playerColor, setPlayerColor] = useState<"w" | "b">("w");
 
     const userId = getLocalStorage("userId");
     const chessRef = useRef(new Chess());
@@ -57,6 +58,7 @@ const Online = () => {
         }
     },[time.type])
 
+    console.log("opponentData in page: ", opponentData, currentGameId);
     //Setup socket listeners for matchmaking
     useEffect(() => {
         // Listen for match found event
@@ -65,10 +67,8 @@ const Online = () => {
             
             // Setup the game
             setCurrentGameId(gameId);
-            setPlayerColor(color);
-            setIsMyTurn(color === "white"); // White moves first
-            setGameStarted(true);
-            setFindingMatch(false);
+            setPlayerColor(color === 'white' ? 'w' : 'b');
+            setIsMyTurn(color === "white"); // White moves first\
             
             // Reset the chess instance to initial state
             chessRef.current.reset();
@@ -80,8 +80,35 @@ const Online = () => {
                 profileImage: opponent.profilePicture,
                 rating: opponent.rating
             });
-            
-            showToast("Match found! Game is starting.", "success");
+        });
+
+        // Listen for game start event
+        SocketService.on("game_start", () => {
+            setGameStarted(true);
+            setFindingMatch(false);
+        });
+
+        // Listen for opponent disconnected
+        SocketService.on("opponent_disconnected", (data) => {
+            showToast(data.message, "info");
+            // You could start a countdown before declaring victory
+        });
+
+        // Listen for resigned event
+        SocketService.on("player_resigned", (data) => {
+            const isWinner = data.winner === (playerColor === 'w' ? 'white' : 'black');
+            if (isWinner) {
+                setResult({ 
+                    result: 1, 
+                    message: "Your opponent resigned" 
+                });
+            } else {
+                setResult({
+                    result: 2,
+                    message: "You resigned"
+                });
+            }
+            setGameStarted(false);
         });
 
         // Listen for matchmaking error
@@ -129,8 +156,6 @@ const Online = () => {
             rating: userData.rating,
             timeControl: { initial: initial * 60, increment }
         });
-        
-        showToast("Finding a match...", "info");
     }
 
     const handleCancelMatchmaking = () => {
@@ -144,6 +169,14 @@ const Online = () => {
 
     const handleTimeSelect = (type: "bullet" | "blitz" | "rapid", time: string) => {
         setTime({type, time});
+    }
+
+    const handleJoinGame = () => {
+        // Join the game room
+        if (currentGameId) {
+            SocketService.joinGame(currentGameId, userId as string);
+            setFindingMatch(false);
+        }
     }
 
     return (
@@ -167,6 +200,9 @@ const Online = () => {
                     gameStarted={gameStarted}
                     isViewingHistory={isViewingHistory}
                     historyFen={historyFen}
+                    gameId={currentGameId}
+                    playerColor={playerColor}
+                    setIsMyTurn={setIsMyTurn}
                 />
                 <Timer
                     profileImage = {userData.profileImage}
@@ -202,6 +238,14 @@ const Online = () => {
                 )}
             </div>
             {result && <ResultModal result={result.result} message={result.message} onClose={() => setResult(null)} />}
+            {findingMatch && 
+            <FindingMatchModal
+                onCancel={handleCancelMatchmaking}
+                userData={userData}
+                opponentData={currentGameId ? opponentData : null}
+                onJoinGame={handleJoinGame}
+                timeControl={`${time.time} ${time.type}`}
+            />}
         </div>
     );
 };

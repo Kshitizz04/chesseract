@@ -3,6 +3,9 @@ import mongoose, {Types} from "mongoose";
 import Game from "../../models/game.model.ts";
 import { TimeFormat } from "../../types/TimeFormat.ts";
 
+// listening to find_match, cancel_matchmaking, match_found, matchmaking_error, disconnect
+// emiting match_found, matchmaking_error
+
 interface WaitingPlayer {
   socketId: string;
   userId: string;
