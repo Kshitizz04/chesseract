@@ -7,11 +7,11 @@ interface TimerProps {
     rating: number;
     isRunning: boolean;
     timeControl: string; 
-    setResult: (result: 0 | 1 | 2, message: string) => void;
     isOpponent: boolean;
+    onTimeOut:(isOpponent: boolean)=> void;
 }
 
-const Timer = ({ isRunning, timeControl, setResult, isOpponent, name, profileImage, rating }: TimerProps) => {
+const Timer = ({ isRunning, timeControl, onTimeOut, isOpponent, name, profileImage, rating }: TimerProps) => {
     const [timeLeft, setTimeLeft] = useState(1); 
     const increment = parseInt(timeControl.split("+")[1]) || 0;
 
@@ -42,8 +42,7 @@ const Timer = ({ isRunning, timeControl, setResult, isOpponent, name, profileIma
 
     useEffect(()=>{
         if(timeLeft <= 0){
-            const result = isOpponent ? 1 : 0;
-            setResult(result, isOpponent ? "Your opponent ran out of time" : "You ran out of time")
+            onTimeOut(isOpponent);
         }
     },[timeLeft])
 

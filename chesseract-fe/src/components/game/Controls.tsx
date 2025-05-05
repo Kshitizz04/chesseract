@@ -9,14 +9,14 @@ interface ControlsProps {
     chess: Chess;
     handleViewHistory: (isViewing: boolean, historyFen: string) => void;
     currentPosition: string;
-    setResult: (result: 0 | 1 | 2, message: string) => void
+    onResign: () => void;
 }
 
 const Controls = ({
     chess,
     handleViewHistory,
     currentPosition,
-    setResult,
+    onResign,
 }: ControlsProps) => {
     const [history, setHistory] = useState<string[]>([]);
     const positionHistoryRef = useRef<Record<number, string>>({});
@@ -32,10 +32,6 @@ const Controls = ({
     useEffect(()=>{
         setCurrentMoveIndex(history.length - 1);
     },[history])
-
-    const handleResign = () => {
-        setResult (0,"You resigned the game")
-    }
 
     const handleUndo = () => {
         console.log("Resign clicked");
@@ -133,7 +129,7 @@ const Controls = ({
             {/* Resign Undo Buttons */}
             <div className='flex gap-2 border-t-1 border-accent-100 pt-2 mb-2 mt-auto'>
                 <Button
-                    onClick={handleResign}
+                    onClick={onResign}
                     className='flex gap-2 items-center bg-bg-100 justify-center'
                 >
                     <BsFillFlagFill/>

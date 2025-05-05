@@ -207,7 +207,7 @@ const SideBar = ({
                                 <MdDarkMode className="h-6 w-6"/>
                                 <MdLightMode className="h-6 w-6"/>
                                 <div className={`absolute w-6 h-6 bg-accent-200 rounded-full
-                                        ${theme === 'dark' ? 'translate-x-[calc(100%+5px)]' : 'translate-x-0'}
+                                        ${theme === 'dark' ? 'translate-x-[calc(100%+5px)]' : 'translate-x-[1px]'}
                                         transition-all duration-300
                                     `}/>
                             </div>

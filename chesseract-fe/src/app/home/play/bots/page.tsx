@@ -49,6 +49,10 @@ const Bot = () => {
         setGameStarted(false);
     }
 
+    const handleResign = () => {
+        setResultMessage (0,"You resigned the game")
+    }
+
     return (
         <div className="h-full w-full flex justify-around max-md:flex-col rounded-md p-2 gap-2">
             {/* Main Section */}
@@ -114,7 +118,7 @@ const Bot = () => {
                         chess={chessRef.current}
                         handleViewHistory={handleViewHistory}
                         currentPosition={currentPosition}
-                        setResult={setResultMessage}
+                        onResign={handleResign}
                     />
                 )}
             </div>

@@ -11,6 +11,7 @@ interface ResultModalProps {
 
 const ResultModal = ({ result, message, onClose }: ResultModalProps) => {
     const getTitle = () => {
+        console.log("Result:", result);
         switch (result) {
             case 0:
                 return "You Lost";

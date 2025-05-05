@@ -58,7 +58,6 @@ const Online = () => {
         }
     },[time.type])
 
-    console.log("opponentData in page: ", opponentData, currentGameId);
     //Setup socket listeners for matchmaking
     useEffect(() => {
         // Listen for match found event
@@ -117,12 +116,25 @@ const Online = () => {
             setFindingMatch(false);
         });
 
+        SocketService.on("game_ended", (data) => {
+            if(data.winner[0] === playerColor) {
+                setResult({ result: 1, message: `You won! ${data.reason}` });
+            } else if(data.winner === "draw") {
+                setResult({ result: 2, message: `It's a draw! ${data.reason}` });
+            } else{
+                setResult({ result: 0, message: `You lost! ${data.reason}` });
+            }
+            setGameStarted(false);
+        });
+
         // Clean up listeners
         return () => {
             SocketService.off("match_found");
             SocketService.off("matchmaking_error");
+            SocketService.off("game_ended");
         };
-    }, [userData.rating]);
+    }, [userData.rating, playerColor]);
+
 
     const handleViewHistory = (isViewing: boolean, historyFen: string) => {
         setIsViewingHistory(isViewing);
@@ -142,6 +154,8 @@ const Online = () => {
             SocketService.connect(token as string);
             return;
         }
+
+        if(currentGameId)resetStates();
 
         setFindingMatch(true);
         
@@ -179,6 +193,54 @@ const Online = () => {
         }
     }
 
+    const handleResign = ()=>{
+        const winner = playerColor === "w" ? "black" : "white";
+        setResult({result: 0, message: "Resignation!"});
+        setGameStarted(false);
+        if (currentGameId) {
+                        // Report game over to server
+            SocketService.emit("game_over", {
+                gameId: currentGameId,
+                winner,
+                reason: "resignation",
+                fen: chessRef.current.fen(),
+                pgn: chessRef.current.pgn(),
+                moves: chessRef.current.history()
+            });
+        }
+    }
+
+    const handleTimeOut=(isOpponent: boolean)=>{
+        const result = isOpponent ? 1 : 0;
+        setResult({result, message: isOpponent ? "Your opponent ran out of time" : "You ran out of time"});
+        const winner = isOpponent ? playerColor==="w" ? "white" : "black" : playerColor==="w" ? "black" : "white";
+        setGameStarted(false);
+        if (currentGameId) {
+            // Report game over to server
+            SocketService.emit("game_over", {
+                gameId: currentGameId,
+                winner: winner,
+                reason: "timeout",
+                fen: chessRef.current.fen(),
+                pgn: chessRef.current.pgn(),
+                moves: chessRef.current.history()
+            });
+        }
+    }
+
+    const resetStates = ()=>{
+        setResult(null);
+        setIsViewingHistory(false);
+        setHistoryFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+        setGameStarted(false);
+        setFindingMatch(false);
+        setCurrentGameId(null);
+        setPlayerColor("w");
+        setIsMyTurn(true);
+        chessRef.current.reset();
+        setCurrentPosition(chessRef.current.fen());
+    }
+
     return (
         <div className="h-full w-full flex justify-around max-md:flex-col rounded-md p-2 gap-2">
             {/* Main Section */}
@@ -189,7 +251,7 @@ const Online = () => {
                     rating = {opponentData.rating}
                     isRunning= {gameStarted && !isMyTurn}
                     timeControl = {time.time}
-                    setResult = {setResultMessage}
+                    onTimeOut={handleTimeOut}
                     isOpponent = {true}
                 />
                 <StandardBoard
@@ -210,7 +272,7 @@ const Online = () => {
                     rating = {userData.rating}
                     isRunning= {gameStarted && isMyTurn}
                     timeControl = {time.time}
-                    setResult = {setResultMessage}
+                   onTimeOut={handleTimeOut}
                     isOpponent = {false}
                 />
             </div>
@@ -227,7 +289,7 @@ const Online = () => {
                         chess={chessRef.current}
                         handleViewHistory={handleViewHistory}
                         currentPosition={currentPosition}
-                        setResult={setResultMessage}
+                        onResign={handleResign}
                     />
                 )}
 

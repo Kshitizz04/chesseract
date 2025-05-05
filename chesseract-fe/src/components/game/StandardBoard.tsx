@@ -72,7 +72,7 @@ const StandardBoard = ({
                 setIsMyTurn(true);
                 
                 // Check if the game is over after opponent's move
-                checkGameOver();
+                //checkGameOver();
             } catch (error) {
                 console.error("Error applying opponent's move:", error);
             }
@@ -107,7 +107,7 @@ const StandardBoard = ({
         // Check for checkmate
         if (chess.isCheckmate()) {
             const winner = chess.turn() === 'w' ? 'black' : 'white';
-            setResult(chess.turn() === playerColor ? 1 : 2, 'Checkmate!');
+            setResult(chess.turn() === playerColor ? 0 : 1, 'Checkmate!');
             
             if (gameId) {
                 // Report game over to server
@@ -116,7 +116,8 @@ const StandardBoard = ({
                     winner,
                     reason: "checkmate",
                     fen: chess.fen(),
-                    pgn: chess.pgn()
+                    pgn: chess.pgn(),
+                    moves: chess.history()
                 });
             }
             return true;
