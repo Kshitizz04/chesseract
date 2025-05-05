@@ -3,6 +3,15 @@ import { JWT_SECRET } from "../config/env.ts";
 import jwt, { Secret } from 'jsonwebtoken';
 import User, { IUser } from "../models/user.model.ts";
 import { IJwtPayload } from "../types/IJwtPayload.ts";
+import { Types } from "mongoose";
+
+declare global {
+    namespace Express {
+        interface Request {
+            user?: { userId: string };
+        }
+    }
+}
 
 const authorize = async (req: Request, res: Response, next: NextFunction) => {
     try{
@@ -17,7 +26,7 @@ const authorize = async (req: Request, res: Response, next: NextFunction) => {
 
         const decoded = jwt.verify(token, JWT_SECRET) as IJwtPayload;
 
-        const user = await User.findById(decoded.userId).select("-password");
+        const user = await User.findById(decoded.userId);
         if(!user){
             res.status(401).json({ 
                 success: false,
@@ -25,6 +34,8 @@ const authorize = async (req: Request, res: Response, next: NextFunction) => {
             });
             return;
         }
+
+        req.user={userId: (user._id as Types.ObjectId).toString()};
         next();
     }catch(err){
         res.status(401).json({

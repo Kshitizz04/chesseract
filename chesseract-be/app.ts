@@ -13,6 +13,7 @@ import authRouter from "./routes/auth.routes.ts";
 import connectToDatabase from "./database/mongodb.ts";
 import errorMiddleware from "./middlewares/error.middleware.ts";
 import arcjetMiddleware from "./middlewares/arcjet.middleware.ts";
+import friendRouter from "./routes/friends.routes.ts";
 
 const app = express();
 const server = http.createServer(app);
@@ -37,6 +38,7 @@ app.use(
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/games', gameRouter);
+app.use('/api/v1/friends', friendRouter);
 
 app.use(errorMiddleware);
 
