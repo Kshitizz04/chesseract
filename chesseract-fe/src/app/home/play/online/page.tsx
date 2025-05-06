@@ -242,7 +242,7 @@ const Online = () => {
     }
 
     return (
-        <div className="h-full w-full flex justify-around max-md:flex-col rounded-md p-2 gap-2">
+        <div className="h-full w-full flex justify-around max-md:flex-col rounded-md gap-2">
             {/* Main Section */}
             <div className="flex flex-col justify-center w-full h-max md:h-full md:w-max rounded-md md:p-2 gap-2">
                 <Timer

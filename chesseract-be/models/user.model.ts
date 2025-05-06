@@ -19,6 +19,11 @@ export interface IUser extends Document {
         blitz: number;
         rapid: number;
     },
+    ratingHistory: {
+        bullet: [{ date: {type: Date}, rating: Number }],  //daily rating history
+        blitz: [{ date: {type: Date}, rating: Number }],
+        rapid: [{ date: {type: Date}, rating: Number }],
+    },
     profilePicture?: string;
     bio?: string;
     isOnline: boolean;
