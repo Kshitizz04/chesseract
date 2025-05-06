@@ -1,8 +1,12 @@
 import mongoose, { Schema, Document, Types } from "mongoose";
+import { TimeFormat } from "../types/TimeFormat";
 
 export interface IGame extends Document {
     whitePlayer: Types.ObjectId;
     blackPlayer: Types.ObjectId;
+    whiteRating: number;
+    blackRating: number;
+    format: TimeFormat;
     moves: string[]; // UCI or SAN notation
     winner?: 'white' | 'black' | 'draw';
     fen?: string; // FEN string representing the current position
@@ -24,6 +28,19 @@ const gameSchema = new Schema<IGame>({
     blackPlayer: { 
         type: Schema.Types.ObjectId, 
         ref: 'User', 
+        required: true 
+    },
+    whiteRating: { 
+        type: Number, 
+        required: true 
+    },
+    blackRating: { 
+        type: Number, 
+        required: true 
+    },
+    format: { 
+        type: String, 
+        enum: ['blitz', 'rapid', 'bullet'], 
         required: true 
     },
     winner: { 

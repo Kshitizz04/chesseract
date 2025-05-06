@@ -168,7 +168,8 @@ const Online = () => {
             username: userData.username,
             profilePicture: userData.profileImage || "",
             rating: userData.rating,
-            timeControl: { initial: initial * 60, increment }
+            timeControl: { initial: initial * 60, increment },
+            timeFormat: time.type
         });
     }
 

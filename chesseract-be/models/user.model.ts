@@ -37,6 +37,18 @@ export interface IUser extends Document {
     createdAt: Date;
 }
 
+const ratingHistorySchema = new Schema({
+    date: {
+      type: Date,
+      required: true,
+      default: Date.now,
+    },
+    rating: {
+      type: Number,
+      required: true,
+    },
+}, { _id: false });
+
 const userSchema = new Schema<IUser>({
     username:{
         type: String,
@@ -69,6 +81,11 @@ const userSchema = new Schema<IUser>({
         bullet: {type: Number, default: 1200, min: 0},
         blitz: {type: Number, default: 1200, min: 0},
         rapid: {type: Number, default: 1200, min: 0},
+    },
+    ratingHistory:{
+        bullet: { type: [ratingHistorySchema], default: () => [{ date: new Date(), rating: 1200 }] },
+        blitz: { type: [ratingHistorySchema], default: () => [{ date: new Date(), rating: 1200 }] },
+        rapid: { type: [ratingHistorySchema], default: () => [{ date: new Date(), rating: 1200 }] },
     },
     profilePicture:{type: String},
     bio: {type: String},

@@ -12,3 +12,10 @@ export interface GetUserResponse extends CommonResponse<IUser> {
     message: string;
     data: IUser;
 }
+
+export interface EditProfileBody {
+    fullname?: string;
+    profilePicture?: string;
+    bio?: string;
+    country?: string;
+}

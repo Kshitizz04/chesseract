@@ -1,13 +1,11 @@
 import {Router} from 'express';
+import authorize from '../middlewares/auth.middleware.ts';
+import { getUserGames, getGameById } from '../controllers/game/game.controller.ts';
 const gameRouter = Router();
 
-gameRouter.get('/', (req, res) => {
-    res.send('GET all games');
-});
+gameRouter.get('/game-history/:userId', authorize, getUserGames);
 
-gameRouter.get('/:id', (req, res) => {
-    res.send('GET game route');
-});
+gameRouter.get('/game-details/:gameId', authorize, getGameById);
 
 gameRouter.post('/', (req, res) => {
     res.send('CREATE game route');

@@ -33,7 +33,7 @@ export default function registerMatchmakingEvents(io: Server, socket: Socket): v
     timeFormat: TimeFormat,
     timeControl: { initial: number, increment: number }
   }) => {
-    const { userId, username, profilePicture, rating, timeControl } = userData;
+    const { userId, username, profilePicture, rating, timeFormat, timeControl } = userData;
     
     console.log(`User ${userId} (${socket.id}) looking for a match with time control: ${timeControl.initial}+${timeControl.increment}`);
     
@@ -78,6 +78,9 @@ export default function registerMatchmakingEvents(io: Server, socket: Socket): v
         const game = new Game({
           whitePlayer: new Types.ObjectId(whitePlayerId),
           blackPlayer: new Types.ObjectId(blackPlayerId),
+          whiteRating: isWhite ? rating : matchedPlayer.rating,
+          blackRating: isWhite ? matchedPlayer.rating : rating,
+          format: timeFormat,
           status: 'ongoing',
           moves: [],
           fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1', // Initial position

@@ -1,5 +1,6 @@
 import { io, Socket } from 'socket.io-client';
 import { SOCKET_BASE_URL } from '../config/env';
+import { TimeFormats } from './models/GameUtilityTypes';
 
 class SocketService {
   private socket: Socket | null = null;
@@ -69,6 +70,7 @@ class SocketService {
     profilePicture: string,
     rating: number,
     timeControl: { initial: number, increment: number }
+    timeFormat: TimeFormats
   }): void {
     this.emit('find_match', userData);
   }
