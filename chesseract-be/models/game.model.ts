@@ -1,5 +1,6 @@
 import mongoose, { Schema, Document, Types } from "mongoose";
 import { TimeFormat } from "../types/TimeFormat";
+import { ResultReason } from "../types/ResultReason";
 
 export interface IGame extends Document {
     whitePlayer: Types.ObjectId;
@@ -16,7 +17,7 @@ export interface IGame extends Document {
         initial: number; // initial time in seconds
         increment: number; // increment time in seconds
     };
-    resultReason?: 'checkmate' | 'stalemate' | 'timeout' | 'resignation' | 'draw by agreement' | 'insufficient material' | 'threefold repetition' | 'fifty-move rule' | 'disconnection' | 'other';
+    resultReason?: ResultReason;
   }
 
 const gameSchema = new Schema<IGame>({

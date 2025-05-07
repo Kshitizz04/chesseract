@@ -2,6 +2,7 @@ import { Server, Socket } from "socket.io";
 import mongoose, {Types} from "mongoose";
 import Game from "../../models/game.model.ts";
 import { TimeFormat } from "../../types/TimeFormat.ts";
+import User from "../../models/user.model.ts";
 
 // listening to find_match, cancel_matchmaking, match_found, matchmaking_error, disconnect
 // emiting match_found, matchmaking_error
@@ -29,14 +30,19 @@ export default function registerMatchmakingEvents(io: Server, socket: Socket): v
     userId: string, 
     username: string,
     profilePicture: string,
-    rating: number,
     timeFormat: TimeFormat,
     timeControl: { initial: number, increment: number }
   }) => {
-    const { userId, username, profilePicture, rating, timeFormat, timeControl } = userData;
+    const { userId, username, profilePicture, timeFormat, timeControl } = userData;
     
     console.log(`User ${userId} (${socket.id}) looking for a match with time control: ${timeControl.initial}+${timeControl.increment}`);
-    
+    const ratings = await User.findById(userId).select("rating")
+    const rating = ratings?.rating[timeFormat]
+    if (!rating) {
+      console.error(`User ${userId} has no rating for time format ${timeFormat}`);
+      socket.emit("matchmaking_error", { message: "No rating found for this time format" });
+      return;
+    }
     // Add player to waiting list
     const newPlayer: WaitingPlayer = {
       socketId: socket.id,
@@ -103,6 +109,7 @@ export default function registerMatchmakingEvents(io: Server, socket: Socket): v
             profilePicture: matchedPlayer.profilePicture,
             rating: matchedPlayer.rating
           },
+          myRating: rating,
           color: isWhite ? 'white' : 'black',
           timeControl
         });
@@ -115,6 +122,7 @@ export default function registerMatchmakingEvents(io: Server, socket: Socket): v
             profilePicture,
             rating
           },
+          myRating: matchedPlayer.rating,
           color: isWhite ? 'black' : 'white',
           timeControl
         });

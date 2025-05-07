@@ -20,9 +20,9 @@ export interface IUser extends Document {
         rapid: number;
     },
     ratingHistory: {
-        bullet: [{ date: {type: Date}, rating: Number }],  //daily rating history
-        blitz: [{ date: {type: Date}, rating: Number }],
-        rapid: [{ date: {type: Date}, rating: Number }],
+        bullet: [{ date: Date, rating: number }],  //daily rating history
+        blitz: [{ date: Date, rating: number }],
+        rapid: [{ date: Date, rating: number }],
     },
     profilePicture?: string;
     bio?: string;

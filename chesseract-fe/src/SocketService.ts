@@ -68,7 +68,6 @@ class SocketService {
     userId: string, 
     username: string,
     profilePicture: string,
-    rating: number,
     timeControl: { initial: number, increment: number }
     timeFormat: TimeFormats
   }): void {

@@ -62,7 +62,7 @@ const Online = () => {
     useEffect(() => {
         // Listen for match found event
         SocketService.on("match_found", (data) => {
-            const { gameId, opponent, color, timeControl } = data;
+            const { gameId, opponent, color, myRating } = data;
             
             // Setup the game
             setCurrentGameId(gameId);
@@ -79,6 +79,7 @@ const Online = () => {
                 profileImage: opponent.profilePicture,
                 rating: opponent.rating
             });
+            setUserData((prev)=>({...prev, rating: myRating}))
         });
 
         // Listen for game start event
@@ -117,6 +118,15 @@ const Online = () => {
         });
 
         SocketService.on("game_ended", (data) => {
+            console.log("Game ended", data, playerColor);
+            if(playerColor === "w"){
+                setUserData((prev) => ({...prev, rating: prev.rating + data.whiteRatingChange}));
+                setOpponentData((prev) => ({...prev, rating: prev.rating + data.blackRatingChange}));
+            }else{
+                setUserData((prev) => ({...prev, rating: prev.rating + data.blackRatingChange}));
+                setOpponentData((prev) => ({...prev, rating: prev.rating + data.whiteRatingChange}));
+            }
+
             if(data.winner[0] === playerColor) {
                 setResult({ result: 1, message: `You won! ${data.reason}` });
             } else if(data.winner === "draw") {
@@ -167,7 +177,6 @@ const Online = () => {
             userId: userId as string,
             username: userData.username,
             profilePicture: userData.profileImage || "",
-            rating: userData.rating,
             timeControl: { initial: initial * 60, increment },
             timeFormat: time.type
         });

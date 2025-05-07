@@ -1,0 +1,1 @@
+export type ResultReason = 'checkmate' | 'stalemate' | 'timeout' | 'resignation' | 'draw by agreement' | 'insufficient material' | 'threefold repetition' | 'fifty-move rule' | 'disconnection' | 'other';
