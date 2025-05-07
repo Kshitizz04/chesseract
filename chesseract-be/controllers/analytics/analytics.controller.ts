@@ -120,7 +120,7 @@ export const getAdvancedAnalytics = async (req: Request, res: Response, next: Ne
         // Prepare format filter for MongoDB queries
         let timeControlFilter: any = {};
         
-        if (format) {
+        if (format && ['bullet', 'blitz', 'rapid'].includes(format as string)) {
             timeControlFilter = { 'format': format };
         }
         

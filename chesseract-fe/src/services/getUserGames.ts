@@ -2,7 +2,7 @@ import { getLocalStorage } from "@/utils/localstorage";
 import API_ENDPOINTS from "../../config/apiConfig";
 import { TimeFormats } from "@/models/GameUtilityTypes";
 
-export interface Game {
+interface GameInHistory {
     _id: string;
     whitePlayer: {
         _id: string;
@@ -25,7 +25,7 @@ export interface Game {
 }
 
 interface GetGameHistoryData {
-    games: Game[];
+    games: GameInHistory[];
     pagination: {
         total: number;
         page: number;
@@ -54,4 +54,4 @@ const getUserGames = async (userId: string, format: TimeFormats | null, limit: n
 }
 
 export default getUserGames;
-export type { GetGameHistoryData };
+export type { GetGameHistoryData, GameInHistory };
