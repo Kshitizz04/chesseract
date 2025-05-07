@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "node app.ts",
+    "start": "node --loader ts-node/esm app.ts",
     "dev": "nodemon app.ts"
   },
   "dependencies": {
