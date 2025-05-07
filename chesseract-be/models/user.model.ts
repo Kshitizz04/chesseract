@@ -83,9 +83,9 @@ const userSchema = new Schema<IUser>({
         rapid: {type: Number, default: 1200, min: 0},
     },
     ratingHistory:{
-        bullet: { type: [ratingHistorySchema], default: () => [{ date: new Date(), rating: 1200 }] },
-        blitz: { type: [ratingHistorySchema], default: () => [{ date: new Date(), rating: 1200 }] },
-        rapid: { type: [ratingHistorySchema], default: () => [{ date: new Date(), rating: 1200 }] },
+        bullet: { type: [ratingHistorySchema], default: () => [{ date: new Date().setHours(0,0,0,0), rating: 1200 }] },
+        blitz: { type: [ratingHistorySchema], default: () => [{ date: new Date().setHours(0,0,0,0), rating: 1200 }] },
+        rapid: { type: [ratingHistorySchema], default: () => [{ date: new Date().setHours(0,0,0,0), rating: 1200 }] },
     },
     profilePicture:{type: String},
     bio: {type: String},

@@ -39,7 +39,6 @@ interface GetGameHistoryResponse extends CommonResponse<GetGameHistoryData> {}
 const getUserGames = async (userId: string, format: TimeFormats | null, limit: number | null, page:number | null): Promise<GetGameHistoryResponse> => {
     try {
         const token = getLocalStorage("token");
-        console.log("url", API_ENDPOINTS.game.getUserGames(userId, format, limit, page));
         const response = await fetch(API_ENDPOINTS.game.getUserGames(userId, format, limit, page), {
             method: "GET",
             headers: {

@@ -11,123 +11,34 @@ import { IoChevronForwardOutline, IoClose } from 'react-icons/io5';
 import { BiLinkExternal } from 'react-icons/bi';
 import { CiSaveUp2 } from 'react-icons/ci';
 import Avatar from '@/components/utilities/Avatar';
-import { TimeFormats } from '@/models/GameUtilityTypes';
+import { TimeFormats, TimeFrame } from '@/models/GameUtilityTypes';
 import { getLocalStorage } from '@/utils/localstorage';
 import getUserById, { GetUserByIdData } from '@/services/getUserById';
 import { useToast } from '@/contexts/ToastContext';
 import LoadingSpinner from '@/components/utilities/LoadingSpinner';
 import getUserGames, { GameInHistory, GetGameHistoryData } from '@/services/getUserGames';
 import { MdFirstPage, MdLastPage, MdNavigateBefore, MdNavigateNext } from 'react-icons/md';
-
-// Dummy user data
-const dummyUser = {
-  username: "MagnusCarlsen",
-  fullname: "Magnus Carlsen",
-  email: "magnus@example.com",
-  bio: "Chess enthusiast and casual player. I enjoy tactical positions and endgames.",
-  profilePicture: "",
-  country: "Norway",
-  rating: {
-    bullet: 1850,
-    blitz: 1920,
-    rapid: 2050,
-  },
-  stats: {
-    bullet: {
-      wins: 145,
-      losses: 98,
-      draws: 24,
-      gamesPlayed: 267,
-      highestRating: 1890,
-      lowestRating: 1420,
-    },
-    blitz: {
-      wins: 203,
-      losses: 115,
-      draws: 39,
-      gamesPlayed: 357,
-      highestRating: 1950,
-      lowestRating: 1580,
-    },
-    rapid: {
-      wins: 98,
-      losses: 45,
-      draws: 22,
-      gamesPlayed: 165,
-      highestRating: 2080,
-      lowestRating: 1750,
-    }
-  }
-};
-
-// Dummy rating history
-const dummyRatingHistory = {
-  bullet: [
-    { date: '01/01', rating: 1700 },
-    { date: '01/15', rating: 1725 },
-    { date: '02/01', rating: 1780 },
-    { date: '02/15', rating: 1750 },
-    { date: '03/01', rating: 1800 },
-    { date: '03/15', rating: 1820 },
-    { date: '04/01', rating: 1850 },
-  ],
-  blitz: [
-    { date: '01/01', rating: 1800 },
-    { date: '01/15', rating: 1850 },
-    { date: '02/01', rating: 1880 },
-    { date: '02/15', rating: 1900 },
-    { date: '03/01', rating: 1870 },
-    { date: '03/15', rating: 1910 },
-    { date: '04/01', rating: 1920 },
-  ],
-  rapid: [
-    { date: '01/01', rating: 1880 },
-    { date: '01/15', rating: 1920 },
-    { date: '02/01', rating: 1970 },
-    { date: '02/15', rating: 2010 },
-    { date: '03/01', rating: 1990 },
-    { date: '03/15', rating: 2020 },
-    { date: '04/01', rating: 2050 },
-  ]
-};
-
-// Dummy game history
-const dummyGameHistory = {
-  bullet: [
-    { id: 'b1', opponent: 'Hikaru123', result: 'win', rating: '+8', date: '2025-04-01', moves: 32 },
-    { id: 'b2', opponent: 'ChessWizard', result: 'loss', rating: '-12', date: '2025-03-27', moves: 45 },
-    { id: 'b3', opponent: 'TacticalPlayer', result: 'win', rating: '+9', date: '2025-03-25', moves: 28 },
-    { id: 'b4', opponent: 'GrandMasterFan', result: 'win', rating: '+10', date: '2025-03-20', moves: 35 },
-    { id: 'b5', opponent: 'Knight_Rider', result: 'draw', rating: '+0', date: '2025-03-18', moves: 62 },
-  ],
-  blitz: [
-    { id: 'bl1', opponent: 'ChessMaster99', result: 'win', rating: '+7', date: '2025-04-02', moves: 42 },
-    { id: 'bl2', opponent: 'RookStar', result: 'win', rating: '+8', date: '2025-03-29', moves: 38 },
-    { id: 'bl3', opponent: 'PawnPusher', result: 'draw', rating: '+0', date: '2025-03-28', moves: 56 },
-    { id: 'bl4', opponent: 'QueenGambler', result: 'loss', rating: '-10', date: '2025-03-25', moves: 49 },
-    { id: 'bl5', opponent: 'BishopRunner', result: 'win', rating: '+9', date: '2025-03-22', moves: 41 },
-  ],
-  rapid: [
-    { id: 'r1', opponent: 'EndGameGuru', result: 'win', rating: '+6', date: '2025-04-01', moves: 62 },
-    { id: 'r2', opponent: 'OpeningMaster', result: 'win', rating: '+8', date: '2025-03-28', moves: 54 },
-    { id: 'r3', opponent: 'CheckmateMachine', result: 'loss', rating: '-9', date: '2025-03-24', moves: 47 },
-    { id: 'r4', opponent: 'StrategicMind', result: 'draw', rating: '+0', date: '2025-03-20', moves: 76 },
-    { id: 'r5', opponent: 'TacticalGenius', result: 'win', rating: '+7', date: '2025-03-15', moves: 39 },
-  ],
-};
+import getUserStats, { GetUserStatsData } from '@/services/getUserStats';
+import getUserRatingHistory, { GetUserRatingHistoryData } from '@/services/getUserRatingHistory';
+import getAdvancedAnalytics, { GetAdvancedAnalyticsData } from '@/services/getAdvancedAnalytics';
 
 const Profile = () => {
 	const [editing, setEditing] = useState(false);
-	const [selectedFormat, setSelectedFormat] = useState('all');
-	const [user, setUser] = useState(dummyUser);
 	const [activeTab, setActiveTab] = useState('all');
 	const [historyTab, setHistoryTab] = useState('all');
+	const [timeframe, setTimeframe] = useState<TimeFrame>('1w');
 	const [loadingUserData, setLoadingUserData] = useState(false);
 	const [loadingGameHistory, setLoadingGameHistory] = useState(false);
+	const [loadingStats, setLoadingStats] = useState(false);
+	const [loadingRatingHistory, setLoadingRatingHistory] = useState(false);
+	const [loadingAnalytics, setLoadingAnalytics] = useState(false);
 	const [page, setPage] = useState(1);
 
 	const [userData, setUserData] = useState<GetUserByIdData | null>(null);
 	const [gameHistory, setGameHistory] = useState<GetGameHistoryData | null>(null);
+	const [stats, setStats] = useState<GetUserStatsData | null>(null);
+	const [ratingHistory, setRatingHistory] = useState<GetUserRatingHistoryData | null>(null);
+	const [analytics, setAnalytics] = useState<GetAdvancedAnalyticsData | null>(null);
 
 	const userId = getLocalStorage('userId')
 	const limit = 10;
@@ -135,34 +46,30 @@ const Profile = () => {
 
 	// User edit form state
 	const [editForm, setEditForm] = useState({
-		fullname: dummyUser.fullname,
-		bio: dummyUser.bio,
-		profilePicture: dummyUser.profilePicture,
+		fullname: userData?.fullname || '',
+		bio: userData?.bio || '',
+		profilePicture: userData?.profilePicture || '',
 	});
 
 	const handleEditSubmit = (e: any) => {
 		e.preventDefault();
-		setUser({
-		...user,
-		fullname: editForm.fullname,
-		bio: editForm.bio,
-		profilePicture: editForm.profilePicture,
-		});
+		//api call to update user data
 		setEditing(false);
 	};
 
 	// Analytics calculations
 	const getWinRate = (format: TimeFormats) => {
-		const stats = user.stats[format];
-		return stats.gamesPlayed > 0 
-		? Math.round((stats.wins / stats.gamesPlayed) * 100) 
+		if(!stats) return 0;
+		const data = stats.stats[format];
+		return data.gamesPlayed > 0 
+		? Math.round((data.wins / data.gamesPlayed) * 100) 
 		: 0;
 	};
 
 	const getPieData = (format: TimeFormats) => [
-		{ name: 'Wins', value: user.stats[format].wins, color: '#4ade80' },
-		{ name: 'Losses', value: user.stats[format].losses, color: '#f87171' },
-		{ name: 'Draws', value: user.stats[format].draws, color: '#a3a3a3' },
+		{ name: 'Wins', value: stats?.stats[format].wins, color: '#4ade80' },
+		{ name: 'Losses', value: stats?.stats[format].losses, color: '#f87171' },
+		{ name: 'Draws', value: stats?.stats[format].draws, color: '#a3a3a3' },
 	];
 
 	useEffect(()=>{
@@ -210,9 +117,69 @@ const Profile = () => {
 		fetchGameHistory(historyTab);
 	},[page, historyTab]);
 
+	useEffect(()=>{
+		const fetchStats = async () => {
+			try{
+				setLoadingStats(true);
+				const response = await getUserStats(userId as string, null);
+				if(response.success){
+					setStats(response.data);
+				}else {
+					const error = response.error || "An error occurred";
+					showToast(error, "error");
+				}
+			}catch(err){
+				console.log("failed to fetch user stats", err);
+			}finally{
+				setLoadingStats(false);
+			}
+		}
+		fetchStats();
+	}, [userId]);
 
+	useEffect(()=>{
+		const fetchRatingHistory = async () => {
+			try{
+				setLoadingRatingHistory(true);
+				const response = await getUserRatingHistory(userId as string, null, timeframe);
+				if(response.success){
+					setRatingHistory(response.data);
+				}else {
+					const error = response.error || "An error occurred";
+					showToast(error, "error");
+				}
+			}catch(err){
+				console.log("failed to fetch user rating history", err);
+			}finally{
+				setLoadingRatingHistory(false);
+			}
+		}
+		fetchRatingHistory();
+	}, [userId]);
 
-	console.log("game history", gameHistory);
+	useEffect(()=>{
+		const fetchAnalytics = async (tab: string) => {
+			let format = null;
+			if(['bullet', 'blitz', 'rapid'].includes(tab)){
+				format = tab as TimeFormats;
+			}
+			try{
+				setLoadingAnalytics(true);
+				const response = await getAdvancedAnalytics(userId as string, format);
+				if(response.success){
+					setAnalytics(response.data);
+				}else {
+					const error = response.error || "An error occurred";
+					showToast(error, "error");
+				}
+			}catch(err){
+				console.log("failed to fetch user analytics", err);
+			}finally{
+				setLoadingAnalytics(false);
+			}
+		}
+		fetchAnalytics(activeTab);
+	}, [userId, activeTab]);
 
 	const COLORS = ['#4ade80', '#f87171', '#a3a3a3'];
 
@@ -314,7 +281,7 @@ const Profile = () => {
 								<div className="flex justify-between text-sm">
 								<span className="text-muted-foreground">Total Games</span>
 								<span className="font-medium">
-									{user.stats.bullet.gamesPlayed + user.stats.blitz.gamesPlayed + user.stats.rapid.gamesPlayed}
+									{stats && stats.stats.bullet.gamesPlayed + stats.stats.blitz.gamesPlayed + stats.stats.rapid.gamesPlayed}
 								</span>
 								</div>
 								<div className="flex justify-between text-sm">
@@ -337,10 +304,10 @@ const Profile = () => {
 					<CardTitle>Analytics</CardTitle>
 					<Tabs className="w-full">
 						<TabsList className="grid w-full grid-cols-4">
-						<TabsTrigger value="all" active={activeTab === 'all'} onClick={() => {setActiveTab('all'); setSelectedFormat("all"); setPage(1)}}>All</TabsTrigger>
-						<TabsTrigger value="bullet" active={activeTab === 'bullet'} onClick={() => {setActiveTab('bullet'); setSelectedFormat("bullet"); setPage(1)}}>Bullet</TabsTrigger>
-						<TabsTrigger value="blitz" active={activeTab === 'blitz'} onClick={() => {setActiveTab('blitz'); setSelectedFormat("blitz"); setPage(1)}}>Blitz</TabsTrigger>
-						<TabsTrigger value="rapid" active={activeTab === 'rapid'} onClick={() => {setActiveTab('rapid'); setSelectedFormat("rapid"); setPage(1)}}>Rapid</TabsTrigger>
+						<TabsTrigger value="all" active={activeTab === 'all'} onClick={() => {setActiveTab('all'); setPage(1)}}>All</TabsTrigger>
+						<TabsTrigger value="bullet" active={activeTab === 'bullet'} onClick={() => {setActiveTab('bullet'); setPage(1)}}>Bullet</TabsTrigger>
+						<TabsTrigger value="blitz" active={activeTab === 'blitz'} onClick={() => {setActiveTab('blitz'); setPage(1)}}>Blitz</TabsTrigger>
+						<TabsTrigger value="rapid" active={activeTab === 'rapid'} onClick={() => {setActiveTab('rapid'); setPage(1)}}>Rapid</TabsTrigger>
 						</TabsList>
 						<TabsContent value="all" activeTab={activeTab}>
 						<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
@@ -349,36 +316,40 @@ const Profile = () => {
 								<CardHeader className="pb-2">
 								<CardTitle className="text-base capitalize">{format}</CardTitle>
 								</CardHeader>
-								<CardContent>
-								<div className="flex items-center">
-									<div className="h-20 w-20">
-									<ResponsiveContainer width="100%" height="100%">
-										<PieChart>
-										<Pie
-											data={getPieData(format)}
-											cx="50%"
-											cy="50%"
-											innerRadius={25}
-											outerRadius={35}
-											paddingAngle={2}
-											dataKey="value"
-										>
-											{getPieData(format).map((entry, index) => (
-											<Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-											))}
-										</Pie>
-										</PieChart>
-									</ResponsiveContainer>
+								{loadingStats || !stats ? (
+									<CardContent className="h-40 flex items-center justify-center">
+										<LoadingSpinner/>
+									</CardContent>
+								):(<CardContent>
+									<div className="flex items-center">
+										<div className="h-20 w-20">
+										<ResponsiveContainer width="100%" height="100%">
+											<PieChart>
+											<Pie
+												data={getPieData(format)}
+												cx="50%"
+												cy="50%"
+												innerRadius={25}
+												outerRadius={35}
+												paddingAngle={2}
+												dataKey="value"
+											>
+												{getPieData(format).map((entry, index) => (
+												<Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+												))}
+											</Pie>
+											</PieChart>
+										</ResponsiveContainer>
+										</div>
+										<div className="ml-4">
+										<p className="text-sm text-muted-foreground">Win Rate</p>
+										<p className="text-2xl font-bold">{getWinRate(format)}%</p>
+										<p className="text-xs text-muted-foreground">
+											{stats.stats[format].gamesPlayed} games played
+										</p>
+										</div>
 									</div>
-									<div className="ml-4">
-									<p className="text-sm text-muted-foreground">Win Rate</p>
-									<p className="text-2xl font-bold">{getWinRate(format)}%</p>
-									<p className="text-xs text-muted-foreground">
-										{user.stats[format].gamesPlayed} games played
-									</p>
-									</div>
-								</div>
-								</CardContent>
+								</CardContent>)}
 							</Card>
 							))}
 						</div>
@@ -386,60 +357,68 @@ const Profile = () => {
 						<div className="mt-6">
 							<h3 className="text-lg font-medium mb-3">Rating History</h3>
 							<div className="h-80 w-full">
-							<ResponsiveContainer width="100%" height="100%">
-								<LineChart 
-								margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-								>
-								<CartesianGrid strokeDasharray="3 3" />
-								<XAxis 
-									dataKey="date" 
-									allowDuplicatedCategory={false} 
-								/>
-								<YAxis domain={['dataMin - 100', 'dataMax + 100']} />
-								<Tooltip />
-								<Legend />
-								<Line 
-									type="monotone" 
-									dataKey="rating" 
-									name="Bullet" 
-									data={dummyRatingHistory.bullet} 
-									stroke="#ff6b6b" 
-									strokeWidth={2} 
-								/>
-								<Line 
-									type="monotone" 
-									dataKey="rating" 
-									name="Blitz" 
-									data={dummyRatingHistory.blitz} 
-									stroke="#4dabf7" 
-									strokeWidth={2} 
-								/>
-								<Line 
-									type="monotone" 
-									dataKey="rating" 
-									name="Rapid" 
-									data={dummyRatingHistory.rapid} 
-									stroke="#40c057" 
-									strokeWidth={2} 
-								/>
-								</LineChart>
-							</ResponsiveContainer>
+								{loadingRatingHistory || !ratingHistory ? (
+									<div className='flex items-center justify-center h-full w-full'>
+										<LoadingSpinner/>
+									</div>
+								):(<ResponsiveContainer width="100%" height="100%">
+									<LineChart 
+									margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+									>
+									<CartesianGrid strokeDasharray="3 3" />
+									<XAxis 
+										dataKey="date" 
+										allowDuplicatedCategory={false} 
+									/>
+									<YAxis domain={['dataMin - 100', 'dataMax + 100']} />
+									<Tooltip />
+									<Legend />
+									<Line 
+										type="monotone" 
+										dataKey="rating" 
+										name="Bullet" 
+										data={ratingHistory?.bullet} 
+										stroke="#ff6b6b" 
+										strokeWidth={2} 
+									/>
+									<Line 
+										type="monotone" 
+										dataKey="rating" 
+										name="Blitz" 
+										data={ratingHistory?.blitz} 
+										stroke="#4dabf7" 
+										strokeWidth={2} 
+									/>
+									<Line 
+										type="monotone" 
+										dataKey="rating" 
+										name="Rapid" 
+										data={ratingHistory?.rapid} 
+										stroke="#40c057" 
+										strokeWidth={2} 
+									/>
+									</LineChart>
+								</ResponsiveContainer>)}
 							</div>
 						</div>
 
 						<div className="mt-6">
 							<h3 className="text-lg font-medium mb-3">Performance Breakdown</h3>
 							<div className="h-64 w-full">
-							<ResponsiveContainer width="100%" height="100%">
+							{loadingAnalytics || !analytics ? (
+								<div className='flex items-center justify-center h-full w-full'>
+									<LoadingSpinner/>
+								</div>
+							):
+							(<ResponsiveContainer width="100%" height="100%">
 								<BarChart 
 								data={[
-									{ name: 'Bullet', wins: user.stats.bullet.wins, losses: user.stats.bullet.losses, draws: user.stats.bullet.draws },
-									{ name: 'Blitz', wins: user.stats.blitz.wins, losses: user.stats.blitz.losses, draws: user.stats.blitz.draws },
-									{ name: 'Rapid', wins: user.stats.rapid.wins, losses: user.stats.rapid.losses, draws: user.stats.rapid.draws },
+									{ name: 'As white', wins: analytics.colorPerformance.asWhite.wins, losses: analytics.colorPerformance.asWhite.losses, draws: analytics.colorPerformance.asWhite.draws },
+									{ name: 'As Black', wins: analytics.colorPerformance.asBlack.wins, losses: analytics.colorPerformance.asBlack.losses, draws: analytics.colorPerformance.asBlack.draws },
 								]}
 								margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
 								>
-								<CartesianGrid strokeDasharray="3 3" />
+								<CartesianGrid strokeDasharray="3 3"/>
 								<XAxis dataKey="name" />
 								<YAxis />
 								<Tooltip />
@@ -448,7 +427,7 @@ const Profile = () => {
 								<Bar dataKey="losses" name="Losses" fill="#f87171" />
 								<Bar dataKey="draws" name="Draws" fill="#a3a3a3" />
 								</BarChart>
-							</ResponsiveContainer>
+							</ResponsiveContainer>)}
 							</div>
 						</div>
 						</TabsContent>
@@ -456,64 +435,72 @@ const Profile = () => {
 						{(['bullet', 'blitz', 'rapid'] as const ).map(format => (
 						<TabsContent key={format} value={format} activeTab={activeTab}>
 							<div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-							<Card>
-								<CardHeader className="pb-2">
-								<CardTitle className="text-base">Performance</CardTitle>
-								</CardHeader>
-								<CardContent>
-								<div className="flex items-center justify-center mb-4">
-									<div className="h-40 w-40">
-									<ResponsiveContainer width="100%" height="100%">
-										<PieChart>
-										<Pie
-											data={getPieData(format)}
-											cx="50%"
-											cy="50%"
-											innerRadius={40}
-											outerRadius={60}
-											paddingAngle={2}
-											dataKey="value"
-											label={({name, percent}) => `${name}: ${(percent * 100).toFixed(0)}%`}
-										>
-											{getPieData(format).map((entry, index) => (
-											<Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-											))}
-										</Pie>
-										</PieChart>
-									</ResponsiveContainer>
+								<Card>
+									<CardHeader className="pb-2">
+									<CardTitle className="text-base">Performance</CardTitle>
+									</CardHeader>
+									{loadingStats || !stats ? (
+										<CardContent className="h-40 flex items-center justify-center">
+											<LoadingSpinner/>
+										</CardContent>
+									):(<CardContent>
+									<div className="flex items-center justify-center mb-4">
+										<div className="h-40 w-40">
+										<ResponsiveContainer width="100%" height="100%">
+											<PieChart>
+											<Pie
+												data={getPieData(format)}
+												cx="50%"
+												cy="50%"
+												innerRadius={40}
+												outerRadius={60}
+												paddingAngle={2}
+												dataKey="value"
+												label={({name, percent}) => `${name}: ${(percent * 100).toFixed(0)}%`}
+											>
+												{getPieData(format).map((entry, index) => (
+												<Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+												))}
+											</Pie>
+											</PieChart>
+										</ResponsiveContainer>
+										</div>
 									</div>
-								</div>
 
-								<div className="space-y-2">
-									<div className="flex justify-between">
-									<span>Win Rate:</span>
-									<span className="font-medium">{getWinRate(format)}%</span>
+									<div className="space-y-2">
+										<div className="flex justify-between">
+										<span>Win Rate:</span>
+										<span className="font-medium">{getWinRate(format)}%</span>
+										</div>
+										<div className="flex justify-between">
+										<span>Games Played:</span>
+										<span className="font-medium">{stats?.stats[format].gamesPlayed}</span>
+										</div>
+										<div className="flex justify-between">
+										<span>Highest Rating:</span>
+										<span className="font-medium">{stats?.stats[format].highestRating}</span>
+										</div>
+										<div className="flex justify-between">
+										<span>Lowest Rating:</span>
+										<span className="font-medium">{stats?.stats[format].lowestRating}</span>
+										</div>
 									</div>
-									<div className="flex justify-between">
-									<span>Games Played:</span>
-									<span className="font-medium">{user.stats[format].gamesPlayed}</span>
-									</div>
-									<div className="flex justify-between">
-									<span>Highest Rating:</span>
-									<span className="font-medium">{user.stats[format].highestRating}</span>
-									</div>
-									<div className="flex justify-between">
-									<span>Lowest Rating:</span>
-									<span className="font-medium">{user.stats[format].lowestRating}</span>
-									</div>
-								</div>
-								</CardContent>
-							</Card>
+									</CardContent>)}
+								</Card>
 
-							<Card>
-								<CardHeader className="pb-2">
-								<CardTitle className="text-base">Rating History</CardTitle>
-								</CardHeader>
-								<CardContent>
-								<div className="h-64 w-full">
-									<ResponsiveContainer width="100%" height="100%">
+								<Card>
+									<CardHeader className="pb-2">
+									<CardTitle className="text-base">Rating History</CardTitle>
+									</CardHeader>
+									<CardContent>
+									<div className="h-64 w-full">
+									{loadingRatingHistory || !ratingHistory ? (
+										<div className='flex items-center justify-center h-full w-full'>
+											<LoadingSpinner/>
+										</div>
+									):(<ResponsiveContainer width="100%" height="100%">
 									<LineChart 
-										data={dummyRatingHistory[format]}
+										data={ratingHistory[format]}
 										margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
 									>
 										<CartesianGrid strokeDasharray="3 3" />
@@ -528,11 +515,39 @@ const Profile = () => {
 										dot={{ r: 4 }}
 										/>
 									</LineChart>
-									</ResponsiveContainer>
-								</div>
-								</CardContent>
-							</Card>
+									</ResponsiveContainer>)}
+									</div>
+									</CardContent>
+								</Card>
 							</div>
+							<div className="mt-6">
+								<h3 className="text-lg font-medium mb-3">Performance Breakdown</h3>
+								<div className="h-64 w-full">
+								{loadingAnalytics || !analytics ? (
+									<div className='flex items-center justify-center h-full w-full'>
+										<LoadingSpinner/>
+									</div>
+								):
+								(<ResponsiveContainer width="100%" height="100%">
+									<BarChart 
+									data={[
+										{ name: 'As white', wins: analytics.colorPerformance.asWhite.wins, losses: analytics.colorPerformance.asWhite.losses, draws: analytics.colorPerformance.asWhite.draws },
+										{ name: 'As Black', wins: analytics.colorPerformance.asBlack.wins, losses: analytics.colorPerformance.asBlack.losses, draws: analytics.colorPerformance.asBlack.draws },
+									]}
+									margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+									>
+									<CartesianGrid strokeDasharray="3 3"/>
+									<XAxis dataKey="name" />
+									<YAxis />
+									<Tooltip />
+									<Legend />
+									<Bar dataKey="wins" name="Wins" fill="#4ade80" />
+									<Bar dataKey="losses" name="Losses" fill="#f87171" />
+									<Bar dataKey="draws" name="Draws" fill="#a3a3a3" />
+									</BarChart>
+								</ResponsiveContainer>)}
+							</div>
+						</div>
 						</TabsContent>
 						))}
 					</Tabs>
@@ -545,10 +560,10 @@ const Profile = () => {
 						<CardTitle>Game History</CardTitle>
 						<Tabs className="w-full">
 							<TabsList className="grid w-full grid-cols-4">
-							<TabsTrigger value="all" active={historyTab === 'all'} onClick={()=>{setHistoryTab("all"); setSelectedFormat("all")}}>All</TabsTrigger>
-							<TabsTrigger value="bullet" active={historyTab === 'bullet'}  onClick={()=>{setHistoryTab("bullet"); setSelectedFormat("bullet")}}>Bullet</TabsTrigger>
-							<TabsTrigger value="blitz" active={historyTab === 'blitz'}  onClick={()=>{setHistoryTab("blitz"); setSelectedFormat("blitz")}}>Blitz</TabsTrigger>
-							<TabsTrigger value="rapid" active={historyTab === 'rapid'}  onClick={()=>{setHistoryTab("rapid"); setSelectedFormat("rapid")}}>Rapid</TabsTrigger>
+							<TabsTrigger value="all" active={historyTab === 'all'} onClick={()=>{setHistoryTab("all")}}>All</TabsTrigger>
+							<TabsTrigger value="bullet" active={historyTab === 'bullet'}  onClick={()=>{setHistoryTab("bullet")}}>Bullet</TabsTrigger>
+							<TabsTrigger value="blitz" active={historyTab === 'blitz'}  onClick={()=>{setHistoryTab("blitz")}}>Blitz</TabsTrigger>
+							<TabsTrigger value="rapid" active={historyTab === 'rapid'}  onClick={()=>{setHistoryTab("rapid")}}>Rapid</TabsTrigger>
 							</TabsList>
 							
 							<TabsContent value={historyTab} activeTab={historyTab}>
