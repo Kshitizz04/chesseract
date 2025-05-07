@@ -18,7 +18,7 @@ export const getUsers = async (req: Request, res: Response<GetUsersResponse>, ne
 
 export const getUser = async (req: Request, res: Response<GetUserResponse>, next: NextFunction) => {
     try{
-        const user = await User.findById(req.params.id).select("-password -stats -friends ratingHistory"); 
+        const user = await User.findById(req.params.id).select("-password -stats -friends -ratingHistory"); 
         if(!user){
             const error = new CustomError("User not found", 404);
             throw error;
@@ -54,7 +54,7 @@ export const editProfile = async (req: Request<{}, any, EditProfileBody>, res: R
             userId,
             { $set: updateFields },
             { new: true, runValidators: true }
-        ).select('-password');
+        ).select('-password -stats -friends -ratingHistory');
 
         if(!updatedUser) {
             const error = new CustomError("User not found", 404);

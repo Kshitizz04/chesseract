@@ -8,10 +8,6 @@ userRouter.get('/', authorize, getUsers);
 
 userRouter.get('/:id', authorize, getUser);
 
-userRouter.post('/', (req, res) => {
-    res.send('CREATE user route');
-});
-
 userRouter.put('', authorize, editProfile);
 
 userRouter.delete('/:id', (req, res) => {
