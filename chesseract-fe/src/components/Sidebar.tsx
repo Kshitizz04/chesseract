@@ -1,10 +1,15 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaUsers, FaTrophy, FaChess } from "react-icons/fa";
 import { HiMenuAlt2, HiOutlineChevronLeft, HiChevronDown, HiChevronUp } from "react-icons/hi";
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { BiSolidChess } from "react-icons/bi";
 import { HiPuzzlePiece } from "react-icons/hi2";
+import { IoMdSettings } from "react-icons/io";
+import { getLocalStorage } from "@/utils/localstorage";
+import Avatar from './utilities/Avatar';
+import { MdDarkMode, MdLightMode } from "react-icons/md";
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface SideBarProps {
     isSideBarOpen: boolean;
@@ -17,6 +22,11 @@ interface NavItemProps {
     href: string;
     isSideBarOpen: boolean;
     children?: React.ReactNode;
+}
+
+interface UserData {
+    username: string;
+    profilePicture?: string;
 }
 
 const NavItem = ({ icon, title, href, isSideBarOpen, children }: NavItemProps) => {
@@ -94,16 +104,23 @@ const SideBar = ({
   isSideBarOpen,
   toggleSideBar
 }: SideBarProps) => {
+    const [userData, setUserData] = useState<UserData | null>(null);
+    const { theme, toggleTheme } = useTheme();
+
+    useEffect(() => {
+        const data = getLocalStorage('user');
+        setUserData(data as UserData);
+    }, []);
 
     return (
         <aside
-            className={`md:block hidden transition-all duration-300 fixed h-full text-text-200
-                    ${isSideBarOpen ? "w-56" : "w-16"}
+            className={`md:block hidden transition-all duration-300 fixed h-screen text-text-200 p-2
+                    ${isSideBarOpen ? "w-56" : "w-22"}
                 `}
         >
-            <div className="bg-bg-200 rounded-md w-full h-full flex flex-col p-4">
+            <div className="bg-bg-200 rounded-md w-full h-full flex flex-col p-2">
                 {/* Logo and Toggle */}
-                <div className="flex items-center mb-8 mt-2 gap-2">
+                <div className={`flex items-center mb-8 mt-2 gap-2 ${!isSideBarOpen && 'justify-center'}`}>
                     <button 
                         onClick={toggleSideBar}
                         className="p-1 rounded-md hover:bg-bg-200-hover"
@@ -165,7 +182,53 @@ const SideBar = ({
                         href="/home/friends" 
                         isSideBarOpen={isSideBarOpen}
                     />
+
                 </nav>
+                <div className="mt-auto mb-5 pt-4 border-t border-accent-200">
+                    <div
+                        className={`flex items-center gap-3 py-3
+                            ${isSideBarOpen ? 'px-4' : 'justify-center'}
+                        `}
+                    >
+                        {isSideBarOpen && (
+                            <span className="transition-all flex-1">Theme</span>
+                        )}
+                        <div className="relative inline-flex items-center cursor-pointer" onClick={(e) => {e.stopPropagation(); toggleTheme()}}>
+                            <input 
+                                type="checkbox" 
+                                value="" 
+                                id="theme-toggle" 
+                                className="sr-only peer"
+                                checked={theme === 'dark'}
+                                readOnly
+                            />
+                            {/* <div className="w-14 h-7 bg-bg-100 rounded-full peer peer-checked:after:translate-x-[calc(100%+3px)] after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-accent-200 after:rounded-full after:h-6 after:w-6 after:transition-all"></div> */}
+                            <div className="relative w-14 h-7 bg-bg-300 rounded-full p-[1px] flex items-center justify-between text-accent-200">
+                                <MdDarkMode className="h-6 w-6"/>
+                                <MdLightMode className="h-6 w-6"/>
+                                <div className={`absolute w-6 h-6 bg-accent-200 rounded-full
+                                        ${theme === 'dark' ? 'translate-x-[calc(100%+5px)]' : 'translate-x-[1px]'}
+                                        transition-all duration-300
+                                    `}/>
+                            </div>
+                        </div>
+                    </div>
+                    <NavItem 
+                        icon={<IoMdSettings size={20} />} 
+                        title="Settings" 
+                        href="/home/settings" 
+                        isSideBarOpen={isSideBarOpen}
+                    />
+
+                    <div className={`mt-1 flex items-center gap-3 p-2 rounded-md bg-bg-200-hover ${!isSideBarOpen && 'justify-center'}`}>
+                        <Avatar 
+                            username={userData?.username || "User"}
+                            profileImage={userData?.profilePicture}
+                            showUsername={isSideBarOpen}
+                            size={isSideBarOpen ? 40 : 30}
+                        />
+                    </div>
+                </div>
             </div>
         </aside>
     );

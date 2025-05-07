@@ -1,0 +1,1 @@
+export type TimeFormat = "blitz" | "rapid" | "bullet";

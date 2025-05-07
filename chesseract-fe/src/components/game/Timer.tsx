@@ -1,19 +1,23 @@
 import { useEffect, useState } from "react";
+import Avatar from "../utilities/Avatar";
 
 interface TimerProps {
+    profileImage?: string;
+    name: string;
+    rating: number;
     isRunning: boolean;
     timeControl: string; 
-    setResult: (result: 0 | 1 | 2, message: string) => void;
     isOpponent: boolean;
+    onTimeOut:(isOpponent: boolean)=> void;
 }
 
-const Timer = ({ isRunning, timeControl, setResult, isOpponent }: TimerProps) => {
+const Timer = ({ isRunning, timeControl, onTimeOut, isOpponent, name, profileImage, rating }: TimerProps) => {
     const [timeLeft, setTimeLeft] = useState(1); 
     const increment = parseInt(timeControl.split("+")[1]) || 0;
 
     useEffect(() => {
         // Parse the initial time from the timeControl prop
-        const initialMinutes = parseInt(timeControl.split("+")[0]);
+        const initialMinutes = parseInt(timeControl.split("|")[0]);
         setTimeLeft(initialMinutes * 60);
     }, [timeControl]);
 
@@ -38,8 +42,7 @@ const Timer = ({ isRunning, timeControl, setResult, isOpponent }: TimerProps) =>
 
     useEffect(()=>{
         if(timeLeft <= 0){
-            const result = isOpponent ? 1 : 0;
-            setResult(result, isOpponent ? "Your opponent ran out of time" : "You ran out of time")
+            onTimeOut(isOpponent);
         }
     },[timeLeft])
 
@@ -51,7 +54,15 @@ const Timer = ({ isRunning, timeControl, setResult, isOpponent }: TimerProps) =>
     };
 
     return (
-        <div className="p-2 rounded-md text-center w-full max-w-md max-md:place-self-center">
+        <div className="p-2 flex justify-between items-center w-full max-w-md max-md:place-self-center">
+            <div className="flex items-center gap-2">
+                <Avatar
+                    username={name}
+                    profileImage={profileImage}
+                    showUsername={true}
+                />
+                <p>({rating})</p>
+            </div>
             <h3 className="text-lg font-bold">{formatTime(timeLeft)}</h3>
         </div>
     );

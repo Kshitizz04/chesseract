@@ -1,160 +1,125 @@
 "use client"
 import { useEffect, useRef, useState } from "react";
 import Controls from "@/components/game/Controls";
-import StandardBoard from "@/components/game/StandardBoard";
-import Timer from "@/components/game/Timer";
+import BotBoard from "@/components/game/BotBoard";
 import ResultModal from "@/components/modals/ResultModal";
+import botAvatar from "@/assets/bot.png";
+import { getLocalStorage } from "@/utils/localstorage";
+import { IUser } from "../../../../models/user";
+import Avatar from "@/components/utilities/Avatar";
+import Button from "@/components/utilities/CustomButton";
+import { Chess } from "chess.js";
 
 const Bot = () => {
     const [gameStarted, setGameStarted] = useState(false);
-    const [difficulty, setDifficulty] = useState("easy");
-    const [timeControl, setTimeControl] = useState("3+0");
-    const [isMyTurn, setIsMyTurn] = useState(true);
+    const [difficulty, setDifficulty] = useState({difficulty: "easy", rating: 500});
     const [result, setResult] = useState<{result: 0 | 1 | 2, message:string} | null>(null);
     const [myColor, setMyColor] = useState<"w" | "b">("w");
+    const [userData, setUserData] = useState<{username: string, profileImage?: string, rating:number}>({username: "You", profileImage: "", rating: 1200});
+    const [isViewingHistory, setIsViewingHistory] = useState(false);
+    const [historyFen, setHistoryFen] = useState("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+    const [currentPosition, setCurrentPosition] = useState("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+
+    const chessRef = useRef(new Chess());
+    const botSkillLevel = [{difficulty: "easy", rating: 500}, {difficulty: "medium", rating: 1000}, {difficulty: "hard", rating: 1500}]
 
     useEffect(()=>{
-        if(myColor === "w"){
-            setIsMyTurn(true)
-        }else{
-            setIsMyTurn(false)
+        const user = getLocalStorage("user") as IUser;
+        if(user){
+            setUserData({
+                username: user.username,
+                profileImage: user.profilePicture,
+                rating: user.rating.rapid
+            })
         }
-    },[myColor])
+    },[])
 
     const startGame = () => {
         Math.floor(Math.random() * 2) === 0 ? setMyColor("w") : setMyColor("b");
         setGameStarted(true);
     };
 
-    const toggleTurn = () => {
-        setIsMyTurn((prev) => !prev);
-    };
+    const handleViewHistory = (isViewing: boolean, historyFen: string) => {
+        setIsViewingHistory(isViewing);
+        setHistoryFen(historyFen);
+    }
 
     const setResultMessage = (result: 0 | 1 | 2, message: string) => {
         setResult({result, message});
         setGameStarted(false);
     }
 
+    const handleResign = () => {
+        setResultMessage (0,"You resigned the game")
+    }
+
     return (
-        <div className="h-full w-full flex justify-around max-md:flex-col rounded-md p-2 gap-2">
+        <div className="h-full w-full flex justify-around max-md:flex-col rounded-md gap-2">
             {/* Main Section */}
             <div className="flex flex-col justify-center w-full h-max md:h-full md:w-max rounded-md md:p-2 gap-2">
-                <Timer 
-                    timeControl={timeControl}
-                    isRunning={!isMyTurn && gameStarted}
-                    setResult={setResultMessage}
-                    isOpponent={true}
-                />
-                <StandardBoard
-                    isMyTurn={isMyTurn}
-                    onTurnChange={toggleTurn}
+                <div className="p-2 flex gap-2 items-center w-full max-w-md max-md:place-self-center">
+                    <Avatar
+                        username="Bot"
+                        profileImage={botAvatar.src}
+                        showUsername={true}
+                    />
+                    <p>{`(${difficulty.rating})`}</p>
+                </div>
+                <BotBoard
+                    position={currentPosition}
+                    setPosition={setCurrentPosition}
+                    chess={chessRef.current}
                     setResult={setResultMessage}
                     myColor={myColor}
+                    difficulty={difficulty.difficulty}
+                    gameStarted={gameStarted}
+                    isViewingHistory={isViewingHistory}
+                    historyFen={historyFen}
                 />
-                <Timer 
-                    timeControl={timeControl}
-                    isRunning={isMyTurn && gameStarted}
-                    setResult={setResultMessage}
-                    isOpponent={false}
-                />
+                <div className="p-2 flex gap-2 items-center w-full max-w-md max-md:place-self-center">
+                    <Avatar
+                        username={userData.username}
+                        profileImage={userData.profileImage}
+                        showUsername={true}
+                    />
+                    <p>{`(${userData.rating})`}</p>
+                </div>
             </div>
 
             {/* Right Section */}
-            <div className="md:w-1/4 w-full md:h-full max-w-md md:p-4 md:bg-bg-200 rounded-md flex flex-col gap-6 place-self-center">
+            <div className="md:w-1/4 w-full md:h-full max-w-md min-w-[225px] md:p-2 bg-bg-200 rounded-md flex flex-col gap-6 place-self-center">
                 {!gameStarted ? (
                     <div>
                         {/* Difficulty Selection */}
                         <h2 className="text-lg font-bold mb-2">Select Difficulty</h2>
                         <div className="flex gap-2">
-                            {["easy", "medium", "hard"].map((level) => (
-                                <button
-                                    key={level}
+                            {botSkillLevel.map((level) => (
+                                <Button
+                                    key={level.difficulty}
                                     onClick={() => setDifficulty(level)}
-                                    className={`p-2 cursor-pointer w-full rounded-md hover:bg-primary-200 ${
-                                        difficulty === level
-                                            ? "bg-primary-200"
-                                            : "bg-primary-100"
-                                    }`}
+                                    className={`bg-bg-100 ${difficulty.difficulty == level.difficulty && "border-1 border-accent-200 text-accent-200"}`}
                                 >
-                                    {level.charAt(0).toUpperCase() + level.slice(1)}
-                                </button>
+                                    {level.difficulty.charAt(0).toUpperCase() + level.difficulty.slice(1)}
+                                </Button>
                             ))}
                         </div>
 
-                        {/* Time Control Selection */}
-                        <h2 className="text-lg font-bold mt-6 mb-2">Select Time Control</h2>
-                        <div className="flex flex-col gap-4">
-                            {/* Bullet Section */}
-                            <div>
-                                <h3 className="font-semibold mb-2">Bullet</h3>
-                                <div className="flex gap-2">
-                                    {["1+0", "2+0", "1+1"].map((control) => (
-                                        <button
-                                            key={control}
-                                            onClick={() => setTimeControl(control)}
-                                            className={`p-2 cursor-pointer w-full rounded-md hover:bg-primary-200 ${
-                                                timeControl === control
-                                                    ? "bg-primary-200"
-                                                    : "bg-primary-100"
-                                            }`}
-                                        >
-                                            {control}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Blitz Section */}
-                            <div>
-                                <h3 className="font-semibold mb-2">Blitz</h3>
-                                <div className="flex gap-2">
-                                    {["3+0", "5+0", "5+5"].map((control) => (
-                                        <button
-                                            key={control}
-                                            onClick={() => setTimeControl(control)}
-                                            className={`p-2 cursor-pointer w-full rounded-md hover:bg-primary-200 ${
-                                                timeControl === control
-                                                    ? "bg-primary-200"
-                                                    : "bg-primary-100"
-                                            }`}
-                                        >
-                                            {control}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Rapid Section */}
-                            <div>
-                                <h3 className="font-semibold mb-2">Rapid</h3>
-                                <div className="flex gap-2">
-                                    {["10+0", "15+0", "20+0"].map((control) => (
-                                        <button
-                                            key={control}
-                                            onClick={() => setTimeControl(control)}
-                                            className={`p-2 cursor-pointer w-full rounded-md hover:bg-primary-200 ${
-                                                timeControl === control
-                                                    ? "bg-primary-200"
-                                                    : "bg-primary-100"
-                                            }`}
-                                        >
-                                            {control}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
 
                         {/* Play Button */}
-                        <button
+                        <Button
                             onClick={startGame}
-                            className="mt-6 w-full p-2 bg-primary-100 hover:bg-primary-200 cursor-pointer text-white rounded-md"
+                            className="mt-6 w-full bg-bg-100 hover:border border-accent-100 cursor-pointer rounded-sm shadow-sm shadow-accent-100"
                         >
                             Play
-                        </button>
+                        </Button>
                     </div>
                 ) : (
-                    <Controls />
+                    <Controls 
+                        chess={chessRef.current}
+                        handleViewHistory={handleViewHistory}
+                        currentPosition={currentPosition}
+                        onResign={handleResign}
+                    />
                 )}
             </div>
             {result && <ResultModal result={result.result} message={result.message} onClose={() => setResult(null)} />}
