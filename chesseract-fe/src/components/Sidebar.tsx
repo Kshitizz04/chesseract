@@ -50,14 +50,8 @@ const NavItem = ({ icon, title, href, isSideBarOpen, children }: NavItemProps) =
             onMouseLeave={handleMouseLeave}
         >
             <Link 
-                href={hasChildren ? "#" : href} 
-                onClick={(e) => {
-                    if (hasChildren) {
-                        e.preventDefault();
-                        setIsOpen(!isOpen);
-                    }
-                }}
-                className={`flex items-center gap-3 py-3 rounded-md transition-all hover:bg-accent-100 hover:text-accent-200
+                href={href}
+                className={`flex items-center gap-3 py-3 rounded-md hover:bg-accent-100 hover:text-accent-200
                     ${isActive && 'bg-accent-100 text-accent-200'}
                     ${isSideBarOpen ? 'px-4' : 'justify-center'}
                 `}

@@ -15,8 +15,8 @@ const API_ENDPOINTS = {
         editProfile : `${API_BASE_URL}/users`,  //put
     },
     game: {
-        getUserGames: (userId: string, format: TimeFormats | null, limit: number | null, page:number | null) => `${API_BASE_URL}/game-history/${userId}?format=${format}&limit=${limit}&page=${page}`, //get
-        getGameById: (gameId: string) => `${API_BASE_URL}/game-details/${gameId}`, //get
+        getUserGames: (userId: string, format: TimeFormats | null, limit: number | null, page:number | null) => `${API_BASE_URL}/games/game-history/${userId}?format=${format}&limit=${limit}&page=${page}`, //get
+        getGameById: (gameId: string) => `${API_BASE_URL}/games/game-details/${gameId}`, //get
     },
     analytics: {
         getUserStats: (userId: string, format: TimeFormats | null) => `${API_BASE_URL}/analytics/stats/${userId}&format=${format}`, //get

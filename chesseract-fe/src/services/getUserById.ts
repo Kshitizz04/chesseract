@@ -14,7 +14,7 @@ interface GetUserByIdData {
     bio?: string;
     isOnline: boolean;
     country: string;
-    createdAt: Date;
+    createdAt: string;
 }
 
 interface GetUserByIdResponse extends CommonResponse<GetUserByIdData> {}

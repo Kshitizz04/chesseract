@@ -29,7 +29,6 @@ const SignIn = () => {
 
         try {
             const response = await signIn({ email, password });
-            console.log("Response:", response);
             if (response.success) {
                 showToast("Sign-in successful!", "success");
                 setLocalStorage("token", response.data?.token);

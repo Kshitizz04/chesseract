@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import Image from 'next/image';
+import { useState, useEffect, use } from 'react';
 import { Tabs, TabsTrigger, TabsList, TabsContent } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, LineChart, Line, CartesianGrid } from 'recharts';
@@ -12,8 +11,14 @@ import { IoChevronForwardOutline, IoClose } from 'react-icons/io5';
 import { BiLinkExternal } from 'react-icons/bi';
 import { CiSaveUp2 } from 'react-icons/ci';
 import Avatar from '@/components/utilities/Avatar';
+import { TimeFormats } from '@/models/GameUtilityTypes';
+import { getLocalStorage } from '@/utils/localstorage';
+import getUserById, { GetUserByIdData } from '@/services/getUserById';
+import { useToast } from '@/contexts/ToastContext';
+import LoadingSpinner from '@/components/utilities/LoadingSpinner';
+import getUserGames, { GameInHistory, GetGameHistoryData } from '@/services/getUserGames';
+import { MdFirstPage, MdLastPage, MdNavigateBefore, MdNavigateNext } from 'react-icons/md';
 
-type Formats = 'bullet' | 'blitz' | 'rapid';
 // Dummy user data
 const dummyUser = {
   username: "MagnusCarlsen",
@@ -117,6 +122,16 @@ const Profile = () => {
 	const [user, setUser] = useState(dummyUser);
 	const [activeTab, setActiveTab] = useState('all');
 	const [historyTab, setHistoryTab] = useState('all');
+	const [loadingUserData, setLoadingUserData] = useState(false);
+	const [loadingGameHistory, setLoadingGameHistory] = useState(false);
+	const [page, setPage] = useState(1);
+
+	const [userData, setUserData] = useState<GetUserByIdData | null>(null);
+	const [gameHistory, setGameHistory] = useState<GetGameHistoryData | null>(null);
+
+	const userId = getLocalStorage('userId')
+	const limit = 10;
+	const { showToast } = useToast();
 
 	// User edit form state
 	const [editForm, setEditForm] = useState({
@@ -137,18 +152,67 @@ const Profile = () => {
 	};
 
 	// Analytics calculations
-	const getWinRate = (format: Formats) => {
+	const getWinRate = (format: TimeFormats) => {
 		const stats = user.stats[format];
 		return stats.gamesPlayed > 0 
 		? Math.round((stats.wins / stats.gamesPlayed) * 100) 
 		: 0;
 	};
 
-	const getPieData = (format: Formats) => [
+	const getPieData = (format: TimeFormats) => [
 		{ name: 'Wins', value: user.stats[format].wins, color: '#4ade80' },
 		{ name: 'Losses', value: user.stats[format].losses, color: '#f87171' },
 		{ name: 'Draws', value: user.stats[format].draws, color: '#a3a3a3' },
 	];
+
+	useEffect(()=>{
+		const fetchUserData = async () => {
+			try{
+				setLoadingUserData(true);
+				const response = await getUserById(userId as string);
+				if(response.success){
+					setUserData(response.data);
+				}else {
+					const error = response.error || "An error occurred";
+					showToast(error, "error");
+				}
+			}catch(err){
+				console.log("failed to fetch user data", err);
+			}finally{
+				setLoadingUserData(false);
+			}
+		}
+		fetchUserData();
+	}, [userId]);
+
+	useEffect(()=>{
+		const fetchGameHistory = async (tab: string) => {
+			let format = null;
+			if(['bullet', 'blitz', 'rapid'].includes(tab)){
+				format = tab as TimeFormats;
+			}
+			try{
+				setLoadingGameHistory(true);
+				const response = await getUserGames(userId as string, format, limit, page);
+				console.log("game history response", response);
+				if(response.success){
+					setGameHistory(response.data);
+				}else {
+					const error = response.error || "An error occurred";
+					showToast(error, "error");
+				}
+			}catch(err){
+				console.log("failed to fetch game history", err);
+			}finally{
+				setLoadingGameHistory(false);
+			}
+		}
+		fetchGameHistory(historyTab);
+	},[page, historyTab]);
+
+
+
+	console.log("game history", gameHistory);
 
 	const COLORS = ['#4ade80', '#f87171', '#a3a3a3'];
 
@@ -157,103 +221,110 @@ const Profile = () => {
 			<div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-full">
 				{/* User Profile Card */}
 				<div className="md:col-span-1 h-full flex flex-col">
-					<Card className="shadow-lg bg-bg-100">
-						<CardHeader className="relative pb-0">
-						{!editing && (
-							<Button
-								className="absolute right-4 top-4"
-								onClick={() => setEditing(true)}
-								width='w-8'
-							>
-								<FaUserEdit className="h-4 w-4" />
-							</Button>
-						)}
-						<div className="flex flex-col items-center">
-							<Avatar
-								username={user.username}
-								profileImage={user.profilePicture}
-								showUsername={false}
-								size={80}
-							/>
-							{editing ? (
-							<form onSubmit={handleEditSubmit} className="w-full">
-								<div className="space-y-4">
-								<div>
-									<label className="text-sm font-medium">Profile URL</label>
-									<input
-									type="text"
-									className="w-full p-2 border rounded mt-1"
-									value={editForm.profilePicture}
-									onChange={(e) => setEditForm({...editForm, profilePicture: e.target.value})}
-									/>
-								</div>
-								<div>
-									<label className="text-sm font-medium">Full Name</label>
-									<input
-									type="text"
-									className="w-full p-2 border rounded mt-1"
-									value={editForm.fullname}
-									onChange={(e) => setEditForm({...editForm, fullname: e.target.value})}
-									/>
-								</div>
-								<div>
-									<label className="text-sm font-medium">Bio</label>
-									<textarea
-									className="w-full p-2 border rounded mt-1"
-									rows={3}
-									value={editForm.bio}
-									onChange={(e) => setEditForm({...editForm, bio: e.target.value})}
-									/>
-								</div>
-								<div className="flex justify-end space-x-2">
-									<Button type="button" onClick={() => setEditing(false)}>
-									<IoClose className="h-4 w-4 mr-2" /> Cancel
-									</Button>
-									<Button type="submit">
-									<CiSaveUp2 className="h-4 w-4 mr-2" /> Save
-									</Button>
-								</div>
-								</div>
-							</form>
-							) : (
-							<>
-								<CardTitle>{user.username}</CardTitle>
-								<CardDescription>{user.fullname}</CardDescription>
-								<p className="text-sm text-muted-foreground mt-2">{user.country}</p>
-								<p className="text-sm mt-4 text-center">{user.bio}</p>
-							</>
+					{loadingUserData || !userData ? (
+						<div className='flex items-center justify-center h-1/2 w-full'>
+							<LoadingSpinner/>
+						</div>
+					) : (
+
+						<Card className="shadow-lg bg-bg-100">
+							<CardHeader className="relative pb-0">
+							{!editing && (
+								<Button
+									className="absolute right-4 top-4"
+									onClick={() => setEditing(true)}
+									width='w-8'
+								>
+									<FaUserEdit className="h-4 w-4" />
+								</Button>
 							)}
-						</div>
-						</CardHeader>
-						<CardContent className="pt-6">
-						<div className="grid grid-cols-3 gap-2 text-center">
-							<div className="bg-secondary/50 p-3 rounded-lg">
-							<p className="text-sm font-medium mb-1">Bullet</p>
-							<p className="text-2xl font-bold">{user.rating.bullet}</p>
+							<div className="flex flex-col items-center">
+								<Avatar
+									username={userData.username}
+									profileImage={userData.profilePicture}
+									showUsername={false}
+									size={80}
+								/>
+								{editing ? (
+								<form onSubmit={handleEditSubmit} className="w-full">
+									<div className="space-y-4">
+									<div>
+										<label className="text-sm font-medium">Profile URL</label>
+										<input
+										type="text"
+										className="w-full p-2 border rounded mt-1"
+										value={editForm.profilePicture}
+										onChange={(e) => setEditForm({...editForm, profilePicture: e.target.value})}
+										/>
+									</div>
+									<div>
+										<label className="text-sm font-medium">Full Name</label>
+										<input
+										type="text"
+										className="w-full p-2 border rounded mt-1"
+										value={editForm.fullname}
+										onChange={(e) => setEditForm({...editForm, fullname: e.target.value})}
+										/>
+									</div>
+									<div>
+										<label className="text-sm font-medium">Bio</label>
+										<textarea
+										className="w-full p-2 border rounded mt-1"
+										rows={3}
+										value={editForm.bio}
+										onChange={(e) => setEditForm({...editForm, bio: e.target.value})}
+										/>
+									</div>
+									<div className="flex justify-end space-x-2">
+										<Button type="button" onClick={() => setEditing(false)}>
+										<IoClose className="h-4 w-4 mr-2" /> Cancel
+										</Button>
+										<Button type="submit">
+										<CiSaveUp2 className="h-4 w-4 mr-2" /> Save
+										</Button>
+									</div>
+									</div>
+								</form>
+								) : (
+								<>
+									<CardTitle>{userData.username}</CardTitle>
+									<CardDescription>{userData.fullname}</CardDescription>
+									<p className="text-sm text-muted-foreground mt-2">{userData.country}</p>
+									<p className="text-sm mt-4 text-center">{userData.bio}</p>
+								</>
+								)}
 							</div>
-							<div className="bg-secondary/50 p-3 rounded-lg">
-							<p className="text-sm font-medium mb-1">Blitz</p>
-							<p className="text-2xl font-bold">{user.rating.blitz}</p>
+							</CardHeader>
+							<CardContent className="pt-6">
+							<div className="grid grid-cols-3 gap-2 text-center">
+								<div className="bg-secondary/50 p-3 rounded-lg">
+								<p className="text-sm font-medium mb-1">Bullet</p>
+								<p className="text-2xl font-bold">{userData.rating.bullet}</p>
+								</div>
+								<div className="bg-secondary/50 p-3 rounded-lg">
+								<p className="text-sm font-medium mb-1">Blitz</p>
+								<p className="text-2xl font-bold">{userData.rating.blitz}</p>
+								</div>
+								<div className="bg-secondary/50 p-3 rounded-lg">
+								<p className="text-sm font-medium mb-1">Rapid</p>
+								<p className="text-2xl font-bold">{userData.rating.rapid}</p>
+								</div>
 							</div>
-							<div className="bg-secondary/50 p-3 rounded-lg">
-							<p className="text-sm font-medium mb-1">Rapid</p>
-							<p className="text-2xl font-bold">{user.rating.rapid}</p>
+							<div className="mt-4 space-y-2">
+								<div className="flex justify-between text-sm">
+								<span className="text-muted-foreground">Total Games</span>
+								<span className="font-medium">
+									{user.stats.bullet.gamesPlayed + user.stats.blitz.gamesPlayed + user.stats.rapid.gamesPlayed}
+								</span>
+								</div>
+								<div className="flex justify-between text-sm">
+								<span className="text-muted-foreground">Member Since</span>
+								<span className="font-medium">{userData.createdAt.slice(0,10)}</span>
+								</div>
 							</div>
-						</div>
-						<div className="mt-4 space-y-2">
-							<div className="flex justify-between text-sm">
-							<span className="text-muted-foreground">Total Games</span>
-							<span className="font-medium">
-								{user.stats.bullet.gamesPlayed + user.stats.blitz.gamesPlayed + user.stats.rapid.gamesPlayed}
-							</span>
-							</div>
-							<div className="flex justify-between text-sm">
-							<span className="text-muted-foreground">Member Since</span>
-							<span className="font-medium">January 2025</span>
-							</div>
-						</div>
-						</CardContent>
-					</Card>
+							</CardContent>
+						</Card>
+					)}
 					<Card className="shadow-lg bg-bg-100 mt-6 h-full">
 						Friends
 					</Card>
@@ -266,10 +337,10 @@ const Profile = () => {
 					<CardTitle>Analytics</CardTitle>
 					<Tabs className="w-full">
 						<TabsList className="grid w-full grid-cols-4">
-						<TabsTrigger value="all" active={activeTab === 'all'} onClick={() => {setActiveTab('all'); setSelectedFormat("all")}}>All</TabsTrigger>
-						<TabsTrigger value="bullet" active={activeTab === 'bullet'} onClick={() => {setActiveTab('bullet'); setSelectedFormat("bullet")}}>Bullet</TabsTrigger>
-						<TabsTrigger value="blitz" active={activeTab === 'blitz'} onClick={() => {setActiveTab('blitz'); setSelectedFormat("blitz")}}>Blitz</TabsTrigger>
-						<TabsTrigger value="rapid" active={activeTab === 'rapid'} onClick={() => {setActiveTab('rapid'); setSelectedFormat("rapid")}}>Rapid</TabsTrigger>
+						<TabsTrigger value="all" active={activeTab === 'all'} onClick={() => {setActiveTab('all'); setSelectedFormat("all"); setPage(1)}}>All</TabsTrigger>
+						<TabsTrigger value="bullet" active={activeTab === 'bullet'} onClick={() => {setActiveTab('bullet'); setSelectedFormat("bullet"); setPage(1)}}>Bullet</TabsTrigger>
+						<TabsTrigger value="blitz" active={activeTab === 'blitz'} onClick={() => {setActiveTab('blitz'); setSelectedFormat("blitz"); setPage(1)}}>Blitz</TabsTrigger>
+						<TabsTrigger value="rapid" active={activeTab === 'rapid'} onClick={() => {setActiveTab('rapid'); setSelectedFormat("rapid"); setPage(1)}}>Rapid</TabsTrigger>
 						</TabsList>
 						<TabsContent value="all" activeTab={activeTab}>
 						<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
@@ -471,36 +542,56 @@ const Profile = () => {
 				{/* Game History Section */}
 				<Card className="shadow-lg mt-6 bg-bg-100">
 					<CardHeader>
-					<CardTitle>Game History</CardTitle>
-					<Tabs className="w-full">
-						<TabsList className="grid w-full grid-cols-4">
-						<TabsTrigger value="all" active={historyTab === 'all'} onClick={()=>{setHistoryTab("all"); setSelectedFormat("all")}}>All</TabsTrigger>
-						<TabsTrigger value="bullet" active={historyTab === 'bullet'}  onClick={()=>{setHistoryTab("bullet"); setSelectedFormat("bullet")}}>Bullet</TabsTrigger>
-						<TabsTrigger value="blitz" active={historyTab === 'blitz'}  onClick={()=>{setHistoryTab("blitz"); setSelectedFormat("blitz")}}>Blitz</TabsTrigger>
-						<TabsTrigger value="rapid" active={historyTab === 'rapid'}  onClick={()=>{setHistoryTab("rapid"); setSelectedFormat("rapid")}}>Rapid</TabsTrigger>
-						</TabsList>
-						
-						<TabsContent value="all" activeTab={historyTab}>
-						<div className="space-y-2 mt-2">
-							{[...dummyGameHistory.bullet, ...dummyGameHistory.blitz, ...dummyGameHistory.rapid]
-							.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-							.slice(0, 8)
-							.map(game => (
-								<GameHistoryItem key={game.id} game={game} />
-							))}
-						</div>
-						</TabsContent>
-
-						{(['bullet', 'blitz', 'rapid'] as const).map(format => (
-						<TabsContent key={format} value={format} activeTab={historyTab}>
-							<div className="space-y-2 mt-2">
-							{dummyGameHistory[format].map(game => (
-								<GameHistoryItem key={game.id} game={game} />
-							))}
-							</div>
-						</TabsContent>
-						))}
-					</Tabs>
+						<CardTitle>Game History</CardTitle>
+						<Tabs className="w-full">
+							<TabsList className="grid w-full grid-cols-4">
+							<TabsTrigger value="all" active={historyTab === 'all'} onClick={()=>{setHistoryTab("all"); setSelectedFormat("all")}}>All</TabsTrigger>
+							<TabsTrigger value="bullet" active={historyTab === 'bullet'}  onClick={()=>{setHistoryTab("bullet"); setSelectedFormat("bullet")}}>Bullet</TabsTrigger>
+							<TabsTrigger value="blitz" active={historyTab === 'blitz'}  onClick={()=>{setHistoryTab("blitz"); setSelectedFormat("blitz")}}>Blitz</TabsTrigger>
+							<TabsTrigger value="rapid" active={historyTab === 'rapid'}  onClick={()=>{setHistoryTab("rapid"); setSelectedFormat("rapid")}}>Rapid</TabsTrigger>
+							</TabsList>
+							
+							<TabsContent value={historyTab} activeTab={historyTab}>
+							{loadingGameHistory || !gameHistory ? (
+								<div className='w-full h-96 flex items-center justify-center'>
+									<LoadingSpinner/>
+								</div>
+							) : (
+								<div className="space-y-2 mt-2">
+									{gameHistory.games.map(game => (
+										<GameHistoryItem key={game._id} game={game} userId={userId as string}/>
+									))}
+									<div className="flex items-center justify-center space-x-2 p-4">
+										<Button
+											width='w-8'
+											onClick={() => setPage(1)}
+										>
+											<MdFirstPage />
+										</Button>
+										<Button
+											width='w-8'
+											onClick={() => {page > 1 && setPage(page - 1)}}
+										>
+											<MdNavigateBefore />
+										</Button>
+										<p>{page}</p>
+										<Button
+											width='w-8'
+											onClick={() => {gameHistory.pagination.totalPages>page && setPage(page + 1)}}
+										>
+											<MdNavigateNext />
+										</Button>
+										<Button
+											width='w-8'
+											onClick={() => setPage(gameHistory.pagination.totalPages)}
+										>
+											<MdLastPage />
+										</Button>
+									</div>
+								</div>
+							)}
+							</TabsContent>
+						</Tabs>
 					</CardHeader>
 				</Card>
 				</div>
@@ -510,75 +601,74 @@ const Profile = () => {
 };
 
 // Game history item component
-const GameHistoryItem = ({ game }: any) => {
-	const resultColor = game.result === 'win' 
-		? 'text-green-500' 
-		: game.result === 'loss' 
-		? 'text-red-500' 
-		: 'text-gray-500';
-
-	const ratingColor = game.rating.startsWith('+') 
-		? 'text-green-500' 
-		: game.rating.startsWith('-') 
-		? 'text-red-500' 
-		: 'text-gray-500';
+const GameHistoryItem = ({game, userId}: {game: GameInHistory, userId: string}) => {
+	let resultColor;
+	let result;
+	let opponent;
+	if(game.whitePlayer._id === userId){
+		game.winner === 'white' ? resultColor = 'text-green-500' : game.winner === 'black' ? resultColor = 'text-red-500' : resultColor = 'text-gray-500';
+		result = game.winner === 'white' ? 'Won' : game.winner === 'black' ? 'Lost' : 'Draw';
+		opponent = game.blackPlayer.username;
+	}else{
+		game.winner === 'black' ? resultColor = 'text-green-500' : game.winner === 'white' ? resultColor = 'text-red-500' : resultColor = 'text-gray-500';
+		result = game.winner === 'black' ? 'Won' : game.winner === 'white' ? 'Lost' : 'Draw';
+		opponent = game.whitePlayer.username;
+	}
 
   return (
 		<Dialog>
-		<DialogTrigger asChild>
-			<div className="p-3 bg-secondary/30 rounded-lg flex items-center justify-between cursor-pointer hover:bg-secondary/50 transition-colors">
-			<div className="flex items-center">
-				<div className={`w-2 h-8 rounded-full mr-3 ${resultColor.replace('text-', 'bg-')}`} />
-				<div>
-				<p className="font-medium">vs {game.opponent}</p>
-				<p className="text-xs text-muted-foreground">
-					{new Date(game.date).toLocaleDateString()} • {game.moves} moves
-				</p>
+			<DialogTrigger asChild>
+				<div className="p-3 bg-secondary/30 rounded-lg flex items-center justify-between cursor-pointer hover:bg-secondary/50 transition-colors">
+				<div className="flex items-center">
+					<div className={`w-2 h-8 rounded-full mr-3 ${resultColor.replace('text-', 'bg-')}`} />
+					<div>
+					<p className="font-medium">{game.whitePlayer.username} vs {game.blackPlayer.username}</p>
+					<p className="text-xs text-muted-foreground">
+						{game.createdAt.slice(0,10)} • {game.moves.length} moves
+					</p>
+					</div>
 				</div>
-			</div>
-			<div className="flex items-center space-x-3">
-				<span className={`font-medium ${resultColor}`}>
-				{game.result.charAt(0).toUpperCase() + game.result.slice(1)}
-				</span>
-				<span className={`text-sm ${ratingColor}`}>{game.rating}</span>
-				<IoChevronForwardOutline className="h-4 w-4 text-muted-foreground" />
-			</div>
-			</div>
-		</DialogTrigger>
-		<DialogContent>
-			<DialogHeader>
-			<DialogTitle>Game Details</DialogTitle>
-			</DialogHeader>
-			<div className="space-y-4">
-			<div className="grid grid-cols-2 gap-4">
-				<div>
-				<p className="text-sm text-muted-foreground">Date</p>
-				<p>{new Date(game.date).toLocaleDateString()}</p>
+				<div className="flex items-center space-x-3">
+					<span className={`font-medium ${resultColor}`}>
+					{result}
+					</span>
+					<IoChevronForwardOutline className="h-4 w-4 text-muted-foreground" />
 				</div>
-				<div>
-				<p className="text-sm text-muted-foreground">Result</p>
-				<p className={resultColor}>
-					{game.result.charAt(0).toUpperCase() + game.result.slice(1)}
-					<span className={`ml-2 ${ratingColor}`}>{game.rating}</span>
-				</p>
 				</div>
-				<div>
-				<p className="text-sm text-muted-foreground">Opponent</p>
-				<p>{game.opponent}</p>
+			</DialogTrigger>
+			<DialogContent>
+				<DialogHeader>
+				<DialogTitle>Game Details</DialogTitle>
+				</DialogHeader>
+				<div className="space-y-4">
+				<div className="grid grid-cols-2 gap-4">
+					<div>
+					<p className="text-sm text-muted-foreground">Date</p>
+					<p>{game.createdAt.slice(0,10)}</p>
+					</div>
+					<div>
+					<p className="text-sm text-muted-foreground">Result</p>
+					<p className={resultColor}>
+						{result}
+					</p>
+					</div>
+					<div>
+					<p className="text-sm text-muted-foreground">Opponent</p>
+					<p>{opponent}</p>
+					</div>
+					<div>
+					<p className="text-sm text-muted-foreground">Moves</p>
+					<p>{game.moves.length}</p>
+					</div>
 				</div>
-				<div>
-				<p className="text-sm text-muted-foreground">Moves</p>
-				<p>{game.moves}</p>
+				<div className="flex justify-center">
+					<Button>
+					<BiLinkExternal className="h-4 w-4 mr-2" />
+					View Full Game
+					</Button>
 				</div>
-			</div>
-			<div className="flex justify-center">
-				<Button>
-				<BiLinkExternal className="h-4 w-4 mr-2" />
-				View Full Game
-				</Button>
-			</div>
-			</div>
-		</DialogContent>
+				</div>
+			</DialogContent>
 		</Dialog>
 	);
 };
