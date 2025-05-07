@@ -23,7 +23,7 @@ export const getLocalStorage = <T>(key: string): T | null => {
             try {
                 return JSON.parse(item) as T;
             } catch (e) {
-                // If parsing fails, return the string directly
+                console.warn(`Failed to parse localStorage key "${key}", returning raw string:`, e);
                 return item as unknown as T;
             }
         } catch (error) {

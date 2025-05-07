@@ -1,6 +1,5 @@
-import { ChessEngine } from '@/Engine';
 import { Chess } from 'chess.js';
-import { Dispatch, SetStateAction, useEffect, useMemo, useRef, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import { Chessboard } from 'react-chessboard';
 import { Piece, Square } from 'react-chessboard/dist/chessboard/types';
 import SocketService from '@/SocketService';
@@ -33,8 +32,6 @@ const StandardBoard = ({
     const [boardWidth, setBoardWidth] = useState(500);
     const [optionSquares, setOptionSquares] = useState<Record<string, React.CSSProperties>>({});
     const [moveFrom, setMoveFrom] = useState<Square | null>(null);
-    const [moveTo, setMoveTo] = useState<Square | null>(null);
-    const [showPromotionDialog, setShowPromotionDialog] = useState(false);
     const [moveSquares, setMoveSquares] = useState({});
     
     const containerRef = useRef<HTMLDivElement>(null);
@@ -52,7 +49,7 @@ const StandardBoard = ({
             
             try {
                 // Make the opponent's move on our board
-                const move = chess.move({
+                chess.move({
                     from: data.move.from as Square,
                     to: data.move.to as Square,
                     promotion: data.move.promotion as 'q' | 'n' | 'r' | 'b' | undefined
@@ -165,8 +162,6 @@ const StandardBoard = ({
         }
         
         try {
-            // Get current turn
-            const turn = chess.turn();
             
             // Attempt to make the move
             const move = chess.move({

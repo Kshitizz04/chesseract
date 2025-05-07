@@ -1,6 +1,7 @@
 import { getLocalStorage } from "@/utils/localstorage";
 import API_ENDPOINTS from "../../config/apiConfig";
 import { TimeFormats, ResultReason } from "@/models/GameUtilityTypes";
+import CommonResponse from "@/models/CommonResponse";
 
 type reason = {
     [reason in ResultReason]: number;
@@ -26,9 +27,7 @@ interface GetAdvancedAnalyticsData {
     totalGames: number,
 }
 
-interface GetAdvancedAnalyticsResponse extends CommonResponse<GetAdvancedAnalyticsData> {}
-
-const getAdvancedAnalytics = async (userId: string, format: TimeFormats | null): Promise<GetAdvancedAnalyticsResponse> => {
+const getAdvancedAnalytics = async (userId: string, format: TimeFormats | null): Promise<CommonResponse<GetAdvancedAnalyticsData>> => {
     try {
         const token = getLocalStorage("token");
         const response = await fetch(API_ENDPOINTS.analytics.getAdvancedAnalytics(userId, format), {

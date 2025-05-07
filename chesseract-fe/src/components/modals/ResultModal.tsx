@@ -1,5 +1,4 @@
 import React from "react";
-import { IoIosCloseCircleOutline } from "react-icons/io";
 import CustomModal from "./CustomModal";
 import CustomButton from "../utilities/CustomButton";
 

@@ -1,6 +1,7 @@
 import { getLocalStorage } from "@/utils/localstorage";
 import API_ENDPOINTS from "../../config/apiConfig";
 import { TimeFormats } from "@/models/GameUtilityTypes";
+import CommonResponse from "@/models/CommonResponse";
 
 interface GameInHistory {
     _id: string;
@@ -34,9 +35,7 @@ interface GetGameHistoryData {
     };
 }
 
-interface GetGameHistoryResponse extends CommonResponse<GetGameHistoryData> {}
-
-const getUserGames = async (userId: string, format: TimeFormats | null, limit: number | null, page:number | null): Promise<GetGameHistoryResponse> => {
+const getUserGames = async (userId: string, format: TimeFormats | null, limit: number | null, page:number | null): Promise<CommonResponse<GetGameHistoryData>> => {
     try {
         const token = getLocalStorage("token");
         const response = await fetch(API_ENDPOINTS.game.getUserGames(userId, format, limit, page), {

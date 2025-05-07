@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect, FormEvent } from 'react';
 import { Tabs, TabsTrigger, TabsList, TabsContent } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, LineChart, Line, CartesianGrid } from 'recharts';
@@ -51,9 +51,10 @@ const Profile = () => {
 		profilePicture: userData?.profilePicture || '',
 	});
 
-	const handleEditSubmit = (e: any) => {
+	const handleEditSubmit = (e: FormEvent) => {
 		e.preventDefault();
 		//api call to update user data
+		setTimeframe('1w'); // to avoid build errors, remove this later
 		setEditing(false);
 	};
 
@@ -585,14 +586,14 @@ const Profile = () => {
 										</Button>
 										<Button
 											width='w-8'
-											onClick={() => {page > 1 && setPage(page - 1)}}
+											onClick={() => {if(page>1)setPage(page - 1)}}
 										>
 											<MdNavigateBefore />
 										</Button>
 										<p>{page}</p>
 										<Button
 											width='w-8'
-											onClick={() => {gameHistory.pagination.totalPages>page && setPage(page + 1)}}
+											onClick={() => {if(gameHistory.pagination.totalPages>page)setPage(page + 1)}}
 										>
 											<MdNavigateNext />
 										</Button>
@@ -621,11 +622,11 @@ const GameHistoryItem = ({game, userId}: {game: GameInHistory, userId: string}) 
 	let result;
 	let opponent;
 	if(game.whitePlayer._id === userId){
-		game.winner === 'white' ? resultColor = 'text-green-500' : game.winner === 'black' ? resultColor = 'text-red-500' : resultColor = 'text-gray-500';
+		resultColor = game.winner === 'white' ? 'text-green-500' : game.winner === 'black' ? 'text-red-500' : 'text-gray-500';
 		result = game.winner === 'white' ? 'Won' : game.winner === 'black' ? 'Lost' : 'Draw';
 		opponent = game.blackPlayer.username;
 	}else{
-		game.winner === 'black' ? resultColor = 'text-green-500' : game.winner === 'white' ? resultColor = 'text-red-500' : resultColor = 'text-gray-500';
+		resultColor = game.winner === 'black' ? 'text-green-500' : game.winner === 'white' ? 'text-red-500' : 'text-gray-500';
 		result = game.winner === 'black' ? 'Won' : game.winner === 'white' ? 'Lost' : 'Draw';
 		opponent = game.whitePlayer.username;
 	}

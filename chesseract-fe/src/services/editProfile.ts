@@ -1,8 +1,7 @@
 import { getLocalStorage } from "@/utils/localstorage";
 import API_ENDPOINTS from "../../config/apiConfig";
 import { GetUserByIdData } from "./getUserById";
-
-interface EditProfileResponse extends CommonResponse<GetUserByIdData> {}
+import CommonResponse from "@/models/CommonResponse";
 
 export interface EditProfileBody {
     fullname?: string;
@@ -11,7 +10,7 @@ export interface EditProfileBody {
     country?: string;
 }
 
-const editProfile = async (data: EditProfileBody): Promise<EditProfileResponse> => {
+const editProfile = async (data: EditProfileBody): Promise<CommonResponse<GetUserByIdData>> => {
     try {
         const token = getLocalStorage("token");
         const response = await fetch(`${API_ENDPOINTS.users.editProfile}`, {

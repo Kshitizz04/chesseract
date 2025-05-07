@@ -35,7 +35,11 @@ const Bot = () => {
     },[])
 
     const startGame = () => {
-        Math.floor(Math.random() * 2) === 0 ? setMyColor("w") : setMyColor("b");
+        if(Math.floor(Math.random() * 2) === 0){
+            setMyColor("w");
+        }else{
+            setMyColor("b");
+        }
         setGameStarted(true);
     };
 

@@ -44,7 +44,7 @@ const Online = () => {
                 SocketService.emit("cancel_matchmaking", { userId });
             }
         };
-    }, []);
+    });
 
     //load user data from local storage
     useEffect(()=>{

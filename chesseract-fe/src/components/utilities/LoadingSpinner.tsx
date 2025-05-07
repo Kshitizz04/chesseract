@@ -1,5 +1,5 @@
 import React from 'react';
-import { ImSpinner2, ImSpinner9 } from 'react-icons/im';
+import { ImSpinner2 } from 'react-icons/im';
 
 interface LoadingSpinnerProps {
   size?: number;

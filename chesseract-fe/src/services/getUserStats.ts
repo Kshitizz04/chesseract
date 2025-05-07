@@ -1,6 +1,7 @@
 import { getLocalStorage } from "@/utils/localstorage";
 import API_ENDPOINTS from "../../config/apiConfig";
 import { TimeFormats } from "@/models/GameUtilityTypes";
+import CommonResponse from "@/models/CommonResponse";
 
 interface stat {
     wins: number;
@@ -24,9 +25,7 @@ interface GetUserStatsData {
     },
 }
 
-interface GetUserStatsResponse extends CommonResponse<GetUserStatsData> {}
-
-const getUserStats = async (userId: string, format: TimeFormats | null): Promise<GetUserStatsResponse> => {
+const getUserStats = async (userId: string, format: TimeFormats | null): Promise<CommonResponse<GetUserStatsData>> => {
     try {
         const token = getLocalStorage("token");
         const response = await fetch(API_ENDPOINTS.analytics.getUserStats(userId, format), {

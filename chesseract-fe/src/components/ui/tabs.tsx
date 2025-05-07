@@ -1,4 +1,4 @@
-import React, { useState, ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 
 interface TabProps {
   children: ReactNode;
@@ -30,7 +30,7 @@ export const TabsList = ({ children, className = '' }: TabProps) => {
   );
 };
 
-export const TabsTrigger = ({ value, onClick, children, active }: TabsTriggerProps) => {
+export const TabsTrigger = ({ onClick, children, active }: TabsTriggerProps) => {
   return (
     <button
       onClick={onClick}

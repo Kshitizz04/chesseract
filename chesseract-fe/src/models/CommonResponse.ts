@@ -1,4 +1,4 @@
-interface CommonResponse<T> {
+export default interface CommonResponse<T> {
     success: boolean;
     message: string;
     error?: string;

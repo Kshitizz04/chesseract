@@ -1,5 +1,6 @@
 import { getLocalStorage } from "@/utils/localstorage";
 import API_ENDPOINTS from "../../config/apiConfig";
+import CommonResponse from "@/models/CommonResponse";
 
 interface GetUserByIdData {
     username: string;
@@ -17,9 +18,7 @@ interface GetUserByIdData {
     createdAt: string;
 }
 
-interface GetUserByIdResponse extends CommonResponse<GetUserByIdData> {}
-
-const getUserById = async (id: string): Promise<GetUserByIdResponse> => {
+const getUserById = async (id: string): Promise<CommonResponse<GetUserByIdData>> => {
     try {
         const token = getLocalStorage("token");
         const response = await fetch(API_ENDPOINTS.users.getById(id), {

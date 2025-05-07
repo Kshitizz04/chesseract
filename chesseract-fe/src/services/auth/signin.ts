@@ -1,3 +1,4 @@
+import CommonResponse from "@/models/CommonResponse";
 import API_ENDPOINTS from "../../../config/apiConfig";
 import { IUser } from "../../models/user";
 
@@ -11,9 +12,7 @@ interface SignInResponseData {
     user: IUser;
 }
 
-interface SignInResponse extends CommonResponse<SignInResponseData> {}
-
-const signIn = async (data: SignInData): Promise<SignInResponse> => {
+const signIn = async (data: SignInData): Promise<CommonResponse<SignInResponseData>> => {
     try {
         const response = await fetch(API_ENDPOINTS.auth.signIn, {
             method: "POST",
@@ -30,4 +29,3 @@ const signIn = async (data: SignInData): Promise<SignInResponse> => {
 };
 
 export default signIn;
-export type{SignInResponse}

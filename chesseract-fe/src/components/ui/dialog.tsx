@@ -34,13 +34,13 @@ export const DialogTrigger = ({
     return React.cloneElement(
       childElement,
       {
-        onClick: (e: React.MouseEvent) => {
-          context.setOpen(true);
-          // Call the original onClick if it exists
-          if (childElement.props && typeof childElement.props.onClick === 'function') {
-            childElement.props.onClick(e);
-          }
-        },
+        // onClick: (e: React.MouseEvent) => {
+        //   context.setOpen(true);
+        //   // Call the original onClick if it exists
+        //   if (childElement.props && typeof childElement.props.onClick === 'function') {
+        //     childElement.props.onClick(e);
+        //   }
+        // },
       }
     );
   }

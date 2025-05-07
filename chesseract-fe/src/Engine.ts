@@ -82,7 +82,6 @@ export class ChessEngine {
       const pvMatch = /pv (.+)$/.exec(message);
       
       const depth = depthMatch ? parseInt(depthMatch[1]) : 0;
-      const scoreType = scoreMatch ? scoreMatch[1] : null;
       const score = scoreMatch ? parseInt(scoreMatch[2]) : null;
       const mate = mateMatch ? parseInt(mateMatch[1]) : null;
       const moves = pvMatch ? pvMatch[1].split(' ') : [];

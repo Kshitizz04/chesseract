@@ -69,10 +69,8 @@ const SignUp = () => {
                 const error = response.error || "An error occurred";
                 showToast(error, "error");
             }
-        } catch (err: any) {
+        } catch (err) {
             console.error("Sign-up failed:", err);
-            const error = err.error || "An error occurred";
-            showToast(error, "error");
         } finally {
             setLoading(false);
         }

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { use, useState } from "react";
+import React, { useState } from "react";
 import signIn from "@/services/auth/signin";
 import { validateEmail } from "@/utils/validators";
 import { useToast } from "@/contexts/ToastContext";
@@ -39,10 +39,8 @@ const SignIn = () => {
                 const error = response.error || "An error occurred";
                 showToast(error, "error");
             }
-        } catch (err: any) {
+        } catch (err) {
             console.error("Sign-in failed:", err);
-            const error = err.error || "An error occurred";
-            showToast(error, "error");
         } finally {
             setLoading(false);
         }
@@ -106,7 +104,7 @@ const SignIn = () => {
                 </button>
 
                 <div className="text-center text-sm">
-                    Don't have an account?{" "}
+                    {"Don't have an account? "}
                     <Link href="/auth/sign-up" className="text-accent-200 hover:underline">
                         Sign Up
                     </Link>

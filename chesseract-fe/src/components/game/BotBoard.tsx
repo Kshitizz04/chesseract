@@ -142,12 +142,16 @@ const BotBoard = ({position, setPosition, chess, setResult, myColor, difficulty=
                     setResult(2, "draw")
                 }
                 if(chess.isCheckmate()){
-                    chess.turn()===myColor ? setResult(0, "Opponent won by checkmate") : setResult(1, "You won by checkmate!!");
+                    if(chess.turn()===myColor){
+                        setResult(1, "Opponent won by checkmate")
+                    }
+                    else setResult(0, "You won by checkmate!!")
                 }
             }
             setPosition(chess.fen())
             return true;
         }catch(e){ 
+            console.log("Invalid move",e)
             return false;
         }
     }

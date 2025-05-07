@@ -1,6 +1,7 @@
 import { getLocalStorage } from "@/utils/localstorage";
 import API_ENDPOINTS from "../../config/apiConfig";
 import { TimeFormats, TimeFrame } from "@/models/GameUtilityTypes";
+import CommonResponse from "@/models/CommonResponse";
 
 interface ratingEntry {
     date: string;
@@ -13,9 +14,7 @@ interface GetUserRatingHistoryData {
     rapid: ratingEntry[];
 }
 
-interface GetUserRatingHistoryResponse extends CommonResponse<GetUserRatingHistoryData> {}
-
-const getUserRatingHistory = async (userId: string, format: TimeFormats | null, timeframe: TimeFrame | null): Promise<GetUserRatingHistoryResponse> => {
+const getUserRatingHistory = async (userId: string, format: TimeFormats | null, timeframe: TimeFrame | null): Promise<CommonResponse<GetUserRatingHistoryData>> => {
     try {
         const token = getLocalStorage("token");
         const response = await fetch(API_ENDPOINTS.analytics.getUserRatingHistory(userId, format, timeframe), {

@@ -1,6 +1,7 @@
 import { getLocalStorage } from "@/utils/localstorage";
 import API_ENDPOINTS from "../../config/apiConfig";
 import { ResultReason, TimeFormats } from "@/models/GameUtilityTypes";
+import CommonResponse from "@/models/CommonResponse";
 
 interface ITimeControl {
     initial: number;     
@@ -31,9 +32,7 @@ interface GetGameByIdData {
     winner: 'white' | 'black' | 'draw';
 }
 
-interface GetGameByIdResponse extends CommonResponse<GetGameByIdData> {}
-
-const getGameById = async (gameId: string): Promise<GetGameByIdResponse> => {
+const getGameById = async (gameId: string): Promise<CommonResponse<GetGameByIdData>> => {
     try {
         const token = getLocalStorage("token");
         const response = await fetch(API_ENDPOINTS.game.getGameById(gameId), {
