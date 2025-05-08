@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import User, { IUser } from "../../models/user.model.ts";
 import { EditProfileBody, GetUserResponse, GetUsersResponse } from "./user.types.ts";
 import { CustomError } from "../../utils/CustomError.ts";
+import FriendRequest from "../../models/friend-request.model.ts";
 
 export const getUsers = async (req: Request, res: Response<GetUsersResponse>, next: NextFunction) => {
     try{
@@ -18,15 +19,50 @@ export const getUsers = async (req: Request, res: Response<GetUsersResponse>, ne
 
 export const getUser = async (req: Request, res: Response<GetUserResponse>, next: NextFunction) => {
     try{
+        const currentUserId = req.user?.userId;
         const user = await User.findById(req.params.id).select("-password -stats -friends -ratingHistory"); 
         if(!user){
             const error = new CustomError("User not found", 404);
             throw error;
         }
+
+        // Check if the user is friend of current user
+        let friendStatus = 0;
+        const isFriend = user.friends.some((friendId) => friendId.toString() === currentUserId);
+
+        const hasRequested = await FriendRequest.findOne({
+            $or: [
+                { sender: currentUserId, receiver: req.params.id },
+            ],
+            status: "pending",
+        });
+
+        if(!isFriend){
+            if(hasRequested){
+                friendStatus = 2;
+            }
+            else{
+                friendStatus = 0;
+            }
+        }else{
+            friendStatus = 1;
+        }
+
         res.status(200).json({
             success: true,
             message: "Users fetched successfully",
-            data: user,
+            data: {
+                username: user.username,
+                email: user.email,
+                fullname: user.fullname || "",
+                rating : user.rating,
+                profilePicture: user.profilePicture || "",
+                bio: user.bio || "",
+                isOnline: user.isOnline,
+                country: user.country || "",
+                createdAt: user.createdAt.toString(),
+                friendStatus: friendStatus,
+            },
         });
     }catch(err){
         next(err);

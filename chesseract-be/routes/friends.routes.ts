@@ -5,7 +5,7 @@ import authorize from '../middlewares/auth.middleware.ts';
 const friendRouter = Router();
 
 // Get all friends
-friendRouter.get('', authorize, getFriends);
+friendRouter.get('/:userId', authorize, getFriends);
 
 // Get all friend requests (sent and received)
 friendRouter.get('/requests', authorize, getFriendRequests);
@@ -14,10 +14,10 @@ friendRouter.get('/requests', authorize, getFriendRequests);
 friendRouter.post('/request', authorize, sendFriendRequest);
 
 // Accept friend request
-friendRouter.post('/accept', authorize, acceptFriendRequest);
+friendRouter.put('/accept', authorize, acceptFriendRequest);
 
 // Reject friend request
-friendRouter.post('/reject', authorize, rejectFriendRequest);
+friendRouter.put('/reject', authorize, rejectFriendRequest);
 
 // Remove friend
 friendRouter.delete('/:friendId', authorize, removeFriend);

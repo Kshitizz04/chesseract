@@ -6,6 +6,7 @@ export interface GetAllFriendsResponseData {
     rating: number;
     isOnline: boolean;
     _id: string;
+    friendStatus: number; // 0: not friends, 1: friend, 2: requested
 }
 
 export interface GetAllFriendsResponse extends CommonResponse<GetAllFriendsResponseData[]> {

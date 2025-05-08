@@ -8,9 +8,10 @@ import { AcceptRejectFriendRequestBody, GetAllFriendsResponse, GetAllFriendsResp
 // Get all friends of the current user
 export const getFriends = async (req: Request, res: Response<GetAllFriendsResponse>, next: NextFunction) => {
     try {
-        const userId = req.user?.userId;
+        const currentUserId = req.user?.userId;
+        const userId = req.params.userId;
         const limit = parseInt(req.query.limit as string) || 10;
-        const offset = parseInt(req.query.offset as string) || 1;
+        const offset = parseInt(req.query.offset as string) || 0;
 
         const user = await User.findById(userId)
             .select('friends')
@@ -29,8 +30,29 @@ export const getFriends = async (req: Request, res: Response<GetAllFriendsRespon
         }
 
         const friendsData = user.friends as unknown as GetAllFriendsResponseData[];
+
+        // Check if the current user is friends with all users in friendsData and check if current user has requested them
+        const updatedFriendsData = await Promise.all(
+            friendsData.map(async (friend) => {
+            const isFriend = await User.exists({
+                _id: currentUserId,
+                friends: friend._id,
+            });
+
+            const hasRequested = await FriendRequest.exists({
+                sender: currentUserId,
+                receiver: friend._id,
+                status: 'pending',
+            });
+
+            return {
+                ...friend,
+                friendStatus: isFriend ? 1 : hasRequested ? 2 : 0, // 0: not friends, 1: friend, 2: requested
+            };
+            })
+        );
         
-        res.status(200).json({ success: true, message: "Friends fetched successfully", data: friendsData});
+        res.status(200).json({ success: true, message: "Friends fetched successfully", data: updatedFriendsData});
     } catch (error) {
         next(error);
     }
@@ -120,7 +142,7 @@ export const sendFriendRequest = async (req: Request<{}, any, SendFriendRequestB
         res.status(201).json({ 
             success: true, 
             message: "Friend request sent successfully",
-            request: friendRequest
+            data: null
         });
     } catch (error) {
         next(error);
