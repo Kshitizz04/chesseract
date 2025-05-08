@@ -21,7 +21,8 @@ import { MdFirstPage, MdLastPage, MdNavigateBefore, MdNavigateNext } from 'react
 import getUserStats, { GetUserStatsData } from '@/services/getUserStats';
 import getUserRatingHistory, { GetUserRatingHistoryData } from '@/services/getUserRatingHistory';
 import getAdvancedAnalytics, { GetAdvancedAnalyticsData } from '@/services/getAdvancedAnalytics';
-import UserInfo from '@/components/profile/userInfo';
+import UserInfo from '@/components/profile/UserInfo';
+import FriendList from '@/components/profile/FriendList';
 
 const Profile = () => {
 	const [activeTab, setActiveTab] = useState('all');
@@ -31,14 +32,12 @@ const Profile = () => {
 	const [loadingStats, setLoadingStats] = useState(false);
 	const [loadingRatingHistory, setLoadingRatingHistory] = useState(false);
 	const [loadingAnalytics, setLoadingAnalytics] = useState(false);
-	const loadingFriends = false;
 	const [page, setPage] = useState(1);
 
 	const [gameHistory, setGameHistory] = useState<GetGameHistoryData | null>(null);
 	const [stats, setStats] = useState<GetUserStatsData | null>(null);
 	const [ratingHistory, setRatingHistory] = useState<GetUserRatingHistoryData | null>(null);
 	const [analytics, setAnalytics] = useState<GetAdvancedAnalyticsData | null>(null);
-	const [friendList, setFriendList] = useState<string[]>([]);
 
 	const userId = getLocalStorage('userId')
 	const limit = 10;
@@ -156,11 +155,7 @@ const Profile = () => {
 				{/* User Profile Card */}
 				<div className="md:col-span-1 h-full flex flex-col">
 					<UserInfo isForProfile={true} userId={userId as string} totalGames={stats ? stats.stats.bullet.gamesPlayed + stats.stats.blitz.gamesPlayed + stats.stats.rapid.gamesPlayed : 0}/>
-					<Card className="shadow-lg bg-bg-100 mt-6 h-full">
-						<CardHeader className="pb-2">
-							<CardTitle>Friends</CardTitle>
-						</CardHeader>
-					</Card>
+					<FriendList isForProfile={true} userId={userId as string}/>
 				</div>
 
 				{/* Analytics Section */}

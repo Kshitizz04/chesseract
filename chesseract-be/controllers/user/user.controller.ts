@@ -20,7 +20,9 @@ export const getUsers = async (req: Request, res: Response<GetUsersResponse>, ne
 export const getUser = async (req: Request, res: Response<GetUserResponse>, next: NextFunction) => {
     try{
         const currentUserId = req.user?.userId;
-        const user = await User.findById(req.params.id).select("-password -stats -friends -ratingHistory"); 
+        const userId = req.params.id;
+        
+        const user = await User.findById(userId).select("-password -stats -friends -ratingHistory"); 
         if(!user){
             const error = new CustomError("User not found", 404);
             throw error;
@@ -28,25 +30,17 @@ export const getUser = async (req: Request, res: Response<GetUserResponse>, next
 
         // Check if the user is friend of current user
         let friendStatus = 0;
-        const isFriend = user.friends.some((friendId) => friendId.toString() === currentUserId);
-
-        const hasRequested = await FriendRequest.findOne({
-            $or: [
-                { sender: currentUserId, receiver: req.params.id },
-            ],
-            status: "pending",
+        const isFriend = await User.exists({
+            _id: currentUserId,
+            friends: userId,
+        });
+        const hasRequested = await FriendRequest.exists({
+            sender: currentUserId,
+            receiver: userId,
+            status: 'pending',
         });
 
-        if(!isFriend){
-            if(hasRequested){
-                friendStatus = 2;
-            }
-            else{
-                friendStatus = 0;
-            }
-        }else{
-            friendStatus = 1;
-        }
+        friendStatus =  isFriend ? 1 : hasRequested ? 2 : 0, // 0: not friends, 1: friend, 2: requested
 
         res.status(200).json({
             success: true,

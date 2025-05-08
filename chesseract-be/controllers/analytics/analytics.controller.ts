@@ -45,7 +45,6 @@ export const getUserRatingHistory = async (req: Request, res: Response, next: Ne
     try {
         const { userId } = req.params;
         const { format, timeframe = '1m' } = req.query;
-        console.log(format, timeframe, userId);
         
         const user = await User.findById(userId);
         

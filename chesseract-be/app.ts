@@ -28,10 +28,10 @@ const io = new Server(server, {
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(arcjetMiddleware); 
+//app.use(arcjetMiddleware); 
 app.use(
   cors({
-      origin: ["http://localhost:3000","https://chesseract.vercel.app"], 
+      origin: ["http://localhost:3000","https://chesseract.vercel.app", "http://localhost:5500"], 
       credentials: true, 
   })
 );

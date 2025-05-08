@@ -17,7 +17,7 @@ export const getFriends = async (req: Request, res: Response<GetAllFriendsRespon
             .select('friends')
             .populate({
                 path: 'friends',
-                select:'username profilePicture rating isOnline _id',
+                select:'username fullname country profilePicture rating isOnline _id',
                 options: {
                     limit: limit,
                     skip: offset,
@@ -45,10 +45,16 @@ export const getFriends = async (req: Request, res: Response<GetAllFriendsRespon
                 status: 'pending',
             });
 
-            return {
-                ...friend,
-                friendStatus: isFriend ? 1 : hasRequested ? 2 : 0, // 0: not friends, 1: friend, 2: requested
-            };
+                return {
+                    username: friend.username,
+                    profilePicture: friend.profilePicture || "",
+                    rating: friend.rating,
+                    isOnline: friend.isOnline,
+                    _id: friend._id,
+                    fullname: friend.fullname || "",
+                    country: friend.country || "f",
+                    friendStatus: isFriend ? 1 : hasRequested ? 2 : 0, // 0: not friends, 1: friend, 2: requested
+                };
             })
         );
         

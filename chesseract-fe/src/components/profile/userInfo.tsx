@@ -65,7 +65,7 @@ const UserInfo = ({ isForProfile, userId, totalGames }: UserInfoProps) => {
 			}
 		}
 		fetchUserData();
-	}, [userId, showToast]);
+	}, [userId]);
 
     const handleEditSubmit = async (e: React.FormEvent) => {
         e.preventDefault();

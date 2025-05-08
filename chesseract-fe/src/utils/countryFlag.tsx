@@ -26,21 +26,23 @@ export const getCountryNameByCode = (code: string): string => {
 };
 
 function CountryFlag({ countryCode }: { countryCode: string }) {
-    if (!countryCode) {
+    if (!countryCode || countryCode === "Unknown") {
       return (
-        <span className="text-2xl">🏳️</span>
+        <span className="text-2xl" title="Unknown Country">🌏</span>
       );
     }
     
     return (
-        <Image
-            src={`https://flagcdn.com/24x18/${countryCode.toLowerCase()}.png`}
-            alt={getCountryNameByCode(countryCode)}
-            title={getCountryNameByCode(countryCode)}
-            width={24}
-            height={18}
-            className="inline-block"
-        />
+        <div className="relative w-6 h-6 rounded-full">
+            <Image
+                src={`https://flagcdn.com/24x18/${countryCode.toLowerCase()}.png`}
+                alt={getCountryNameByCode(countryCode)}
+                title={getCountryNameByCode(countryCode)}
+                width={24}
+                height={18}
+                className="object-cover w-full h-full rounded-full"
+            />
+        </div>
     );
 }
 

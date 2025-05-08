@@ -9,6 +9,7 @@ interface AvatarProps {
   showUsername?: boolean;
   size?: number;
   className?: string;
+  onClick?: () => void;
 }
 
 const Avatar: React.FC<AvatarProps> = ({
@@ -17,13 +18,14 @@ const Avatar: React.FC<AvatarProps> = ({
   showUsername = false,
   size = 40,
   className = '',
+  onClick = () => {},
 }) => {
     const router = useRouter();
 
   return (
     <div 
         className={`flex items-center gap-2 ${className} text-accent-200 cursor-pointer`}
-        onClick={()=>router.push(`/home/profile`)}
+        onClick={onClick}
     >
       <div 
         className="rounded-full border-1 border-accent-100 overflow-hidden flex items-center justify-center bg-bg-100 font-semibold"
@@ -43,7 +45,7 @@ const Avatar: React.FC<AvatarProps> = ({
       </div>
       
       {showUsername && (
-        <div className="flex flex-col">
+        <div className="flex flex-col text-text-100">
           <p className="font-medium truncate" style={{ maxWidth: '150px' }}>
             {username}
           </p>

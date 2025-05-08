@@ -22,11 +22,12 @@ const API_ENDPOINTS = {
         getAdvancedAnalytics: (userId: string, format: TimeFormats | null) => `${API_BASE_URL}/analytics/advanced-analytics/${userId}?format=${format}`, //get
     },
     friends:{
-        getAllFriends: (userId: string, limit: number | null, page: number | null) => `${API_BASE_URL}/friends?userId=${userId}&limit=${limit}&page=${page}`, //get
+        getAllFriends: (userId: string, limit: number | null, page: number | null) => `${API_BASE_URL}/friends/${userId}?limit=${limit}&page=${page}`, //get
         sendRequest: `${API_BASE_URL}/friends/request`, //post
         acceptRequest: `${API_BASE_URL}/friends/accept`, //put
         rejectRequest: `${API_BASE_URL}/friends/reject`, //put
         removeFriends: (friendId: string) => `${API_BASE_URL}/friends/${friendId}`, //delete
+        cancelRequest: (friendId: string) => `${API_BASE_URL}/friends/request/${friendId}`, //delete
     }
 };
   
