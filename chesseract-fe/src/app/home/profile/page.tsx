@@ -21,42 +21,28 @@ import { MdFirstPage, MdLastPage, MdNavigateBefore, MdNavigateNext } from 'react
 import getUserStats, { GetUserStatsData } from '@/services/getUserStats';
 import getUserRatingHistory, { GetUserRatingHistoryData } from '@/services/getUserRatingHistory';
 import getAdvancedAnalytics, { GetAdvancedAnalyticsData } from '@/services/getAdvancedAnalytics';
+import UserInfo from '@/components/profile/userInfo';
 
 const Profile = () => {
-	const [editing, setEditing] = useState(false);
 	const [activeTab, setActiveTab] = useState('all');
 	const [historyTab, setHistoryTab] = useState('all');
 	const [timeframe, setTimeframe] = useState<TimeFrame>('1w');
-	const [loadingUserData, setLoadingUserData] = useState(false);
 	const [loadingGameHistory, setLoadingGameHistory] = useState(false);
 	const [loadingStats, setLoadingStats] = useState(false);
 	const [loadingRatingHistory, setLoadingRatingHistory] = useState(false);
 	const [loadingAnalytics, setLoadingAnalytics] = useState(false);
+	const loadingFriends = false;
 	const [page, setPage] = useState(1);
 
-	const [userData, setUserData] = useState<GetUserByIdData | null>(null);
 	const [gameHistory, setGameHistory] = useState<GetGameHistoryData | null>(null);
 	const [stats, setStats] = useState<GetUserStatsData | null>(null);
 	const [ratingHistory, setRatingHistory] = useState<GetUserRatingHistoryData | null>(null);
 	const [analytics, setAnalytics] = useState<GetAdvancedAnalyticsData | null>(null);
+	const [friendList, setFriendList] = useState<string[]>([]);
 
 	const userId = getLocalStorage('userId')
 	const limit = 10;
 	const { showToast } = useToast();
-
-	// User edit form state
-	const [editForm, setEditForm] = useState({
-		fullname: userData?.fullname || '',
-		bio: userData?.bio || '',
-		profilePicture: userData?.profilePicture || '',
-	});
-
-	const handleEditSubmit = (e: FormEvent) => {
-		e.preventDefault();
-		//api call to update user data
-		setTimeframe('1w'); // to avoid build errors, remove this later
-		setEditing(false);
-	};
 
 	// Analytics calculations
 	const getWinRate = (format: TimeFormats) => {
@@ -72,26 +58,6 @@ const Profile = () => {
 		{ name: 'Losses', value: stats?.stats[format].losses, color: '#f87171' },
 		{ name: 'Draws', value: stats?.stats[format].draws, color: '#a3a3a3' },
 	];
-
-	useEffect(()=>{
-		const fetchUserData = async () => {
-			try{
-				setLoadingUserData(true);
-				const response = await getUserById(userId as string);
-				if(response.success){
-					setUserData(response.data);
-				}else {
-					const error = response.error || "An error occurred";
-					showToast(error, "error");
-				}
-			}catch(err){
-				console.log("failed to fetch user data", err);
-			}finally{
-				setLoadingUserData(false);
-			}
-		}
-		fetchUserData();
-	}, [userId]);
 
 	useEffect(()=>{
 		const fetchGameHistory = async (tab: string) => {
@@ -189,112 +155,11 @@ const Profile = () => {
 			<div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-full">
 				{/* User Profile Card */}
 				<div className="md:col-span-1 h-full flex flex-col">
-					{loadingUserData || !userData ? (
-						<div className='flex items-center justify-center h-1/2 w-full'>
-							<LoadingSpinner/>
-						</div>
-					) : (
-
-						<Card className="shadow-lg bg-bg-100">
-							<CardHeader className="relative pb-0">
-							{!editing && (
-								<Button
-									className="absolute right-4 top-4"
-									onClick={() => setEditing(true)}
-									width='w-8'
-								>
-									<FaUserEdit className="h-4 w-4" />
-								</Button>
-							)}
-							<div className="flex flex-col items-center">
-								<Avatar
-									username={userData.username}
-									profileImage={userData.profilePicture}
-									showUsername={false}
-									size={80}
-								/>
-								{editing ? (
-								<form onSubmit={handleEditSubmit} className="w-full">
-									<div className="space-y-4">
-									<div>
-										<label className="text-sm font-medium">Profile URL</label>
-										<input
-										type="text"
-										className="w-full p-2 border rounded mt-1"
-										value={editForm.profilePicture}
-										onChange={(e) => setEditForm({...editForm, profilePicture: e.target.value})}
-										/>
-									</div>
-									<div>
-										<label className="text-sm font-medium">Full Name</label>
-										<input
-										type="text"
-										className="w-full p-2 border rounded mt-1"
-										value={editForm.fullname}
-										onChange={(e) => setEditForm({...editForm, fullname: e.target.value})}
-										/>
-									</div>
-									<div>
-										<label className="text-sm font-medium">Bio</label>
-										<textarea
-										className="w-full p-2 border rounded mt-1"
-										rows={3}
-										value={editForm.bio}
-										onChange={(e) => setEditForm({...editForm, bio: e.target.value})}
-										/>
-									</div>
-									<div className="flex justify-end space-x-2">
-										<Button type="button" onClick={() => setEditing(false)}>
-										<IoClose className="h-4 w-4 mr-2" /> Cancel
-										</Button>
-										<Button type="submit">
-										<CiSaveUp2 className="h-4 w-4 mr-2" /> Save
-										</Button>
-									</div>
-									</div>
-								</form>
-								) : (
-								<>
-									<CardTitle>{userData.username}</CardTitle>
-									<CardDescription>{userData.fullname}</CardDescription>
-									<p className="text-sm text-muted-foreground mt-2">{userData.country}</p>
-									<p className="text-sm mt-4 text-center">{userData.bio}</p>
-								</>
-								)}
-							</div>
-							</CardHeader>
-							<CardContent className="pt-6">
-							<div className="grid grid-cols-3 gap-2 text-center">
-								<div className="bg-secondary/50 p-3 rounded-lg">
-								<p className="text-sm font-medium mb-1">Bullet</p>
-								<p className="text-2xl font-bold">{userData.rating.bullet}</p>
-								</div>
-								<div className="bg-secondary/50 p-3 rounded-lg">
-								<p className="text-sm font-medium mb-1">Blitz</p>
-								<p className="text-2xl font-bold">{userData.rating.blitz}</p>
-								</div>
-								<div className="bg-secondary/50 p-3 rounded-lg">
-								<p className="text-sm font-medium mb-1">Rapid</p>
-								<p className="text-2xl font-bold">{userData.rating.rapid}</p>
-								</div>
-							</div>
-							<div className="mt-4 space-y-2">
-								<div className="flex justify-between text-sm">
-								<span className="text-muted-foreground">Total Games</span>
-								<span className="font-medium">
-									{stats && stats.stats.bullet.gamesPlayed + stats.stats.blitz.gamesPlayed + stats.stats.rapid.gamesPlayed}
-								</span>
-								</div>
-								<div className="flex justify-between text-sm">
-								<span className="text-muted-foreground">Member Since</span>
-								<span className="font-medium">{userData.createdAt.slice(0,10)}</span>
-								</div>
-							</div>
-							</CardContent>
-						</Card>
-					)}
+					<UserInfo isForProfile={true} userId={userId as string} totalGames={stats ? stats.stats.bullet.gamesPlayed + stats.stats.blitz.gamesPlayed + stats.stats.rapid.gamesPlayed : 0}/>
 					<Card className="shadow-lg bg-bg-100 mt-6 h-full">
-						Friends
+						<CardHeader className="pb-2">
+							<CardTitle>Friends</CardTitle>
+						</CardHeader>
 					</Card>
 				</div>
 
