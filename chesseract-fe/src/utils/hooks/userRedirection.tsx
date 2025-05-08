@@ -7,7 +7,7 @@ const useUserRedirection = () => {
     return (userId: string, pathName: string) => {
         const loggedInUserId = getLocalStorage("userId");
 
-        if (loggedInUserId == userId.toString() && pathName.includes("home/users")) {
+        if (loggedInUserId == userId.toString() && pathName.includes("home/user")) {
             return null;
         } else {
             router.push(`${pathName}`);

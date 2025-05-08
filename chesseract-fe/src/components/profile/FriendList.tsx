@@ -68,9 +68,7 @@ const FriendList = ({ isForProfile, userId }: UserInfoProps) => {
                 
                 // If we got fewer items than the limit, there are no more to fetch
                 setHasMore(newFriends.length === limit);
-            } else {
-                showToast(response.error || "Failed to load friends", "error");
-            }
+            } 
         } catch (err) {
             console.error("Error fetching friends:", err);
             showToast("Failed to load friends", "error");
@@ -94,7 +92,7 @@ const FriendList = ({ isForProfile, userId }: UserInfoProps) => {
                         profileImage={friend.profilePicture}
                         showUsername={false}
                         size={80}
-                        onClick={() => userRouter(friend._id, `/home/users/${friend._id}`)}
+                        onClick={() => userRouter(friend._id, `/home/user/${friend._id}`)}
                     />
                     <div className="flex flex-col w-full">
                         {friend.fullname ? 
@@ -125,8 +123,6 @@ const FriendList = ({ isForProfile, userId }: UserInfoProps) => {
             </div>
         )
     }
-
-    console.log("Friends:", friends);
 
     return (
         <Card className="shadow-lg bg-bg-100 mt-6 h-full flex flex-col">

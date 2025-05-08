@@ -6,10 +6,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, LineChart, Line, CartesianGrid } from 'recharts';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import Button from '@/components/utilities/CustomButton';
-import { IoChevronForwardOutline } from 'react-icons/io5';
+import { IoChevronForwardOutline, IoClose } from 'react-icons/io5';
 import { BiLinkExternal } from 'react-icons/bi';
 import { TimeFormats, TimeFrame } from '@/models/GameUtilityTypes';
-import { getLocalStorage } from '@/utils/localstorage';
 import { useToast } from '@/contexts/ToastContext';
 import LoadingSpinner from '@/components/utilities/LoadingSpinner';
 import getUserGames, { GameInHistory, GetGameHistoryData } from '@/services/getUserGames';
@@ -19,8 +18,9 @@ import getUserRatingHistory, { GetUserRatingHistoryData } from '@/services/getUs
 import getAdvancedAnalytics, { GetAdvancedAnalyticsData } from '@/services/getAdvancedAnalytics';
 import UserInfo from '@/components/profile/UserInfo';
 import FriendList from '@/components/profile/FriendList';
+import { useParams } from 'next/navigation';
 
-const Profile = () => {
+const User = () => {
 	const [activeTab, setActiveTab] = useState('all');
 	const [historyTab, setHistoryTab] = useState('all');
 	const [timeframe, setTimeframe] = useState<TimeFrame>('1w');
@@ -35,9 +35,20 @@ const Profile = () => {
 	const [ratingHistory, setRatingHistory] = useState<GetUserRatingHistoryData | null>(null);
 	const [analytics, setAnalytics] = useState<GetAdvancedAnalyticsData | null>(null);
 
-	const userId = getLocalStorage('userId')
-	const limit = 10;
 	const { showToast } = useToast();
+    const params = useParams();
+  	const userId = params.userId;
+	const limit = 10;
+
+	console.log("userId", userId);
+	if(!userId){
+		console.log("userId", userId);
+		return (
+			<div className="h-full w-full flex items-center justify-center">
+				<p className="text-lg text-muted-foreground">User not found</p>
+			</div>
+		);
+	}
 
 	// Analytics calculations
 	const getWinRate = (format: TimeFormats) => {
@@ -150,8 +161,8 @@ const Profile = () => {
 			<div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-full">
 				{/* User Profile Card */}
 				<div className="md:col-span-1 h-full flex flex-col">
-					<UserInfo isForProfile={true} userId={userId as string} totalGames={stats ? stats.stats.bullet.gamesPlayed + stats.stats.blitz.gamesPlayed + stats.stats.rapid.gamesPlayed : 0}/>
-					<FriendList isForProfile={true} userId={userId as string}/>
+					<UserInfo isForProfile={false} userId={userId as string} totalGames={stats ? stats.stats.bullet.gamesPlayed + stats.stats.blitz.gamesPlayed + stats.stats.rapid.gamesPlayed : 0}/>
+					<FriendList isForProfile={false} userId={userId as string}/>
 				</div>
 
 				{/* Analytics Section */}
@@ -545,4 +556,4 @@ const GameHistoryItem = ({game, userId}: {game: GameInHistory, userId: string}) 
 	);
 };
 
-export default Profile;
+export default User;
