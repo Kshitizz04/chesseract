@@ -21,13 +21,13 @@ interface UserInfoProps {
 const FriendList = ({ isForProfile, userId }: UserInfoProps) => {
     const [friends, setFriends] = useState<GetUserFriendsData[]>([]);
     const [loading, setLoading] = useState(false);
-    const [searchQuery, setSearchQuery] = useState("");
+    //const [searchQuery, setSearchQuery] = useState("");
     const [offset, setOffset] = useState(0);
     const [hasMore, setHasMore] = useState(true);
     const [showDetails, setShowDetails] = useState<string | null>(null);
 
     const userRouter = useUserRedirection();
-    const limit = 10;
+    const limit = isForProfile ? 10 : 10;
     const { showToast } = useToast();
     const observer = useRef<IntersectionObserver | null>(null);
     const lastFriendElementRef = useCallback((node: HTMLDivElement | null) => {
@@ -133,8 +133,8 @@ const FriendList = ({ isForProfile, userId }: UserInfoProps) => {
                         type="text"
                         placeholder="Search friends..."
                         className="w-full p-2 pl-9 border rounded-md bg-bg-50 text-fg-900"
-                        value={searchQuery}
-                        onChange={()=>{}}
+                        // value={searchQuery}
+                        // onChange={()=>{}}
                     />
                     <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
                 </div>
@@ -142,7 +142,7 @@ const FriendList = ({ isForProfile, userId }: UserInfoProps) => {
             <CardContent className="h-full overflow-y-auto pt-2 pb-0">
                 {friends.length > 0 ? (
                     <div className="space-y-2">
-                        {friends.map((friend, index) => {
+                        {friends.map((friend) => {
                             return (
                                 <div 
                                     ref={lastFriendElementRef}

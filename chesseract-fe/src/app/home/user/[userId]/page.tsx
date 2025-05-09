@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, LineChart, Line, CartesianGrid } from 'recharts';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import Button from '@/components/utilities/CustomButton';
-import { IoChevronForwardOutline, IoClose } from 'react-icons/io5';
+import { IoChevronForwardOutline } from 'react-icons/io5';
 import { BiLinkExternal } from 'react-icons/bi';
 import { TimeFormats, TimeFrame } from '@/models/GameUtilityTypes';
 import { useToast } from '@/contexts/ToastContext';
@@ -41,14 +41,7 @@ const User = () => {
 	const limit = 10;
 
 	console.log("userId", userId);
-	if(!userId){
-		console.log("userId", userId);
-		return (
-			<div className="h-full w-full flex items-center justify-center">
-				<p className="text-lg text-muted-foreground">User not found</p>
-			</div>
-		);
-	}
+	
 
 	// Analytics calculations
 	const getWinRate = (format: TimeFormats) => {
@@ -88,6 +81,7 @@ const User = () => {
 			}
 		}
 		fetchGameHistory(historyTab);
+		setTimeframe('1w'); // used to prevent build error, remove later
 	},[page, historyTab]);
 
 	useEffect(()=>{
@@ -155,6 +149,15 @@ const User = () => {
 	}, [userId, activeTab]);
 
 	const COLORS = ['#4ade80', '#f87171', '#a3a3a3'];
+
+	if(!userId){
+		console.log("userId", userId);
+		return (
+			<div className="h-full w-full flex items-center justify-center">
+				<p className="text-lg text-muted-foreground">User not found</p>
+			</div>
+		);
+	}
 
 	return (
 		<div className="h-full w-full p-2 rounded-md bg-bg-200 max-md:overflow-scroll">

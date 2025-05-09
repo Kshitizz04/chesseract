@@ -32,12 +32,12 @@ const FriendButton: React.FC<FriendActionButtonProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const myId = localStorage.getItem("userId") || "";
 
+  const { showToast } = useToast();
+
   if (myId === friendId) {
     return null
   }
   
-  const { showToast } = useToast();
-
   const handleAction = async () => {
     try {
       setIsLoading(true);

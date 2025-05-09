@@ -97,6 +97,7 @@ const Profile = () => {
 			}
 		}
 		fetchStats();
+		setTimeframe('1w'); // to prevent build error, remove later
 	}, [userId]);
 
 	useEffect(()=>{

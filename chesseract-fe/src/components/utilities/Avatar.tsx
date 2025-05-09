@@ -1,7 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
 import { FaUser } from 'react-icons/fa';
-import { useRouter } from 'next/navigation';
 
 interface AvatarProps {
   username: string;
@@ -20,7 +19,6 @@ const Avatar: React.FC<AvatarProps> = ({
   className = '',
   onClick = () => {},
 }) => {
-    const router = useRouter();
 
   return (
     <div 

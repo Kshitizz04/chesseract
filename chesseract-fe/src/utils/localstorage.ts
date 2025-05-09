@@ -22,7 +22,8 @@ export const getLocalStorage = <T>(key: string): T | null => {
             // Try to parse as JSON, if it fails return the raw string
             try {
                 return JSON.parse(item) as T;
-            } catch (e) {
+            } catch (error) {
+                console.log(`Error parsing localStorage key "${key}":`, error);
                 return item as unknown as T;
             }
         } catch (error) {

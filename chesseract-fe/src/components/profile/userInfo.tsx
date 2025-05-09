@@ -8,7 +8,7 @@ import { useToast } from "@/contexts/ToastContext";
 import LoadingSpinner from "../utilities/LoadingSpinner";
 import { IoClose, IoTimerOutline } from "react-icons/io5";
 import { CiSaveUp2 } from "react-icons/ci";
-import CountryFlag, { countryOptions, getCountryNameByCode } from "@/utils/countryFlag";
+import CountryFlag, { countryOptions } from "@/utils/countryFlag";
 import editProfile from "@/services/editProfile";
 import { RiRadioButtonLine } from "react-icons/ri";
 import { GiBulletBill } from "react-icons/gi";
