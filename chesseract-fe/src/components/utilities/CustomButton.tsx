@@ -4,13 +4,15 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     className?: string;
     width?: string;
     height?: string;
+    bg?: string;
 }
-const Button = ({ children, onCLick, className,width="w-full", ...props }: ButtonProps) => {
+const Button = ({ children, onCLick, className,width="w-full", bg="bg-bg-300", ...props }: ButtonProps) => {
     return (
         <button onClick={onCLick} {...props}
-            className={`p-2 cursor-pointer rounded-sm hover:text-accent-200 bg-bg-300 flex items-center justify-center
+            className={`p-2 cursor-pointer rounded-sm hover:text-accent-200 flex items-center justify-center
                 ${className}
                 ${width}
+                ${bg}
             `}
         >
             {children}
