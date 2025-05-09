@@ -4,10 +4,10 @@ import { getLocalStorage } from "../localstorage";
 const useUserRedirection = () => {
     const router = useRouter();
 
-    return (userId: number, pathName: string) => {
+    return (userId: string, pathName: string) => {
         const loggedInUserId = getLocalStorage("userId");
 
-        if (loggedInUserId == userId.toString() && pathName.includes("home/friends")) {
+        if (loggedInUserId == userId.toString() && pathName.includes("home/user")) {
             return null;
         } else {
             router.push(`${pathName}`);

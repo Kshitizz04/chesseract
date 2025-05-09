@@ -7,10 +7,25 @@ export interface GetUsersResponse extends CommonResponse<IUser[]> {
     data: IUser[];
 }
 
-export interface GetUserResponse extends CommonResponse<IUser> {
+export interface GetUserResponse  {
     success: boolean;
     message: string;
-    data: IUser;
+    data: {
+        username: string;
+        email: string;
+        fullname?: string;
+        rating: {
+            bullet: number;
+            blitz: number;
+            rapid: number;
+        },
+        profilePicture?: string;
+        bio?: string;
+        isOnline: boolean;
+        country: string;
+        createdAt: string;
+        friendStatus: number; // 0: not friends, 1: friends, 2: requested
+    };
 }
 
 export interface EditProfileBody {

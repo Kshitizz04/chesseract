@@ -2,27 +2,25 @@ import { getLocalStorage } from "@/utils/localstorage";
 import API_ENDPOINTS from "../../config/apiConfig";
 import CommonResponse from "@/models/CommonResponse";
 
-interface GetUserByIdData {
+interface GetUserFriendsData {
     username: string;
-    email: string;
-    fullname?: string;
+    profilePicture: string;
     rating: {
         bullet: number;
         blitz: number;
         rapid: number;
-    },
-    profilePicture?: string;
-    bio?: string;
+    };
     isOnline: boolean;
+    _id: string;
     country: string;
-    createdAt: string;
-    friendStatus: number; // 0: not friends, 1: friends, 2: requested
+    fullname: string;
+    friendStatus: number; // 0: not friends, 1: friend, 2: requested
 }
 
-const getUserById = async (id: string): Promise<CommonResponse<GetUserByIdData>> => {
+const getUserFriends = async (userId: string, limit: number | null, offset:number | null): Promise<CommonResponse<GetUserFriendsData[]>> => {
     try {
         const token = getLocalStorage("token");
-        const response = await fetch(API_ENDPOINTS.users.getById(id), {
+        const response = await fetch(API_ENDPOINTS.friends.getAllFriends(userId, limit, offset), {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -36,5 +34,5 @@ const getUserById = async (id: string): Promise<CommonResponse<GetUserByIdData>>
     }
 }
 
-export default getUserById;
-export type { GetUserByIdData };
+export default getUserFriends;
+export type { GetUserFriendsData };

@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Chessbender",
+  title: "Chesseract",
   description: "An online chess platform",
 };
 

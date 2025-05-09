@@ -18,7 +18,7 @@ export default function Home() {
   
   return (
     <div className="h-screen flex items-center justify-center w-screen">
-      <div className="w-40 h-40 animate-slow-grow">
+      <div className="w-40 h-40 flex items-center justify-center animate-slow-grow">
         Logo goes here
       </div>
     </div>

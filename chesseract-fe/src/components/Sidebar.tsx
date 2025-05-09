@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { FaUsers, FaTrophy, FaChess } from "react-icons/fa";
 import { HiMenuAlt2, HiOutlineChevronLeft, HiChevronDown, HiChevronUp } from "react-icons/hi";
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { BiSolidChess } from "react-icons/bi";
 import { HiPuzzlePiece } from "react-icons/hi2";
 import { IoMdSettings } from "react-icons/io";
@@ -100,6 +100,7 @@ const SideBar = ({
 }: SideBarProps) => {
     const [userData, setUserData] = useState<UserData | null>(null);
     const { theme, toggleTheme } = useTheme();
+    const router = useRouter();
 
     useEffect(() => {
         const data = getLocalStorage('user');
@@ -220,6 +221,7 @@ const SideBar = ({
                             profileImage={userData?.profilePicture}
                             showUsername={isSideBarOpen}
                             size={isSideBarOpen ? 40 : 30}
+                            onClick={()=>router.push("/home/profile")}
                         />
                     </div>
                 </div>
