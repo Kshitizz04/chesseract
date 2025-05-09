@@ -15,6 +15,7 @@ import errorMiddleware from "./middlewares/error.middleware.ts";
 import arcjetMiddleware from "./middlewares/arcjet.middleware.ts";
 import friendRouter from "./routes/friends.routes.ts";
 import analyticsRouter from "./routes/analytics.routes.ts";
+import puzzleRouter from "./routes/puzzle.routes.ts";
 
 const app = express();
 const server = http.createServer(app);
@@ -41,6 +42,7 @@ app.use('/api/v1/users', userRouter);
 app.use('/api/v1/games', gameRouter);
 app.use('/api/v1/friends', friendRouter);
 app.use('/api/v1/analytics', analyticsRouter);
+app.use('/api/v1/puzzles', puzzleRouter);
 
 app.use(errorMiddleware);
 
