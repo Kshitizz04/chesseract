@@ -14,7 +14,7 @@ import { RiRadioButtonLine } from "react-icons/ri";
 import { GiBulletBill } from "react-icons/gi";
 import { SiStackblitz } from "react-icons/si";
 
-interface UserInfoProps {
+interface UserInfoCardProps {
     isForProfile: boolean;
     userId: string;
     totalGames: number;
@@ -27,7 +27,7 @@ interface EditFormState {
     country: string;
 }
 
-const UserInfo = ({ isForProfile, userId, totalGames }: UserInfoProps) => {
+const UserInfoCard = ({ isForProfile, userId, totalGames }: UserInfoCardProps) => {
     const [userData, setUserData] = useState<GetUserByIdData | null>(null);
     const [loading, setLoading] = useState(true);
     const [editing, setEditing] = useState(false);
@@ -234,4 +234,4 @@ const UserInfo = ({ isForProfile, userId, totalGames }: UserInfoProps) => {
     );
 };
 
-export default UserInfo;
+export default UserInfoCard;

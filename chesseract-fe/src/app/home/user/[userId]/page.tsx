@@ -16,7 +16,7 @@ import { MdFirstPage, MdLastPage, MdNavigateBefore, MdNavigateNext } from 'react
 import getUserStats, { GetUserStatsData } from '@/services/getUserStats';
 import getUserRatingHistory, { GetUserRatingHistoryData } from '@/services/getUserRatingHistory';
 import getAdvancedAnalytics, { GetAdvancedAnalyticsData } from '@/services/getAdvancedAnalytics';
-import UserInfo from '@/components/profile/UserInfo';
+import UserInfoCard from '@/components/profile/UserInfoCard';
 import FriendList from '@/components/profile/FriendList';
 import { useParams } from 'next/navigation';
 
@@ -164,7 +164,7 @@ const User = () => {
 			<div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-full">
 				{/* User Profile Card */}
 				<div className="md:col-span-1 h-full flex flex-col">
-					<UserInfo isForProfile={false} userId={userId as string} totalGames={stats ? stats.stats.bullet.gamesPlayed + stats.stats.blitz.gamesPlayed + stats.stats.rapid.gamesPlayed : 0}/>
+					<UserInfoCard isForProfile={false} userId={userId as string} totalGames={stats ? stats.stats.bullet.gamesPlayed + stats.stats.blitz.gamesPlayed + stats.stats.rapid.gamesPlayed : 0}/>
 					<FriendList isForProfile={false} userId={userId as string}/>
 				</div>
 
