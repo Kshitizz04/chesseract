@@ -17,8 +17,8 @@ import { MdFirstPage, MdLastPage, MdNavigateBefore, MdNavigateNext } from 'react
 import getUserStats, { GetUserStatsData } from '@/services/getUserStats';
 import getUserRatingHistory, { GetUserRatingHistoryData } from '@/services/getUserRatingHistory';
 import getAdvancedAnalytics, { GetAdvancedAnalyticsData } from '@/services/getAdvancedAnalytics';
-import UserInfo from '@/components/profile/UserInfo';
 import FriendList from '@/components/profile/FriendList';
+import UserInfo from '@/components/profile/UserInfo';
 
 const Profile = () => {
 	const [activeTab, setActiveTab] = useState('all');
