@@ -91,6 +91,7 @@ export const updateUserScore = async (req: Request<{}, any, UpdateUserScoreBody>
     try{
         const userId = req.user?.userId;
         const { survival, threeMinute, fiveMinute } = req.body;
+        
         if(!userId){
             const error = new CustomError("User not found", 404);
             throw error;
@@ -103,13 +104,19 @@ export const updateUserScore = async (req: Request<{}, any, UpdateUserScoreBody>
             throw error;
         }
         if (survival) {
-            user.puzzleScores.survival = survival;
+            if(survival > user.puzzleScores.survival){
+                user.puzzleScores.survival = survival;
+            }
         }
         if(threeMinute) {
-            user.puzzleScores.threeMinute = threeMinute;
+            if(threeMinute > user.puzzleScores.threeMinute){
+                user.puzzleScores.threeMinute = threeMinute;
+            }
         }
         if(fiveMinute) {
-            user.puzzleScores.fiveMinute = fiveMinute;
+            if(fiveMinute > user.puzzleScores.fiveMinute){
+                user.puzzleScores.fiveMinute = fiveMinute;
+            }
         }
         await user.save();
         res.status(200).json({

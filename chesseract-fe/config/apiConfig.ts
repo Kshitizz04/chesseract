@@ -32,6 +32,8 @@ const API_ENDPOINTS = {
     puzzles:{
         getInitialBatch: (startRating: number | null, endRating: number | null, batchSize: number | null) => `${API_BASE_URL}/puzzles/initial-batch?startRating=${startRating}&endRating=${endRating}&batchSize=${batchSize}`, //get
         getNextBatch: (currentEndRating: number | null, batchSize: number | null) => `${API_BASE_URL}/puzzles/next-batch?currentEndRating=${currentEndRating}&batchSize=${batchSize}`, //get
+        getScore: (userId: string) => `${API_BASE_URL}/puzzles/user-score/${userId}`, //get
+        updateScore: `${API_BASE_URL}/puzzles/user-score`, //put
     }
 };
   

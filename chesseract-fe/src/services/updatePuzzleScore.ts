@@ -1,19 +1,18 @@
 import { getLocalStorage } from "@/utils/localstorage";
 import API_ENDPOINTS from "../../config/apiConfig";
-import { GetUserByIdData } from "./getUserById";
+import { GetUserPuzzleScoreData } from "./getPuzzleScore";
 import CommonResponse from "@/models/CommonResponse";
 
-interface EditProfileBody {
-    fullname?: string;
-    profilePicture?: string;
-    bio?: string;
-    country?: string;
+interface UpdateUserScoreBody {
+    survival?: number;
+    threeMinute?: number;
+    fiveMinute?: number;
 }
 
-const editProfile = async (data: EditProfileBody): Promise<CommonResponse<GetUserByIdData>> => {
+const editProfile = async (data: UpdateUserScoreBody): Promise<CommonResponse<GetUserPuzzleScoreData>> => {
     try {
         const token = getLocalStorage("token");
-        const response = await fetch(`${API_ENDPOINTS.users.editProfile}`, {
+        const response = await fetch(`${API_ENDPOINTS.puzzles.updateScore}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
