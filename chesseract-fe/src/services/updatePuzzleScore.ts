@@ -9,7 +9,7 @@ interface UpdateUserScoreBody {
     fiveMinute?: number;
 }
 
-const editProfile = async (data: UpdateUserScoreBody): Promise<CommonResponse<GetUserPuzzleScoreData>> => {
+const updatePuzzleScore = async (data: UpdateUserScoreBody): Promise<CommonResponse<GetUserPuzzleScoreData>> => {
     try {
         const token = getLocalStorage("token");
         const response = await fetch(`${API_ENDPOINTS.puzzles.updateScore}`, {
@@ -27,4 +27,4 @@ const editProfile = async (data: UpdateUserScoreBody): Promise<CommonResponse<Ge
     }
 }
 
-export default editProfile;
+export default updatePuzzleScore;

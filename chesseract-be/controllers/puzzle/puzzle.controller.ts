@@ -66,7 +66,7 @@ export const getUserScoreById = async (req: Request, res: Response, next: NextFu
     try {
         const userId = req.params.userId;
         
-        const user = await User.findById(userId).select("puzzleScores");
+        const user = await User.findById(userId).select("puzzleScores profilePicture username");
         
         if (!user) {
             const error = new CustomError("User not found", 404);
@@ -77,6 +77,8 @@ export const getUserScoreById = async (req: Request, res: Response, next: NextFu
             success: true,
             message: "User puzzle score fetched successfully",
             data: { 
+                username: user.username,
+                profilePicture: user.profilePicture,
                 survival: user.puzzleScores.survival,
                 threeMinute: user.puzzleScores.threeMinute,
                 fiveMinute: user.puzzleScores.fiveMinute,
@@ -123,6 +125,8 @@ export const updateUserScore = async (req: Request<{}, any, UpdateUserScoreBody>
             success: true,
             message: "User puzzle score updated successfully",
             data: {
+                username: user.username,
+                profilePicture: user.profilePicture,
                 survival: user.puzzleScores.survival,
                 threeMinute: user.puzzleScores.threeMinute,
                 fiveMinute: user.puzzleScores.fiveMinute,

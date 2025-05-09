@@ -3,6 +3,8 @@ import API_ENDPOINTS from "../../config/apiConfig";
 import CommonResponse from "@/models/CommonResponse";
   
 interface GetUserPuzzleScoreData {
+    username: string;
+    profilePicture: string;
     survival: number;
     threeMinute: number;
     fiveMinute: number;

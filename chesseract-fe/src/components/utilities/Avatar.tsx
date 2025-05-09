@@ -26,7 +26,7 @@ const Avatar: React.FC<AvatarProps> = ({
         onClick={onClick}
     >
       <div 
-        className="rounded-full border-1 border-accent-100 overflow-hidden flex items-center justify-center bg-bg-100 font-semibold"
+        className="rounded-full border-1 border-accent-100 overflow-hidden flex items-center justify-center bg-bg-100 font-semibold flex-shrink-0"
         style={{ width: size, height: size }}
       >
         {profileImage ? (
