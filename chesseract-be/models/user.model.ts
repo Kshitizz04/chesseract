@@ -34,6 +34,11 @@ export interface IUser extends Document {
         rapid: stat,
     },
     friends: Types.ObjectId[];
+    puzzleScores: {
+        survival: number;
+        threeMinute: number;
+        fiveMinute: number;
+    }
     createdAt: Date;
 }
 
@@ -116,6 +121,11 @@ const userSchema = new Schema<IUser>({
             highestRating:{type: Number, default: 1200,min: 0},
             lowestRating:{type: Number, default: 1200,min: 0},
         },
+    },
+    puzzleScores:{
+        survival: {type: Number, default: 0},
+        threeMinute: {type: Number, default: 0},
+        fiveMinute: {type: Number, default: 0},
     },
     friends: [{type: Schema.Types.ObjectId, ref: "User"}],
 }, {timestamps: true});

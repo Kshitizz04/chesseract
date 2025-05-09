@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import Puzzle from "../../models/puzzle.model.ts";
 import { CustomError } from "../../utils/CustomError.ts";
+import User from "../../models/user.model.ts";
+import { UpdateUserScoreBody } from "./puzzle.types.ts";
 
 export const getInitialBatch = async (req: Request, res: Response, next: NextFunction)=>{
     try {
@@ -56,10 +58,73 @@ export const getNextBatch = async (req: Request, res: Response, next: NextFuncti
             },
         });
     } catch (error) {
-        console.error("Error fetching next puzzle batch:", error);
-        res.status(500).json({ message: "Server error" });
+        next(error);
     }
 };
+
+export const getUserScoreById = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const userId = req.params.userId;
+        
+        const user = await User.findById(userId).select("puzzleScores");
+        
+        if (!user) {
+            const error = new CustomError("User not found", 404);
+            throw error;
+        }
+        
+        res.json({ 
+            success: true,
+            message: "User puzzle score fetched successfully",
+            data: { 
+                survival: user.puzzleScores.survival,
+                threeMinute: user.puzzleScores.threeMinute,
+                fiveMinute: user.puzzleScores.fiveMinute,
+            },
+        });
+    }catch (error) {
+        next(error);
+    }
+}
+
+export const updateUserScore = async (req: Request<{}, any, UpdateUserScoreBody>, res: Response, next: NextFunction) => {
+    try{
+        const userId = req.user?.userId;
+        const { survival, threeMinute, fiveMinute } = req.body;
+        if(!userId){
+            const error = new CustomError("User not found", 404);
+            throw error;
+        }
+
+        const user = await User.findById(userId);
+
+        if (!user) {
+            const error = new CustomError("User not found", 404);
+            throw error;
+        }
+        if (survival) {
+            user.puzzleScores.survival = survival;
+        }
+        if(threeMinute) {
+            user.puzzleScores.threeMinute = threeMinute;
+        }
+        if(fiveMinute) {
+            user.puzzleScores.fiveMinute = fiveMinute;
+        }
+        await user.save();
+        res.status(200).json({
+            success: true,
+            message: "User puzzle score updated successfully",
+            data: {
+                survival: user.puzzleScores.survival,
+                threeMinute: user.puzzleScores.threeMinute,
+                fiveMinute: user.puzzleScores.fiveMinute,
+            },
+        })
+    }catch(err){
+        next(err);
+    }
+}
 
 async function getProgressivePuzzleBatch(startRating: number, endRating: number, batchSize: number) {
     const ratingStep = (endRating - startRating) / (batchSize - 1);
