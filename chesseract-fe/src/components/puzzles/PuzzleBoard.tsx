@@ -1,5 +1,5 @@
 "use client"
-import { use, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Chess } from "chess.js";
 import { Chessboard } from "react-chessboard";
 import { Square } from "react-chessboard/dist/chessboard/types";
@@ -85,7 +85,7 @@ const PuzzleBoard: React.FC<PuzzleProps> = ({ chess, puzzle, onComplete, gameSta
             setIsMyTurn(true);
             setComputerThinking(false);
         } catch (error) {
-            console.log("Invalid computer move:", move);
+            console.log("Invalid computer move:", error);
         }
     };
 

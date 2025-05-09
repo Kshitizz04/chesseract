@@ -7,7 +7,7 @@ import getPuzzlesInitial from "@/services/getInitialPuzzles";
 import getPuzzlesNext from "@/services/getPuzzlesNext";
 import { MdPending } from "react-icons/md";
 import { IoMdCheckmarkCircle, IoMdCloseCircle } from "react-icons/io";
-import getPuzzleScore, { GetUserPuzzleScoreData } from "@/services/getPuzzleScore";
+import getPuzzleScore from "@/services/getPuzzleScore";
 import { Chess } from "chess.js";
 import { useToast } from "@/contexts/ToastContext";
 import Avatar from "@/components/utilities/Avatar";
