@@ -28,6 +28,10 @@ const API_ENDPOINTS = {
         rejectRequest: `${API_BASE_URL}/friends/reject`, //put
         removeFriends: (friendId: string) => `${API_BASE_URL}/friends/${friendId}`, //delete
         cancelRequest: (friendId: string) => `${API_BASE_URL}/friends/request/${friendId}`, //delete
+    },
+    puzzles:{
+        getInitialBatch: (startRating: number | null, endRating: number | null, batchSize: number | null) => `${API_BASE_URL}/puzzles/initial-batch?startRating=${startRating}&endRating=${endRating}&batchSize=${batchSize}`, //get
+        getNextBatch: (currentEndRating: number | null, batchSize: number | null) => `${API_BASE_URL}/puzzles/next-batch?currentEndRating=${currentEndRating}&batchSize=${batchSize}`, //get
     }
 };
   
