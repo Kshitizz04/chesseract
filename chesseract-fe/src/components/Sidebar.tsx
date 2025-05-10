@@ -5,11 +5,12 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { BiSolidChess } from "react-icons/bi";
 import { HiPuzzlePiece } from "react-icons/hi2";
-import { IoMdSettings } from "react-icons/io";
+import { IoMdNotifications, IoMdSettings } from "react-icons/io";
 import { getLocalStorage } from "@/utils/localstorage";
 import Avatar from './utilities/Avatar';
 import { MdDarkMode, MdLightMode } from "react-icons/md";
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLayout } from "@/utils/hooks/useLayout";
 
 interface SideBarProps {
     isSideBarOpen: boolean;
@@ -100,6 +101,7 @@ const SideBar = ({
 }: SideBarProps) => {
     const [userData, setUserData] = useState<UserData | null>(null);
     const { theme, toggleTheme } = useTheme();
+    const {toggleNotificationPanel, toggleSettingsPanel} = useLayout();
     const router = useRouter();
 
     useEffect(() => {
@@ -208,12 +210,30 @@ const SideBar = ({
                             </div>
                         </div>
                     </div>
-                    <NavItem 
-                        icon={<IoMdSettings size={20} />} 
-                        title="Settings" 
-                        href="/home/settings" 
-                        isSideBarOpen={isSideBarOpen}
-                    />
+
+                    <div
+                        className={`flex items-center gap-3 py-3 rounded-md hover:bg-bg-100 cursor-pointer
+                            ${isSideBarOpen ? 'px-4' : 'justify-center'}
+                        `}
+                        onClick={toggleNotificationPanel}
+                    >
+                        <IoMdNotifications size={20}/>
+                        {isSideBarOpen && (
+                            <span className="transition-all flex-1">Notifications</span>
+                        )}
+                    </div>
+                    
+                    <div
+                        className={`flex items-center gap-3 py-3 rounded-md hover:bg-bg-100 cursor-pointer
+                            ${isSideBarOpen ? 'px-4' : 'justify-center'}
+                        `}
+                        onClick={toggleSettingsPanel}
+                    >
+                        <IoMdSettings size={20}/>
+                        {isSideBarOpen && (
+                            <span className="transition-all flex-1">Settings</span>
+                        )}
+                    </div>
 
                     <div className={`mt-1 flex items-center gap-3 p-2 rounded-md bg-bg-200-hover ${!isSideBarOpen && 'justify-center'}`}>
                         <Avatar 

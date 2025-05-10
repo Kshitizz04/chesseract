@@ -3,7 +3,7 @@ import API_ENDPOINTS from "../../config/apiConfig";
 import CommonResponse from "@/models/CommonResponse";
 
 interface SendRequestBody {
-    recieverId: string;
+    receiverId: string;
 }
 
 const sendFriendRequest = async (data: SendRequestBody): Promise<CommonResponse<null>> => {

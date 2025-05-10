@@ -83,7 +83,6 @@ const User = () => {
 			}
 		}
 		fetchGameHistory(historyTab);
-		setTimeframe('1w'); // used to prevent build error, remove later
 	},[page, historyTab]);
 
 	useEffect(()=>{

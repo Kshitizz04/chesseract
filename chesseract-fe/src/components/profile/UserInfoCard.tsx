@@ -16,6 +16,7 @@ import { SiStackblitz } from "react-icons/si";
 import Image from "next/image";
 import { BiImageAdd } from "react-icons/bi";
 import { CLOUDINARY_CLOUD_NAME, CLOUDINARY_UPLOAD_PRESET } from "../../../config/env";
+import FriendButton from "../utilities/FriendButton";
 
 interface UserInfoCardProps {
     isForProfile: boolean;
@@ -252,7 +253,7 @@ const UserInfoCard = ({ isForProfile, userId, totalGames }: UserInfoCardProps) =
     return (
         <Card className="shadow-lg bg-bg-100">
             <CardHeader className="relative pb-0">
-                {!editing && !loading && isForProfile &&(
+                {isForProfile ? !editing && !loading && (
                     <Button
                         className="absolute right-4 top-4"
                         onClick={() => setEditing(true)}
@@ -260,6 +261,15 @@ const UserInfoCard = ({ isForProfile, userId, totalGames }: UserInfoCardProps) =
                     >
                         <FaUserEdit className="h-4 w-4" />
                     </Button>
+                ) : userData && (
+                    <div className="absolute right-4 top-4">
+                        <FriendButton
+                            friendId={userId}
+                            friendStatus={userData?.friendStatus}
+                            showText={false}
+                            width="w-8"
+                        />
+                    </div>
                 )}
             </CardHeader>
 

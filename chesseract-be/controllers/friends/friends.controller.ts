@@ -104,7 +104,6 @@ export const sendFriendRequest = async (req: Request<{}, any, SendFriendRequestB
     try {
         const senderId = req.user?.userId;
         const receiverId = req.body.receiverId;
-
         
         // Check if users exist
         const [sender, receiver] = await Promise.all([
