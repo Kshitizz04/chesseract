@@ -63,7 +63,6 @@ const Profile = () => {
 			try{
 				setLoadingGameHistory(true);
 				const response = await getUserGames(userId as string, format, limit, page);
-				console.log("game history response", response);
 				if(response.success){
 					setGameHistory(response.data);
 				}else {

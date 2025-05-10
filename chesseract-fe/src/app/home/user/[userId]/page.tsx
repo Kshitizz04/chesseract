@@ -40,9 +40,6 @@ const User = () => {
   	const userId = params.userId;
 	const limit = 10;
 
-	console.log("userId", userId);
-	
-
 	// Analytics calculations
 	const getWinRate = (format: TimeFormats) => {
 		if(!stats) return 0;
@@ -67,7 +64,6 @@ const User = () => {
 			try{
 				setLoadingGameHistory(true);
 				const response = await getUserGames(userId as string, format, limit, page);
-				console.log("game history response", response);
 				if(response.success){
 					setGameHistory(response.data);
 				}else {

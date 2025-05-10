@@ -245,21 +245,21 @@ const PuzzleRush = () => {
 						<div className="w-full space-y-2">
 							<div className="flex justify-between items-center px-3 py-2 bg-bg-200 rounded-md">
 								<div className="flex items-center gap-2">
-									<GiBurningSkull className="text-accent-100" />
+									<GiBurningSkull className="text-accent-200" />
 									<span className="text-md">Survival</span>
 								</div>
 								<span className="font-bold">{highscores.survival}</span>
 							</div>
 							<div className="flex justify-between items-center px-3 py-2 bg-bg-200 rounded-md">
 								<div className="flex items-center gap-2">
-									<SiStackblitz className="text-accent-100" />
+									<SiStackblitz className="text-accent-200" />
 									<span className="text-md">3 Minute</span>
 								</div>
 								<span className="font-bold">{highscores.threeMinute}</span>
 							</div>
 							<div className="flex justify-between items-center px-3 py-2 bg-bg-200 rounded-md">
 								<div className="flex items-center gap-2">
-									<IoTimerOutline className="text-accent-100" />
+									<IoTimerOutline className="text-accent-200" />
 									<span className="text-md">5 Minute</span>
 								</div>
 								<span className="font-bold">{highscores.fiveMinute}</span>
