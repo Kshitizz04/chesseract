@@ -4,6 +4,7 @@ import FriendRequest from '../../models/friend-request.model.ts';
 import GameChallenge from '../../models/game-challenge.model.ts';
 import User from '../../models/user.model.ts';
 import { CustomError } from '../../utils/CustomError.ts';
+import { HandleChallengeReqBody, HandleFriendReqBody, MarkAsReadBody } from './notification.types.ts';
 
 export const getNotifications = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -42,7 +43,7 @@ export const getNotifications = async (req: Request, res: Response, next: NextFu
 };
 
 // Mark notifications as read
-export const markAsRead = async (req: Request, res: Response, next: NextFunction) => {
+export const markAsRead = async (req: Request<{}, any, MarkAsReadBody>, res: Response, next: NextFunction) => {
     try {
         const userId = req.user?.userId;
         const { notificationIds } = req.body;
@@ -82,7 +83,7 @@ export const markAsRead = async (req: Request, res: Response, next: NextFunction
 };
 
 // Handle friend request (accept/reject)
-export const handleFriendRequest = async (req: Request, res: Response, next: NextFunction) => {
+export const handleFriendRequest = async (req: Request<{}, any, HandleFriendReqBody>, res: Response, next: NextFunction) => {
   try {
     const userId = req.user?.userId;
     const { requestId, action } = req.body;
@@ -161,7 +162,7 @@ export const handleFriendRequest = async (req: Request, res: Response, next: Nex
 };
 
 // Handle game challenge (accept/reject)
-export const handleGameChallenge = async (req: Request, res: Response, next: NextFunction) => {
+export const handleGameChallenge = async (req: Request<{}, any, HandleChallengeReqBody>, res: Response, next: NextFunction) => {
   try {
     const userId = req.user?.userId;
     const { challengeId, action } = req.body;
