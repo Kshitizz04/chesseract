@@ -125,7 +125,7 @@ const FriendList = ({ isForProfile, userId }: UserInfoProps) => {
     }
 
     return (
-        <Card className="shadow-lg bg-bg-100 mt-6 h-full flex flex-col">
+        <Card className="shadow-lg bg-bg-100 mt-2 h-full flex flex-col">
             <CardHeader className="pb-2">
                 <CardTitle>Friends</CardTitle>
                 <div className="relative mt-2">
@@ -139,7 +139,7 @@ const FriendList = ({ isForProfile, userId }: UserInfoProps) => {
                     <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
                 </div>
             </CardHeader>
-            <CardContent className="h-full overflow-y-auto pt-2 pb-0">
+            <CardContent className="h-full overflow-y-auto pt-2 pb-0 max-md:h-96">
                 {friends.length > 0 ? (
                     <div className="space-y-2">
                         {friends.map((friend) => {

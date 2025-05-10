@@ -145,12 +145,12 @@ const SideBar = ({
                         <DropdownItem title="Friends" href="/home/play/friends" />
                     </NavItem>
                     
-                    <NavItem 
+                    {/* <NavItem 
                         icon={<FaChess size={20} />} 
                         title="Variants" 
                         href="/home/variants" 
                         isSideBarOpen={isSideBarOpen}
-                    />
+                    /> */}
                     
                     {/* Puzzles with dropdown options */}
                     <NavItem 
