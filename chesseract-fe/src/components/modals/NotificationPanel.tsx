@@ -10,6 +10,7 @@ import Avatar from '../utilities/Avatar';
 import { Notification } from '@/services/getNotifications';
 import LoadingSpinner from '../utilities/LoadingSpinner';
 import Button from '../utilities/CustomButton';
+import useUserRedirection from '@/utils/hooks/userRedirection';
 
 const NotificationPanel = () => {
     const [processingIds, setProcessingIds] = useState<string[]>([]);
@@ -23,6 +24,7 @@ const NotificationPanel = () => {
     } = useLayout();
     const router = useRouter();
     const { showToast } = useToast();
+    const userRouter = useUserRedirection();
 
     useEffect(() => {
         if (isNotificationPanelOpen && notifications.length > 0) {
@@ -94,6 +96,7 @@ const NotificationPanel = () => {
                         profileImage={sender.profilePicture} 
                         size={40}
                         showUsername={false}
+                        onClick={()=>userRouter(sender._id, `/home/user/${sender._id}`)}
                     />
                     <div className="flex-1">
                         <p className="font-medium">{sender.username}</p>

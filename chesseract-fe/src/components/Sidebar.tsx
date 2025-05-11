@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { FaUsers, FaTrophy, FaChess } from "react-icons/fa";
+import { FaUsers, FaTrophy } from "react-icons/fa";
 import { HiMenuAlt2, HiOutlineChevronLeft, HiChevronDown, HiChevronUp } from "react-icons/hi";
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -223,8 +223,8 @@ const SideBar = ({
                         )}
 
                         {unreadCount > 0 && (
-                        <span className={`${!isSideBarOpen && 'absolute'} top-0 right-0 h-4 w-4 bg-accent-200 rounded-full flex items-center justify-center text-[10px] font-bold text-text-100`}>
-                            {unreadCount < 6 ? unreadCount : '5+'}
+                        <span className={`${!isSideBarOpen && 'absolute'} top-0 right-0 h-4 w-4 bg-red-500 rounded-full flex items-center justify-center text-[10px] font-bold text-white`}>
+                            {unreadCount < 10 ? unreadCount : '9+'}
                         </span>
                         )}
                     </div>

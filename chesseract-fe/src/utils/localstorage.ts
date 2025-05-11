@@ -23,7 +23,9 @@ export const getLocalStorage = <T>(key: string): T | null => {
             try {
                 return JSON.parse(item) as T;
             } catch (error) {
-                error;
+                if(error){
+                    return item as unknown as T;
+                }
                 return item as unknown as T;
             }
         } catch (error) {

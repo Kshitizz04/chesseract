@@ -6,7 +6,7 @@ import NotificationPanel from "@/components/modals/NotificationPanel";
 import SettingsPanel from "@/components/modals/SettingsPanel";
 import SideBar from "@/components/Sidebar";
 import { useLayout } from "@/utils/hooks/useLayout";
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode } from "react";
 
 type LayoutProps = {
     children: ReactNode;

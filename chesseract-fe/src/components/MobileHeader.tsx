@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { IoMdSettings, IoMdNotifications } from 'react-icons/io';
 import { MdDarkMode, MdLightMode } from 'react-icons/md';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -36,7 +35,7 @@ const MobileHeader = () => {
 				>
 					<IoMdNotifications className="h-5 w-5" />
 					{unreadCount > 0 && (
-					<span className="absolute top-0 right-0 h-4 w-4 bg-accent-200 rounded-full flex items-center justify-center text-[10px] font-bold text-text-100">
+					<span className="absolute top-0 right-0 h-4 w-4 bg-red-500 rounded-full flex items-center justify-center text-[10px] font-bold text-white">
 						{unreadCount < 6 ? unreadCount : '5+'}
 					</span>
 					)}
