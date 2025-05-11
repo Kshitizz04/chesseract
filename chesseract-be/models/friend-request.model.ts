@@ -3,7 +3,7 @@ import mongoose, { Schema, Document, Types } from "mongoose";
 export interface IFriendRequest extends Document {
     sender: Types.ObjectId;
     receiver: Types.ObjectId;
-    status: 'pending' | 'accepted' | 'rejected';
+    status: 'pending' | 'accepted' | 'rejected' | 'expired';
     createdAt: Date;
 }
 
@@ -20,13 +20,13 @@ const friendRequestSchema = new Schema<IFriendRequest>({
     },
     status: {
         type: String,
-        enum: ['pending', 'accepted', 'rejected'],
+        enum: ['pending', 'accepted', 'rejected', 'expired'],
         default: 'pending'
     }
 }, {timestamps: true});
 
 // Create a compound index to ensure uniqueness
-friendRequestSchema.index({ sender: 1, receiver: 1 }, { unique: true });
+//friendRequestSchema.index({ sender: 1, receiver: 1 }, { unique: true });
 
 const FriendRequest = mongoose.model("FriendRequest", friendRequestSchema);
 

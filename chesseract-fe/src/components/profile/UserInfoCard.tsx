@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Card, CardContent, CardHeader } from "../ui/card";
 import getUserById, { GetUserByIdData } from "@/services/getUserById";
 import Button from "../utilities/CustomButton";
-import { FaUserEdit } from "react-icons/fa";
+import { FaUser, FaUserEdit } from "react-icons/fa";
 import Avatar from "../utilities/Avatar";
 import { useToast } from "@/contexts/ToastContext";
 import LoadingSpinner from "../utilities/LoadingSpinner";
@@ -13,6 +13,10 @@ import editProfile from "@/services/editProfile";
 import { RiRadioButtonLine } from "react-icons/ri";
 import { GiBulletBill } from "react-icons/gi";
 import { SiStackblitz } from "react-icons/si";
+import Image from "next/image";
+import { BiImageAdd } from "react-icons/bi";
+import { CLOUDINARY_CLOUD_NAME, CLOUDINARY_UPLOAD_PRESET } from "../../../config/env";
+import FriendButton from "../utilities/FriendButton";
 
 interface UserInfoCardProps {
     isForProfile: boolean;
@@ -38,8 +42,28 @@ const UserInfoCard = ({ isForProfile, userId, totalGames }: UserInfoCardProps) =
         country: ''
     });
     const [submitting, setSubmitting] = useState(false);
+    const [newImageFile, setNewImageFile] = useState<File | null>(null);
 
+    const fileInputRef = useRef<HTMLInputElement>(null);
     const { showToast } = useToast();
+
+    const setLocalImageUrl = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!e.target.files || e.target.files.length === 0) return;
+
+        const file = e.target.files[0];
+
+        if (file.size > 10 * 1024 * 1024) {
+            showToast("Image too large. Maximum size is 10MB", "error");
+            return;
+        }
+
+        const imageUrl = URL.createObjectURL(file);
+        setEditForm((prev) => ({
+            ...prev,
+            profilePicture: imageUrl
+        }));
+        setNewImageFile(file);
+    }
 
     useEffect(()=>{
 		const fetchUserData = async () => {
@@ -71,16 +95,65 @@ const UserInfoCard = ({ isForProfile, userId, totalGames }: UserInfoCardProps) =
         e.preventDefault();
         try {
             setSubmitting(true);
-            const response = await editProfile(editForm);
+            let finalProfilePicture = editForm.profilePicture;
+            let oldPublicId = null;
+
+            if(newImageFile){
+                if(userData?.profilePicture?.includes("cloudinary")){
+                    const previousImageUrl = userData.profilePicture;
+                    const urlParts = previousImageUrl.split('/');
+                    const filenameWithExtension = urlParts[urlParts.length - 1];
+                    oldPublicId = filenameWithExtension.split('.')[0];
+                }
+
+                const formData = new FormData();
+                formData.append("file", newImageFile);
+                formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET || "chesseract_uploads");
+
+                const cloudinaryResponse = await fetch(
+                    `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
+                    {
+                        method: "POST",
+                        body: formData
+                    }
+                )
+
+                const cloudinaryData = await cloudinaryResponse.json();
+
+                if(cloudinaryResponse.ok){
+                    finalProfilePicture = cloudinaryData.secure_url;
+                    
+                    if(oldPublicId){
+                        await fetch('/api/delete-image', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ publicId: oldPublicId })
+                        })
+                    }
+                }else{
+                    throw new Error("Failed to upload image");
+                }
+            }
+
+            const updatedForm = {
+                ...editForm,
+                profilePicture: finalProfilePicture
+            }
+
+            const response = await editProfile(updatedForm);
             if (response.success) {
-                setUserData(prev => ({
-                    ...prev!,
-                    profilePicture: editForm.profilePicture,
-                    fullname: editForm.fullname,
-                    bio: editForm.bio,
-                    country: editForm.country
-                }));
+                setUserData(response.data);
+                setEditForm({
+                    profilePicture: response.data.profilePicture || '',
+                    fullname: response.data.fullname || '',
+                    bio: response.data.bio || '',
+                    country: response.data.country || ''
+                });
+
                 setEditing(false);
+                setNewImageFile(null);
                 showToast("Profile updated successfully", "success");
             } else {
                 showToast(response.error || "Failed to update profile", "error");
@@ -98,14 +171,33 @@ const UserInfoCard = ({ isForProfile, userId, totalGames }: UserInfoCardProps) =
             <CardContent>
                 <form onSubmit={handleEditSubmit} className="w-full">
                     <div className="space-y-4">
-                        <div>
-                            <label className="text-sm font-medium">Profile URL</label>
-                            <input
-                                type="text"
-                                className="w-full p-2 border rounded mt-1 bg-bg-50 text-fg-900"
-                                value={editForm.profilePicture}
-                                onChange={(e) => setEditForm({...editForm, profilePicture: e.target.value})}
-                                placeholder="URL to your profile image"
+                        <div className="flex flex-col items-center justify-center">
+                            <div 
+                                className="relative rounded-full border-1 border-accent-100 overflow-hidden flex items-center justify-center bg-bg-100 font-semibold flex-shrink-0"
+                                style={{ width: 100, height: 100 }}
+                                onClick={() => fileInputRef.current?.click()}
+                            >
+                                {editForm.profilePicture ? (
+                                    <Image
+                                        src={editForm.profilePicture}
+                                        alt={`${userData?.username || "User"}'s profile`}
+                                        width={100}
+                                        height={100}
+                                        className="object-cover w-full h-full"
+                                    />
+                                ) : (
+                                    <FaUser size={90}/>
+                                )}
+                                <div className="absolute inset-0 hover:bg-black/50 hover:cursor-pointer transition-all rounded-full opacity-0 hover:opacity-100 flex items-center justify-center z-10">
+                                    <BiImageAdd size={50} className="text-white" />
+                                </div>
+                            </div>
+                            <input 
+                                type="file" 
+                                ref={fileInputRef}
+                                accept="image/*"
+                                onChange={setLocalImageUrl}
+                                className="hidden"
                             />
                         </div>
                         <div>
@@ -148,7 +240,7 @@ const UserInfoCard = ({ isForProfile, userId, totalGames }: UserInfoCardProps) =
                                 <IoClose className="h-4 w-4 mr-2" /> Cancel
                             </Button>
                             <Button type="submit" disabled={submitting}>
-                                {submitting ? <LoadingSpinner /> : <CiSaveUp2 className="h-4 w-4 mr-2" />}
+                                {submitting ? <LoadingSpinner className="mr-2"/> : <CiSaveUp2 className="h-4 w-4 mr-2" />}
                                 Save
                             </Button>
                         </div>
@@ -161,7 +253,7 @@ const UserInfoCard = ({ isForProfile, userId, totalGames }: UserInfoCardProps) =
     return (
         <Card className="shadow-lg bg-bg-100">
             <CardHeader className="relative pb-0">
-                {!editing && !loading && isForProfile &&(
+                {isForProfile ? !editing && !loading && (
                     <Button
                         className="absolute right-4 top-4"
                         onClick={() => setEditing(true)}
@@ -169,6 +261,15 @@ const UserInfoCard = ({ isForProfile, userId, totalGames }: UserInfoCardProps) =
                     >
                         <FaUserEdit className="h-4 w-4" />
                     </Button>
+                ) : userData && (
+                    <div className="absolute right-4 top-4">
+                        <FriendButton
+                            friendId={userId}
+                            friendStatus={userData?.friendStatus}
+                            showText={false}
+                            width="w-8"
+                        />
+                    </div>
                 )}
             </CardHeader>
 

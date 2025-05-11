@@ -31,7 +31,6 @@ const FriendButton: React.FC<FriendActionButtonProps> = ({
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const myId = localStorage.getItem("userId") || "";
-
   const { showToast } = useToast();
 
   if (myId === friendId) {
@@ -45,7 +44,7 @@ const FriendButton: React.FC<FriendActionButtonProps> = ({
 
       switch (friendStatus) {
         case FriendStatus.NOT_FRIENDS:
-          response = await sendFriendRequest({ recieverId: friendId });
+          response = await sendFriendRequest({ receiverId: friendId });
           if (response.success) {
             showToast("Friend request sent successfully", "success");
           } else {

@@ -19,6 +19,8 @@ import getUserRatingHistory, { GetUserRatingHistoryData } from '@/services/getUs
 import getAdvancedAnalytics, { GetAdvancedAnalyticsData } from '@/services/getAdvancedAnalytics';
 import FriendList from '@/components/profile/FriendList';
 import UserInfoCard from '@/components/profile/UserInfoCard';
+import fillMissingHistory, { getStartDate } from '@/utils/fillMissingHistory';
+import TimeframeDropdown from '@/components/profile/TimeframeDropdown';
 
 const Profile = () => {
 	const [activeTab, setActiveTab] = useState('all');
@@ -54,6 +56,10 @@ const Profile = () => {
 		{ name: 'Draws', value: stats?.stats[format].draws, color: '#a3a3a3' },
 	];
 
+	const selectTimeframe = (timeframe: TimeFrame) => {
+		setTimeframe(timeframe);
+	}
+
 	useEffect(()=>{
 		const fetchGameHistory = async (tab: string) => {
 			let format = null;
@@ -63,7 +69,6 @@ const Profile = () => {
 			try{
 				setLoadingGameHistory(true);
 				const response = await getUserGames(userId as string, format, limit, page);
-				console.log("game history response", response);
 				if(response.success){
 					setGameHistory(response.data);
 				}else {
@@ -97,7 +102,6 @@ const Profile = () => {
 			}
 		}
 		fetchStats();
-		setTimeframe('1w'); // to prevent build error, remove later
 	}, [userId]);
 
 	useEffect(()=>{
@@ -106,7 +110,10 @@ const Profile = () => {
 				setLoadingRatingHistory(true);
 				const response = await getUserRatingHistory(userId as string, null, timeframe);
 				if(response.success){
-					setRatingHistory(response.data);
+					const startDate = getStartDate(timeframe);
+					const endDate = new Date();
+					const filledHistory = fillMissingHistory(response.data, startDate, endDate);
+					setRatingHistory(filledHistory);
 				}else {
 					const error = response.error || "An error occurred";
 					showToast(error, "error");
@@ -118,7 +125,7 @@ const Profile = () => {
 			}
 		}
 		fetchRatingHistory();
-	}, [userId]);
+	}, [userId, timeframe]);
 
 	useEffect(()=>{
 		const fetchAnalytics = async (tab: string) => {
@@ -148,7 +155,7 @@ const Profile = () => {
 
 	return (
 		<div className="h-full w-full p-2 rounded-md bg-bg-200 max-md:overflow-scroll">
-			<div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-full">
+			<div className="grid grid-cols-1 md:grid-cols-3 gap-2 h-full">
 				{/* User Profile Card */}
 				<div className="md:col-span-1 h-full flex flex-col">
 					<UserInfoCard isForProfile={true} userId={userId as string} totalGames={stats ? stats.stats.bullet.gamesPlayed + stats.stats.blitz.gamesPlayed + stats.stats.rapid.gamesPlayed : 0}/>
@@ -212,8 +219,11 @@ const Profile = () => {
 							))}
 						</div>
 
-						<div className="mt-6">
-							<h3 className="text-lg font-medium mb-3">Rating History</h3>
+						<div className="mt-2">
+							<div className='flex gap-2 items-center mb-3'>
+								<h3 className="text-lg font-medium">Rating History</h3>
+								<TimeframeDropdown onSelect={selectTimeframe} selectedTimeframe={timeframe}/>
+							</div>
 							<div className="h-80 w-full">
 								{loadingRatingHistory || !ratingHistory ? (
 									<div className='flex items-center justify-center h-full w-full'>
@@ -260,7 +270,7 @@ const Profile = () => {
 							</div>
 						</div>
 
-						<div className="mt-6">
+						<div className="mt-2">
 							<h3 className="text-lg font-medium mb-3">Performance Breakdown</h3>
 							<div className="h-64 w-full">
 							{loadingAnalytics || !analytics ? (
@@ -413,7 +423,7 @@ const Profile = () => {
 				</Card>
 
 				{/* Game History Section */}
-				<Card className="shadow-lg mt-6 bg-bg-100">
+				<Card className="shadow-lg mt-2 bg-bg-100">
 					<CardHeader>
 						<CardTitle>Game History</CardTitle>
 						<Tabs className="w-full">

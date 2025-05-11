@@ -34,7 +34,13 @@ const API_ENDPOINTS = {
         getNextBatch: (currentEndRating: number | null, batchSize: number | null) => `${API_BASE_URL}/puzzles/next-batch?currentEndRating=${currentEndRating}&batchSize=${batchSize}`, //get
         getScore: (userId: string) => `${API_BASE_URL}/puzzles/user-score/${userId}`, //get
         updateScore: `${API_BASE_URL}/puzzles/user-score`, //put
-    }
+    },
+    notifications: {
+        getAllNotifications: `${API_BASE_URL}/notifications`, //get
+        markAsRead: `${API_BASE_URL}/notifications/mark-as-read`, //put
+        handleFriendRequest: `${API_BASE_URL}/notifications/friend-request`, //put
+        handleGameChallenge: `${API_BASE_URL}/notifications/game-challenge`, //put
+    },
 };
   
 export default API_ENDPOINTS; 

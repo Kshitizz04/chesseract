@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
-import { FaUsers, FaTrophy, FaChess } from "react-icons/fa";
+import { FaUsers, FaTrophy } from "react-icons/fa";
 import { HiMenuAlt2, HiOutlineChevronLeft, HiChevronDown, HiChevronUp } from "react-icons/hi";
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { BiSolidChess } from "react-icons/bi";
 import { HiPuzzlePiece } from "react-icons/hi2";
-import { IoMdSettings } from "react-icons/io";
+import { IoMdNotifications, IoMdSettings } from "react-icons/io";
 import { getLocalStorage } from "@/utils/localstorage";
 import Avatar from './utilities/Avatar';
 import { MdDarkMode, MdLightMode } from "react-icons/md";
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLayout } from "@/utils/hooks/useLayout";
 
 interface SideBarProps {
     isSideBarOpen: boolean;
@@ -100,6 +101,7 @@ const SideBar = ({
 }: SideBarProps) => {
     const [userData, setUserData] = useState<UserData | null>(null);
     const { theme, toggleTheme } = useTheme();
+    const {toggleNotificationPanel, toggleSettingsPanel, unreadCount} = useLayout();
     const router = useRouter();
 
     useEffect(() => {
@@ -145,12 +147,12 @@ const SideBar = ({
                         <DropdownItem title="Friends" href="/home/play/friends" />
                     </NavItem>
                     
-                    <NavItem 
+                    {/* <NavItem 
                         icon={<FaChess size={20} />} 
                         title="Variants" 
                         href="/home/variants" 
                         isSideBarOpen={isSideBarOpen}
-                    />
+                    /> */}
                     
                     {/* Puzzles with dropdown options */}
                     <NavItem 
@@ -208,12 +210,36 @@ const SideBar = ({
                             </div>
                         </div>
                     </div>
-                    <NavItem 
-                        icon={<IoMdSettings size={20} />} 
-                        title="Settings" 
-                        href="/home/settings" 
-                        isSideBarOpen={isSideBarOpen}
-                    />
+
+                    <div
+                        className={`relative flex items-center gap-3 py-3 rounded-md hover:bg-bg-100 cursor-pointer
+                            ${isSideBarOpen ? 'px-4' : 'justify-center'}
+                        `}
+                        onClick={toggleNotificationPanel}
+                    >
+                        <IoMdNotifications size={20}/>
+                        {isSideBarOpen && (
+                            <span className="transition-all flex-1">Notifications</span>
+                        )}
+
+                        {unreadCount > 0 && (
+                        <span className={`${!isSideBarOpen && 'absolute'} top-0 right-0 h-4 w-4 bg-red-500 rounded-full flex items-center justify-center text-[10px] font-bold text-white`}>
+                            {unreadCount < 10 ? unreadCount : '9+'}
+                        </span>
+                        )}
+                    </div>
+                    
+                    <div
+                        className={`flex items-center gap-3 py-3 rounded-md hover:bg-bg-100 cursor-pointer
+                            ${isSideBarOpen ? 'px-4' : 'justify-center'}
+                        `}
+                        onClick={toggleSettingsPanel}
+                    >
+                        <IoMdSettings size={20}/>
+                        {isSideBarOpen && (
+                            <span className="transition-all flex-1">Settings</span>
+                        )}
+                    </div>
 
                     <div className={`mt-1 flex items-center gap-3 p-2 rounded-md bg-bg-200-hover ${!isSideBarOpen && 'justify-center'}`}>
                         <Avatar 

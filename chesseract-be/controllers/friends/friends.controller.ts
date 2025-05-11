@@ -4,6 +4,7 @@ import FriendRequest from '../../models/friend-request.model.ts';
 import mongoose from 'mongoose';
 import { CustomError } from '../../utils/CustomError.ts';
 import { AcceptRejectFriendRequestBody, GetAllFriendsResponse, GetAllFriendsResponseData, SendFriendRequestBody } from './friends.types.ts';
+import Notification from '../../models/notification.model.ts';
 
 // Get all friends of the current user
 export const getFriends = async (req: Request, res: Response<GetAllFriendsResponse>, next: NextFunction) => {
@@ -104,7 +105,6 @@ export const sendFriendRequest = async (req: Request<{}, any, SendFriendRequestB
     try {
         const senderId = req.user?.userId;
         const receiverId = req.body.receiverId;
-
         
         // Check if users exist
         const [sender, receiver] = await Promise.all([
@@ -127,7 +127,6 @@ export const sendFriendRequest = async (req: Request<{}, any, SendFriendRequestB
         const existingRequest = await FriendRequest.findOne({
             $or: [
                 { sender: senderId, receiver: receiverId },
-                { sender: receiverId, receiver: senderId }
             ],
             status: 'pending'
         });
@@ -144,6 +143,14 @@ export const sendFriendRequest = async (req: Request<{}, any, SendFriendRequestB
         });
         
         await friendRequest.save();
+
+        await Notification.create({
+            recipient: receiverId,
+            type: 'friend_request',
+            relatedId: friendRequest._id,
+            sender: senderId,
+            read: false,
+        })
         
         res.status(201).json({ 
             success: true, 

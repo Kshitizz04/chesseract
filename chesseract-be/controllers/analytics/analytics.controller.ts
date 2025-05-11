@@ -81,16 +81,22 @@ export const getUserRatingHistory = async (req: Request, res: Response, next: Ne
         if (format && ['bullet', 'blitz', 'rapid'].includes(format as string)) {
             // For a specific format
             const formatHistory = user.ratingHistory[format as keyof typeof user.ratingHistory] || [];
-            filteredHistory[format as keyof typeof user.ratingHistory] = formatHistory.filter(
-                (entry: any) => new Date(entry.date) >= startDate
-            );
+            filteredHistory[format as keyof typeof user.ratingHistory] = formatHistory
+            .filter((entry: any) => new Date(entry.date) >= startDate)
+            .map((entry: any) => ({
+                ...entry.toObject?.() || entry,
+                date: new Date(entry.date).toISOString().split('T')[0]
+            }));
         } else {
             // For all formats
             for (const key of ['bullet', 'blitz', 'rapid']) {
                 const formatHistory = user.ratingHistory[key as keyof typeof user.ratingHistory] || [];
-                filteredHistory[key] = formatHistory.filter(
-                    (entry: any) => new Date(entry.date) >= startDate
-                );
+                filteredHistory[key] = formatHistory
+                .filter((entry: any) => new Date(entry.date) >= startDate)
+                .map((entry: any) => ({
+                    ...entry.toObject?.() || entry,
+                    date: new Date(entry.date).toISOString().split('T')[0]
+                }));
             }
         }
         
