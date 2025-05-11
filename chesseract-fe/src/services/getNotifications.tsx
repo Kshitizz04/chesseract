@@ -1,5 +1,25 @@
 import CommonResponse from "@/models/CommonResponse";
 import API_ENDPOINTS from "../../config/apiConfig";
+import { TimeFormats } from "@/models/GameUtilityTypes";
+
+interface Request {
+    status: 'pending' | 'accepted' | 'rejected' | 'expired';
+    _id: string;
+}
+
+interface Challenge{
+    _id: string;
+    challenger: string;
+    recipient: string;
+    status: 'pending' | 'accepted' | 'rejected' | 'expired';
+    format: TimeFormats;
+    timeControl: {
+        initial: number; 
+        increment: number; 
+    };
+    color: 'random' | 'white' | 'black';
+    expiresAt: Date;
+}
 
 interface Notification {
     _id: string;
@@ -9,7 +29,7 @@ interface Notification {
         username: string;
         profilePicture?: string;
     };
-    relatedId: any;
+    relatedId: Request | Challenge;
     read: boolean;
     createdAt: string;
 }
@@ -36,4 +56,4 @@ const getNotifications = async (): Promise<CommonResponse<GetNotificationsData>>
     }
 }
 export default getNotifications;
-export type { GetNotificationsData };
+export type { GetNotificationsData, Notification };

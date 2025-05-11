@@ -236,7 +236,7 @@ const PuzzleRush = () => {
 					<div className="w-full flex flex-col items-center gap-2 bg-bg-100 rounded-md mb-4 p-2">
 						<Avatar
 							username={username}
-							showUsername={true}
+							showUsername={false}
 							profileImage={profilePicture}
 							className="rounded-full"
 							size={100}

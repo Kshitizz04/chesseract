@@ -44,7 +44,7 @@ app.use('/api/v1/games', gameRouter);
 app.use('/api/v1/friends', friendRouter);
 app.use('/api/v1/analytics', analyticsRouter);
 app.use('/api/v1/puzzles', puzzleRouter);
-app.use('api/v1/notifications', NotificationRouter);
+app.use('/api/v1/notifications', NotificationRouter);
 
 app.use(errorMiddleware);
 

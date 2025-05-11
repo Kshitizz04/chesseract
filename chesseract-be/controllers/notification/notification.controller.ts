@@ -15,13 +15,33 @@ export const getNotifications = async (req: Request, res: Response, next: NextFu
             throw error;
         }
 
-        const notifications = await Notification.find({ recipient: userId })
-            .sort({ createdAt: -1 })
-            .populate('sender', 'username profilePicture _id')
-            .populate({
-                path: 'relatedId',
-                select: 'status format timeControl color',
+        const friendRequestNotifications = await Notification.find({ 
+            recipient: userId,
+            type: 'friend_request'
+        })
+          .sort({ createdAt: -1 })
+          .populate('sender', 'username profilePicture _id')
+          .populate({
+              path: 'relatedId',
+              model: 'FriendRequest',
+              select: 'status _id'
         });
+
+        const challengeNotifications = await Notification.find({ 
+            recipient: userId,
+            type: 'game_challenge'
+        })
+          .sort({ createdAt: -1 })
+          .populate('sender', 'username profilePicture _id')
+          .populate({
+              path: 'relatedId',
+              model: 'GameChallenge'
+        });
+
+        const notifications = [
+            ...friendRequestNotifications,
+            ...challengeNotifications
+        ].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
         const unreadCount = await Notification.countDocuments({ 
             recipient: userId, 
@@ -218,18 +238,6 @@ export const handleGameChallenge = async (req: Request<{}, any, HandleChallengeR
       { read: true }
     );
 
-    // If accepted, return details needed to create/join the game
-    let gameData = null;
-    if (action === 'accept') {
-      gameData = {
-        challengerId: gameChallenge.challenger,
-        recipientId: gameChallenge.recipient,
-        timeControl: gameChallenge.timeControl,
-        format: gameChallenge.format,
-        color: gameChallenge.color
-      };
-    }
-
     const unreadCount = await Notification.countDocuments({ 
       recipient: userId, 
       read: false 
@@ -239,7 +247,6 @@ export const handleGameChallenge = async (req: Request<{}, any, HandleChallengeR
       success: true,
       message: `Game challenge ${action}ed successfully`,
       data: gameChallenge,
-      gameData,
       unreadCount
     });
 

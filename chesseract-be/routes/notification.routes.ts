@@ -5,7 +5,7 @@ import authorize from './../middlewares/auth.middleware.ts';
 const NotificationRouter = express.Router();
 
 // Get all notifications for current user
-NotificationRouter.get('/', authorize, getNotifications);
+NotificationRouter.get('', authorize, getNotifications);
 
 // Mark notifications as read
 NotificationRouter.put('/mark-as-read', authorize, markAsRead);

@@ -1,5 +1,7 @@
 "use client";
-import React, { createContext, useContext, useState } from 'react';
+import { useToast } from '@/contexts/ToastContext';
+import getNotifications, { Notification } from '@/services/getNotifications';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 
 interface LayoutContextType {
     isNotificationPanelOpen: boolean;
@@ -8,6 +10,10 @@ interface LayoutContextType {
     toggleSettingsPanel: () => void;
     isSideBarOpen: boolean;
     toggleSideBar: () => void;
+    notifications: Notification[];
+    unreadCount: number;
+    refreshNotifications: () => Promise<void>;
+    loading: boolean;
 }
 
 const LayoutContext = createContext<LayoutContextType | undefined>(undefined);
@@ -16,6 +22,11 @@ export const LayoutProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const [isNotificationPanelOpen, setIsNotificationPanelOpen] = useState(false);
     const [isSettingsPanelOpen, setIsSettingsPanelOpen] = useState(false);
     const [isSideBarOpen, setIsSideBarOpen] = useState(true);
+    const [notifications, setNotifications] = useState<Notification[]>([]);
+    const [unreadCount, setUnreadCount] = useState(0);
+    const [loading, setLoading] = useState(false);
+
+    const { showToast } = useToast();
 
     const toggleNotificationPanel = () => {
         setIsNotificationPanelOpen(prev => !prev);
@@ -29,6 +40,29 @@ export const LayoutProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         setIsSideBarOpen(prev => !prev);
     };
 
+    const refreshNotifications = async () => {
+        try {
+            setLoading(true);
+            const response = await getNotifications();
+            
+            if (response.success) {
+                setNotifications(response.data.notifications);
+                setUnreadCount(response.data.unreadCount);
+            } else {
+                const error = response.message || "An error occurred";
+                showToast(error, "error");
+            }
+        } catch (error) {
+            console.error('Error fetching notifications:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        refreshNotifications();
+    }, []);
+
     return (
         <LayoutContext.Provider value={{
             isNotificationPanelOpen,
@@ -37,6 +71,10 @@ export const LayoutProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             toggleSettingsPanel,
             isSideBarOpen,
             toggleSideBar,
+            notifications,
+            unreadCount,
+            refreshNotifications,
+            loading,
         }}>
             {children}
         </LayoutContext.Provider>

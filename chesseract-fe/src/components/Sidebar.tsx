@@ -101,7 +101,7 @@ const SideBar = ({
 }: SideBarProps) => {
     const [userData, setUserData] = useState<UserData | null>(null);
     const { theme, toggleTheme } = useTheme();
-    const {toggleNotificationPanel, toggleSettingsPanel} = useLayout();
+    const {toggleNotificationPanel, toggleSettingsPanel, unreadCount} = useLayout();
     const router = useRouter();
 
     useEffect(() => {
@@ -212,7 +212,7 @@ const SideBar = ({
                     </div>
 
                     <div
-                        className={`flex items-center gap-3 py-3 rounded-md hover:bg-bg-100 cursor-pointer
+                        className={`relative flex items-center gap-3 py-3 rounded-md hover:bg-bg-100 cursor-pointer
                             ${isSideBarOpen ? 'px-4' : 'justify-center'}
                         `}
                         onClick={toggleNotificationPanel}
@@ -220,6 +220,12 @@ const SideBar = ({
                         <IoMdNotifications size={20}/>
                         {isSideBarOpen && (
                             <span className="transition-all flex-1">Notifications</span>
+                        )}
+
+                        {unreadCount > 0 && (
+                        <span className={`${!isSideBarOpen && 'absolute'} top-0 right-0 h-4 w-4 bg-accent-200 rounded-full flex items-center justify-center text-[10px] font-bold text-text-100`}>
+                            {unreadCount < 6 ? unreadCount : '5+'}
+                        </span>
                         )}
                     </div>
                     

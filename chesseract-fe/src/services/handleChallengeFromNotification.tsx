@@ -1,13 +1,28 @@
 import { getLocalStorage } from "@/utils/localstorage";
 import API_ENDPOINTS from "../../config/apiConfig";
 import CommonResponse from "@/models/CommonResponse";
+import { TimeFormats } from "@/models/GameUtilityTypes";
 
-export interface HandleChallengeReqBody {
+interface HandleChallengeReqBody {
     challengeId: string;
     action: 'accept' | 'reject';
 }
+interface GameChallenge {
+    _id: string;
+    challenger: string;
+    recipient: string;
+    status: 'pending' | 'accepted' | 'rejected' | 'expired';
+    format: TimeFormats;
+    timeControl: {
+        initial: number; 
+        increment: number; 
+    };
+    color: 'random' | 'white' | 'black';
+    expiresAt: Date;
+}
 
 interface HandleChallengeFromNotificationData {
+    gameChallenge: GameChallenge;
     unreadCount: number;
 }
 
@@ -30,4 +45,4 @@ const handleChallengeFromNotification = async (data: HandleChallengeReqBody): Pr
 }
 
 export default handleChallengeFromNotification;
-export type { HandleChallengeFromNotificationData };
+export type { HandleChallengeFromNotificationData, GameChallenge };

@@ -6,8 +6,7 @@ import { useLayout } from '@/utils/hooks/useLayout';
 
 const MobileHeader = () => {
 	const { theme, toggleTheme } = useTheme();
-	const {toggleNotificationPanel, toggleSettingsPanel} = useLayout();
-	const notificationCount = 2;
+	const {toggleNotificationPanel, toggleSettingsPanel, unreadCount} = useLayout();
 
     return (
 		<header className="md:hidden fixed top-0 left-0 right-0 h-14 bg-bg-200 border-b border-bg-300 px-4 flex items-center justify-between z-20">
@@ -36,9 +35,9 @@ const MobileHeader = () => {
 					aria-label="Notifications"
 				>
 					<IoMdNotifications className="h-5 w-5" />
-					{notificationCount > 0 && (
+					{unreadCount > 0 && (
 					<span className="absolute top-0 right-0 h-4 w-4 bg-accent-200 rounded-full flex items-center justify-center text-[10px] font-bold text-text-100">
-						{notificationCount < 10 ? notificationCount : '9+'}
+						{unreadCount < 6 ? unreadCount : '5+'}
 					</span>
 					)}
 				</button>
