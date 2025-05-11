@@ -2,6 +2,9 @@ import { IoMdSettings, IoMdNotifications } from 'react-icons/io';
 import { MdDarkMode, MdLightMode } from 'react-icons/md';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLayout } from '@/utils/hooks/useLayout';
+import Image from 'next/image';
+import logo from "@/assets/logo.png";
+import LogoTextSvg from '@/assets/LogoTextSvg';
 
 const MobileHeader = () => {
 	const { theme, toggleTheme } = useTheme();
@@ -10,7 +13,7 @@ const MobileHeader = () => {
     return (
 		<header className="md:hidden fixed top-0 left-0 right-0 h-14 bg-bg-200 border-b border-bg-300 px-4 flex items-center justify-between z-20">
 			<div className="flex items-center">
-				<h1 className="text-xl font-bold text-text-200">Chesseract</h1>
+					<LogoTextSvg id="mobile-header" className='w-40'/>
 			</div>
 
 			<div className="flex items-center space-x-4">

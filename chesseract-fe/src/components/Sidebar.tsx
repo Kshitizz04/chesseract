@@ -11,6 +11,7 @@ import Avatar from './utilities/Avatar';
 import { MdDarkMode, MdLightMode } from "react-icons/md";
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLayout } from "@/utils/hooks/useLayout";
+import LogoTextSvg from "@/assets/LogoTextSvg";
 
 interface SideBarProps {
     isSideBarOpen: boolean;
@@ -129,8 +130,7 @@ const SideBar = ({
                             <HiMenuAlt2 size={20} />
                         )}
                     </button>
-                    
-                    <h1 className={`text-xl font-bold ${!isSideBarOpen && 'hidden'}`}>Chesseract</h1>
+                    <LogoTextSvg id="sidebar" className={`${!isSideBarOpen && 'hidden'}`}/>
                 </div>
                 
                 {/* Navigation Items */}

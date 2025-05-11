@@ -26,7 +26,7 @@ interface PlayerRatingData {
 interface TopPlayersByRatingData {
   topPlayers: PlayerRatingData[];
   userRank: number | null;
-  userData: PlayerRatingData | null;
+  userData: PlayerRatingData;
 }
 
 const getTopPlayersByRating = async (format: TimeFormats, country: string | null): Promise<CommonResponse<TopPlayersByRatingData>> => {
