@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { PuzzleFormats } from '@/models/GameUtilityTypes'
 import Image from 'next/image'
-import { getLocalStorage } from '@/utils/localstorage'
 import getTopPlayersByPuzzleScore, { TopPlayersByPuzzleData } from '@/services/getTopPlayersByPuzzle'
 import getTopFriendsByPuzzleScore, { TopFriendsByPuzzleData } from '@/services/getTopFriendsByPuzzle'
 
@@ -16,7 +15,6 @@ const PuzzleLeaderboard = ({
     format,
     isFriendsRanking = false 
 }: PuzzleLeaderboardProps) => {
-    const userId = getLocalStorage('userId')
     const [country, setCountry] = useState<string | null>(null)
     const [loading, setLoading] = useState(true)
     const [data, setData] = useState<TopPlayersByPuzzleData | TopFriendsByPuzzleData | null>(null)

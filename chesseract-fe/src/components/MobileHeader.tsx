@@ -2,8 +2,6 @@ import { IoMdSettings, IoMdNotifications } from 'react-icons/io';
 import { MdDarkMode, MdLightMode } from 'react-icons/md';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLayout } from '@/utils/hooks/useLayout';
-import Image from 'next/image';
-import logo from "@/assets/logo.png";
 import LogoTextSvg from '@/assets/LogoTextSvg';
 
 const MobileHeader = () => {
