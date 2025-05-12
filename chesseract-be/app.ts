@@ -17,6 +17,7 @@ import friendRouter from "./routes/friends.routes.ts";
 import analyticsRouter from "./routes/analytics.routes.ts";
 import puzzleRouter from "./routes/puzzle.routes.ts";
 import NotificationRouter from "./routes/notification.routes.ts";
+import leaderboardRouter from "./routes/leaderboard.routes.ts";
 
 const app = express();
 const server = http.createServer(app);
@@ -45,6 +46,7 @@ app.use('/api/v1/friends', friendRouter);
 app.use('/api/v1/analytics', analyticsRouter);
 app.use('/api/v1/puzzles', puzzleRouter);
 app.use('/api/v1/notifications', NotificationRouter);
+app.use('/api/v1/leaderboard', leaderboardRouter)
 
 app.use(errorMiddleware);
 

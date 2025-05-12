@@ -7,6 +7,9 @@ import { useToast } from "@/contexts/ToastContext";
 import { setLocalStorage } from "@/utils/localstorage";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import bgImage from "@/assets/auth-desk-bg.png";
+import bgImagePhone from "@/assets/auth-phone-bg.png";
+import LogoTextSvg from "@/assets/LogoTextSvg";
 
 const SignUp = () => {
     const [username, setUsername] = useState("");
@@ -77,119 +80,147 @@ const SignUp = () => {
     };
 
     return (
-        <div className="flex items-center justify-center h-screen">
-            <form
-                onSubmit={handleSubmit}
-                className="bg-bg-200 border-1 border-accent-100 p-6 rounded-md shadow-md w-96"
-            >
-                <h2 className="text-2xl font-bold mb-4 text-center">Sign Up</h2>
-                
-                {/* Username field */}
-                <div className="mb-4">
-                    <label
-                        htmlFor="username"
-                        className="block text-sm font-medium"
-                    >
-                        Username
-                    </label>
-                    <input
-                        type="text"
-                        id="username"
-                        value={username}
-                        onChange={(e) => {setUsername(e.target.value); setUsernameError(null)}}
-                        className="mt-1 block w-full p-2 border border-accent-100 rounded-md shadow-sm focus:ring-accent-200 focus:border-accent-200"
-                        required
-                    />
-                    {usernameError && (
-                        <div className="text-red-500 text-sm mt-1">
-                            {usernameError}
-                        </div>
-                    )}
+        <div className="relative flex justify-between md:justify-start h-screen">
+            <div
+                className="hidden md:block absolute inset-0 bg-cover bg-center pointer-events-none"
+                style={{
+                    backgroundImage: `url(${bgImage.src})`,
+                    opacity: 1,
+                    zIndex: -1,
+                }}
+            />
+
+            <div
+                className="block md:hidden absolute inset-0 bg-cover bg-center pointer-events-none"
+                style={{
+                    backgroundImage: `url(${bgImagePhone.src})`,
+                    opacity: 0.3,
+                    zIndex: -1,
+                }}
+            />
+
+            <div className="relative w-96 md:w-1/4 md:bg-bg-100 flex flex-col items-center justify-center p-2">
+                <div className="fixed top-0 flex flex-col justify-start w-max m-4">
+                    <LogoTextSvg id="sign-in" className="w-1/2" />
+                    <p className="gradient-text">Think Inside The Chesseract</p>
                 </div>
-                
-                {/* Email field */}
-                <div className="mb-4">
-                    <label
-                        htmlFor="email"
-                        className="block text-sm font-medium"
-                    >
-                        Email
-                    </label>
-                    <input
-                        type="email"
-                        id="email"
-                        value={email}
-                        onChange={(e) => {setEmail(e.target.value); setEmailError(null)}}
-                        className="mt-1 block w-full p-2 border border-accent-100 rounded-md shadow-sm focus:ring-accent-200 focus:border-accent-200"
-                        required
-                    />
-                    {emailError && (
-                        <div className="text-red-500 text-sm mt-1">
-                            {emailError}
-                        </div>
-                    )}
+
+                <div className="flex flex-col justify-start w-max mb-4">
+                    <h1 className="text-2xl font-bold">WELCOME</h1>
+                    <p>Sign up to start your journey</p>
                 </div>
-                
-                {/* Password field */}
-                <div className="mb-4">
-                    <label
-                        htmlFor="password"
-                        className="block text-sm font-medium"
-                    >
-                        Password
-                    </label>
-                    <input
-                        type="password"
-                        id="password"
-                        value={password}
-                        onChange={(e) => {setPassword(e.target.value); setPasswordError(null)}}
-                        className="mt-1 block w-full p-2 border border-accent-100 rounded-md shadow-sm focus:ring-accent-200 focus:border-accent-200"
-                        required
-                    />
-                </div>
-                
-                {/* Confirm Password field */}
-                <div className="mb-4">
-                    <label
-                        htmlFor="confirmPassword"
-                        className="block text-sm font-medium"
-                    >
-                        Confirm Password
-                    </label>
-                    <input
-                        type="password"
-                        id="confirmPassword"
-                        value={confirmPassword}
-                        onChange={(e) => {setConfirmPassword(e.target.value); setPasswordError(null)}}
-                        className="mt-1 block w-full p-2 border border-accent-100 rounded-md shadow-sm focus:ring-accent-200 focus:border-accent-200"
-                        required
-                    />
-                    {passwordError && (
-                        <div className="text-red-500 text-sm mt-1">
-                            {passwordError}
-                        </div>
-                    )}
-                </div>
-                
-                <button
-                    type="submit"
-                    disabled={loading}
-                    className={`w-full p-2 text-white rounded-md ${
-                        loading
-                            ? "bg-primary-200 cursor-not-allowed text-accent-200"
-                            : "bg-primary-100 hover:bg-primary-200"
-                    } mb-4`}
+                <form
+                    onSubmit={handleSubmit}
+                    className="p-6 rounded-md shadow-md w-80"
                 >
-                    {loading ? "Creating Account..." : "Sign Up"}
-                </button>
-                
-                <div className="text-center text-sm">
-                    Already have an account?{" "}
-                    <Link href="/auth/sign-in" className="text-accent-200 hover:underline">
-                        Sign In
-                    </Link>
-                </div>
-            </form>
+                    
+                    {/* Username field */}
+                    <div className="mb-4">
+                        <label
+                            htmlFor="username"
+                            className="block text-sm font-medium"
+                        >
+                            Username
+                        </label>
+                        <input
+                            type="text"
+                            id="username"
+                            value={username}
+                            onChange={(e) => {setUsername(e.target.value); setUsernameError(null)}}
+                            className="mt-1 block w-full p-2 border border-accent-100 rounded-md shadow-sm focus:ring-accent-200 focus:border-accent-200"
+                            required
+                        />
+                        {usernameError && (
+                            <div className="text-red-500 text-sm mt-1">
+                                {usernameError}
+                            </div>
+                        )}
+                    </div>
+                    
+                    {/* Email field */}
+                    <div className="mb-4">
+                        <label
+                            htmlFor="email"
+                            className="block text-sm font-medium"
+                        >
+                            Email
+                        </label>
+                        <input
+                            type="email"
+                            id="email"
+                            value={email}
+                            onChange={(e) => {setEmail(e.target.value); setEmailError(null)}}
+                            className="mt-1 block w-full p-2 border border-accent-100 rounded-md shadow-sm focus:ring-accent-200 focus:border-accent-200"
+                            required
+                        />
+                        {emailError && (
+                            <div className="text-red-500 text-sm mt-1">
+                                {emailError}
+                            </div>
+                        )}
+                    </div>
+                    
+                    {/* Password field */}
+                    <div className="mb-4">
+                        <label
+                            htmlFor="password"
+                            className="block text-sm font-medium"
+                        >
+                            Password
+                        </label>
+                        <input
+                            type="password"
+                            id="password"
+                            value={password}
+                            onChange={(e) => {setPassword(e.target.value); setPasswordError(null)}}
+                            className="mt-1 block w-full p-2 border border-accent-100 rounded-md shadow-sm focus:ring-accent-200 focus:border-accent-200"
+                            required
+                        />
+                    </div>
+                    
+                    {/* Confirm Password field */}
+                    <div className="mb-4">
+                        <label
+                            htmlFor="confirmPassword"
+                            className="block text-sm font-medium"
+                        >
+                            Confirm Password
+                        </label>
+                        <input
+                            type="password"
+                            id="confirmPassword"
+                            value={confirmPassword}
+                            onChange={(e) => {setConfirmPassword(e.target.value); setPasswordError(null)}}
+                            className="mt-1 block w-full p-2 border border-accent-100 rounded-md shadow-sm focus:ring-accent-200 focus:border-accent-200"
+                            required
+                        />
+                        {passwordError && (
+                            <div className="text-red-500 text-sm mt-1">
+                                {passwordError}
+                            </div>
+                        )}
+                    </div>
+                    
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className={`w-full p-2 text-white rounded-md ${
+                            loading
+                                ? "bg-primary-200 cursor-not-allowed text-accent-200"
+                                : "bg-primary-100 hover:bg-primary-200"
+                        } mb-4`}
+                    >
+                        {loading ? "Creating Account..." : "Sign Up"}
+                    </button>
+                    
+                    <div className="text-center text-sm">
+                        Already have an account?{" "}
+                        <Link href="/auth/sign-in" className="text-accent-200 hover:underline">
+                            Sign In
+                        </Link>
+                    </div>
+                </form>
+            </div>
         </div>
     );
 };

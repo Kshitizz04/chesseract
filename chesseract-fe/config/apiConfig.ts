@@ -1,4 +1,4 @@
-import { TimeFormats, TimeFrame } from "@/models/GameUtilityTypes";
+import { PuzzleFormats, TimeFormats, TimeFrame } from "@/models/GameUtilityTypes";
 import { API_BASE_URL } from "./env";
 
 const API_ENDPOINTS = {
@@ -41,6 +41,14 @@ const API_ENDPOINTS = {
         handleFriendRequest: `${API_BASE_URL}/notifications/friend-request`, //put
         handleGameChallenge: `${API_BASE_URL}/notifications/game-challenge`, //put
     },
+    leaderboard : {
+        getTopPlayersByRating: (format: TimeFormats, country: string | null) => `${API_BASE_URL}/leaderboard/rating/${format}?country=${country}`, //get
+        getTopPlayersByPuzzleScore: (format: PuzzleFormats, country: string | null) => `${API_BASE_URL}/leaderboard/puzzle/${format}?country=${country}`, //get
+        getTopPlayersByGamesPlayed: (country: string | null)=>`${API_BASE_URL}/leaderboard/games-played?country=${country}`, //get
+        getTopFriendsByRating: (format: TimeFormats, country: string | null) => `${API_BASE_URL}/leaderboard/friends/rating/${format}?country=${country}`, //get
+        getTopFriendsByPuzzleScore: (format: PuzzleFormats, country: string | null) => `${API_BASE_URL}/leaderboard/friends/puzzle/${format}?country=${country}`, //get
+        getTopFriendsByRatingJump: `${API_BASE_URL}/leaderboard/friends/rating-jump`, //get
+    }
 };
   
 export default API_ENDPOINTS; 

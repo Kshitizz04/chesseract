@@ -7,6 +7,7 @@ import SettingsPanel from "@/components/modals/SettingsPanel";
 import SideBar from "@/components/Sidebar";
 import { useLayout } from "@/utils/hooks/useLayout";
 import { ReactNode } from "react";
+import bgImage from "@/assets/bg-img.png";
 
 type LayoutProps = {
     children: ReactNode;
@@ -19,7 +20,16 @@ const Layout = ({ children }: LayoutProps) => {
     } = useLayout();
 
     return (
-        <div className="flex min-h-screen">
+        <div className="relative flex min-h-screen overflow-hidden">
+            <div
+                className="absolute inset-0 bg-cover bg-center z-0 pointer-events-none"
+                style={{
+                    backgroundImage: `url(${bgImage.src})`,
+                    opacity: 0.3,
+                    zIndex: -1,
+                }}
+            />
+
             <SideBar isSideBarOpen={isSideBarOpen} toggleSideBar={toggleSideBar}/>
 
             <MobileHeader />

@@ -7,6 +7,9 @@ import { useToast } from "@/contexts/ToastContext";
 import { setLocalStorage } from "@/utils/localstorage";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import bgImage from "@/assets/auth-desk-bg.png";
+import bgImagePhone from "@/assets/auth-phone-bg.png";
+import LogoTextSvg from "@/assets/LogoTextSvg";
 
 const SignIn = () => {
     const [email, setEmail] = useState("");
@@ -47,69 +50,96 @@ const SignIn = () => {
     };
 
     return (
-        <div className="flex items-center justify-center h-screen">
-            <form
-                onSubmit={handleSubmit}
-                className="bg-bg-200 border-1 border-accent-100 p-6 rounded-md shadow-md w-80"
-            >
-                <h2 className="text-2xl font-bold mb-4 text-center">Sign In</h2>
-                <div className="mb-4">
-                    <label
-                        htmlFor="email"
-                        className="block text-sm font-medium"
-                    >
-                        Email
-                    </label>
-                    <input
-                        type="email"
-                        id="email"
-                        value={email}
-                        onChange={(e) => {setEmail(e.target.value); setEmailError(null)}}
-                        className="mt-1 block w-full p-2 border border-accent-100 rounded-md shadow-sm focus:ring-accent-200 focus:border-accent-200"
-                        required
-                    />
-                    {emailError && (
-                        <div className="text-red-500 text-sm mt-1">
-                            {emailError}
-                        </div>
-                    )}
-                </div>
-                <div className="mb-4">
-                    <label
-                        htmlFor="password"
-                        className="block text-sm font-medium"
-                    >
-                        Password
-                    </label>
-                    <input
-                        type="password"
-                        id="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className="mt-1 block w-full p-2 border border-accent-100 rounded-md shadow-sm focus:ring-accent-200 focus:border-accent-200"
-                        required
-                    />
+        <div className="relative flex justify-between md:justify-start h-screen">
+            <div
+                className="hidden md:block absolute inset-0 bg-cover bg-center pointer-events-none"
+                style={{
+                    backgroundImage: `url(${bgImage.src})`,
+                    opacity: 1,
+                    zIndex: -1,
+                }}
+            />
+
+            <div
+                className="block md:hidden absolute inset-0 bg-cover bg-center pointer-events-none"
+                style={{
+                    backgroundImage: `url(${bgImagePhone.src})`,
+                    opacity: 0.3,
+                    zIndex: -1,
+                }}
+            />
+            <div className="relative w-96 md:w-1/4 md:bg-bg-100 flex flex-col items-center justify-center p-2">
+                <div className="fixed top-0 flex flex-col justify-start w-max m-4">
+                    <LogoTextSvg id="sign-in" className="w-1/2" />
+                    <p className="gradient-text">Think Inside The Chesseract</p>
                 </div>
 
-                <button
-                    type="submit"
-                    disabled={loading}
-                    className={`w-full p-2 text-white rounded-md mb-4 ${
-                        loading
-                            ? "bg-primary-200 cursor-not-allowed text-accent-200"
-                            : "bg-primary-100 hover:bg-primary-200"
-                    }`}
+                <div className="flex flex-col justify-start w-max mb-4">
+                    <h1 className="text-2xl font-bold">WELCOME BACK</h1>
+                    <p>Welcome back! Please enter your details</p>
+                </div>
+                <form
+                    onSubmit={handleSubmit}
+                    className="p-6 rounded-md shadow-md w-80 "
                 >
-                    {loading ? "Signing In..." : "Sign In"}
-                </button>
+                    <div className="mb-4">
+                        <label
+                            htmlFor="email"
+                            className="block text-sm font-medium"
+                        >
+                            Email
+                        </label>
+                        <input
+                            type="email"
+                            id="email"
+                            value={email}
+                            onChange={(e) => {setEmail(e.target.value); setEmailError(null)}}
+                            className="mt-1 block w-full p-2 border border-accent-100 rounded-md shadow-sm focus:ring-accent-200 focus:border-accent-200"
+                            required
+                        />
+                        {emailError && (
+                            <div className="text-red-500 text-sm mt-1">
+                                {emailError}
+                            </div>
+                        )}
+                    </div>
+                    <div className="mb-4">
+                        <label
+                            htmlFor="password"
+                            className="block text-sm font-medium"
+                        >
+                            Password
+                        </label>
+                        <input
+                            type="password"
+                            id="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="mt-1 block w-full p-2 border border-accent-100 rounded-md shadow-sm focus:ring-accent-200 focus:border-accent-200"
+                            required
+                        />
+                    </div>
 
-                <div className="text-center text-sm">
-                    {"Don't have an account? "}
-                    <Link href="/auth/sign-up" className="text-accent-200 hover:underline">
-                        Sign Up
-                    </Link>
-                </div>
-            </form>
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className={`w-full p-2 text-white rounded-md mb-4 ${
+                            loading
+                                ? "bg-primary-200 cursor-not-allowed text-accent-200"
+                                : "bg-primary-100 hover:bg-primary-200"
+                        }`}
+                    >
+                        {loading ? "Signing In..." : "Sign In"}
+                    </button>
+
+                    <div className="text-center text-sm">
+                        {"Don't have an account? "}
+                        <Link href="/auth/sign-up" className="text-accent-200 hover:underline">
+                            Sign Up
+                        </Link>
+                    </div>
+                </form>
+            </div>
         </div>
     );
 };

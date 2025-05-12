@@ -11,6 +11,8 @@
   --color-bg-100:#fffefb;
   --color-bg-200:#f5f4f1;
   --color-bg-300:#cccbc8;
+    --color-gradient-start: #4E65FF;
+    --color-gradient-end: #92EFFD;
 }
 
 @layer theme{
@@ -25,6 +27,8 @@
     --color-bg-100:#0F1C2E ; 
     --color-bg-200:#1f2b3e ;
     --color-bg-300:#374357 ;
+    --color-gradient-start: #4E65FF;
+    --color-gradient-end: #92EFFD;
   }
 }
 
@@ -56,4 +60,11 @@ body {
 
 .animate-slow-grow {
   animation: slowGrow 3s ease-in-out infinite alternate;
+}
+
+.gradient-text {
+  background: linear-gradient(45deg, var(--color-gradient-start), var(--color-gradient-end));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
