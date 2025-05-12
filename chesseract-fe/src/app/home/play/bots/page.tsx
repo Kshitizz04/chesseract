@@ -91,7 +91,7 @@ const Bot = () => {
             </div>
 
             {/* Right Section */}
-            <div className="md:w-1/4 w-full md:h-full max-w-md min-w-[225px] md:p-2 bg-bg-200 rounded-md flex flex-col gap-6 place-self-center">
+            <div className="md:w-1/4 w-full md:h-full max-w-md min-w-[225px] md:p-2 bg-bg-200/60 rounded-md flex flex-col gap-6 place-self-center">
                 {!gameStarted ? (
                     <div>
                         {/* Difficulty Selection */}

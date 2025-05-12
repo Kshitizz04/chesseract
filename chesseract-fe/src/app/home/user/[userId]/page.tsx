@@ -164,7 +164,7 @@ const User = () => {
 	}
 
 	return (
-		<div className="h-full w-full p-2 rounded-md bg-bg-200 max-md:overflow-scroll">
+		<div className="h-full w-full p-2 rounded-md max-md:overflow-scroll">
 			<div className="grid grid-cols-1 md:grid-cols-3 gap-2 h-full">
 				{/* User Profile Card */}
 				<div className="md:col-span-1 h-full flex flex-col">
@@ -174,7 +174,7 @@ const User = () => {
 
 				{/* Analytics Section */}
 				<div className="md:col-span-2 h-full md:overflow-scroll">
-				<Card className="shadow-lg bg-bg-100">
+				<Card className="shadow-lg bg-bg-100/60">
 					<CardHeader>
 					<CardTitle>Analytics</CardTitle>
 					<Tabs className="w-full">
@@ -433,7 +433,7 @@ const User = () => {
 				</Card>
 
 				{/* Game History Section */}
-				<Card className="shadow-lg mt-2 bg-bg-100">
+				<Card className="shadow-lg mt-2 bg-bg-100/60">
 					<CardHeader>
 						<CardTitle>Game History</CardTitle>
 						<Tabs className="w-full">

@@ -41,7 +41,11 @@
 }
 
 body {
-  background: var(--color-bg-100);
+  background-image: url("../assets/bg-img.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
   color: var(--color-text-100);
 }
 
