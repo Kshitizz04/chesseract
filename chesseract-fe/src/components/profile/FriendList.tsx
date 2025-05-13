@@ -125,7 +125,7 @@ const FriendList = ({ isForProfile, userId }: UserInfoProps) => {
     }
 
     return (
-        <Card className="shadow-lg bg-bg-100 mt-2 h-full flex flex-col">
+        <Card className="shadow-lg bg-bg-100/60 mt-2 h-full flex flex-col">
             <CardHeader className="pb-2">
                 <CardTitle>Friends</CardTitle>
                 <div className="relative mt-2">

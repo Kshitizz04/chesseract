@@ -24,7 +24,7 @@ export const Tabs = ({ children, className = '' }: TabProps) => {
 
 export const TabsList = ({ children, className = '' }: TabProps) => {
   return (
-    <div className={`flex border-b mb-4 ${className}`}>
+    <div className={`flex border-b border-accent-200 mb-4 ${className}`}>
       {children}
     </div>
   );
@@ -36,8 +36,8 @@ export const TabsTrigger = ({ onClick, children, active }: TabsTriggerProps) => 
       onClick={onClick}
       className={`px-4 py-2 font-medium text-sm focus:outline-none ${
         active
-          ? 'border-b-2 border-primary text-primary'
-          : 'text-gray-500 hover:text-gray-700'
+          ? 'border-b-2 border-accent-200 text-accent-200'
+          : 'text-text-100 hover:text-accent-200'
       }`}
     >
       {children}

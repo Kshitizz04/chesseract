@@ -14,12 +14,30 @@ interface PlayerRatingData {
     rapid?: number;
   };
   stats?: {
-    wins?: number;
-    losses?: number;
-    draws?: number;
-    gamesPlayed?: number;
-    highestRating?: number;
-    lowestRating?: number;
+    bullet: {
+      wins?: number;
+      losses?: number;
+      draws?: number;
+      gamesPlayed?: number;
+      highestRating?: number;
+      lowestRating?: number;
+    },
+    blitz: {
+      wins?: number;
+      losses?: number;
+      draws?: number;
+      gamesPlayed?: number;
+      highestRating?: number;
+      lowestRating?: number;
+    },
+    rapid: {
+      wins?: number;
+      losses?: number;
+      draws?: number;
+      gamesPlayed?: number;
+      highestRating?: number;
+      lowestRating?: number;
+    },
   };
 }
 

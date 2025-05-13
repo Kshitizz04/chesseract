@@ -251,7 +251,7 @@ const UserInfoCard = ({ isForProfile, userId, totalGames }: UserInfoCardProps) =
     }
 
     return (
-        <Card className="shadow-lg bg-bg-100">
+        <Card className="shadow-lg bg-bg-100/60">
             <CardHeader className="relative pb-0">
                 {isForProfile ? !editing && !loading && (
                     <Button

@@ -10,6 +10,7 @@ import Link from "next/link";
 import bgImage from "@/assets/auth-desk-bg.png";
 import bgImagePhone from "@/assets/auth-phone-bg.png";
 import LogoTextSvg from "@/assets/LogoTextSvg";
+import Image from "next/image";
 
 const SignUp = () => {
     const [username, setUsername] = useState("");
@@ -82,25 +83,33 @@ const SignUp = () => {
     return (
         <div className="relative flex justify-between md:justify-start h-screen">
             <div
-                className="hidden md:block absolute inset-0 bg-cover bg-center pointer-events-none"
-                style={{
-                    backgroundImage: `url(${bgImage.src})`,
-                    opacity: 1,
-                    zIndex: -1,
-                }}
-            />
+                className="hidden md:block relative w-3/5 h-full"
+            >
+                <Image
+                    src={bgImage.src}
+                    alt="Background"
+                    fill
+                    priority
+                    sizes="100vw"
+                    className="object-cover object-center"
+                />
+            </div>
 
             <div
-                className="block md:hidden absolute inset-0 bg-cover bg-center pointer-events-none"
-                style={{
-                    backgroundImage: `url(${bgImagePhone.src})`,
-                    opacity: 0.3,
-                    zIndex: -1,
-                }}
-            />
+                className="block md:hidden absolute inset-0 bg-cover bg-center  pointer-events-none"
+            >
+                <Image
+                    src={bgImagePhone.src}
+                    alt="Background"
+                    fill
+                    priority
+                    sizes="100vw"
+                    className="object-cover object-center"
+                />
+            </div>
 
-            <div className="relative w-96 md:w-1/4 md:bg-bg-100 flex flex-col items-center justify-center p-2">
-                <div className="fixed top-0 flex flex-col justify-start w-max m-4">
+            <div className="relative w-full md:w-2/5 bg-bg-100/70 md:bg-bg-100 flex flex-col items-center justify-center p-2">
+                <div className="absolute top-0 left-0 flex flex-col justify-start w-max m-4">
                     <LogoTextSvg id="sign-in" className="w-1/2" />
                     <p className="gradient-text">Think Inside The Chesseract</p>
                 </div>
@@ -204,10 +213,10 @@ const SignUp = () => {
                     <button
                         type="submit"
                         disabled={loading}
-                        className={`w-full p-2 text-white rounded-md ${
+                        className={`w-full p-2 text-accent-200 rounded-md ${
                             loading
-                                ? "bg-primary-200 cursor-not-allowed text-accent-200"
-                                : "bg-primary-100 hover:bg-primary-200"
+                                ? "bg-bg-300 cursor-not-allowed"
+                                : "bg-bg-200 hover:bg-bg-300"
                         } mb-4`}
                     >
                         {loading ? "Creating Account..." : "Sign Up"}

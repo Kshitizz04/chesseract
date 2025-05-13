@@ -116,7 +116,7 @@ const SideBar = ({
                     ${isSideBarOpen ? "w-56" : "w-22"}
                 `}
         >
-            <div className="bg-bg-200 rounded-md w-full h-full flex flex-col p-2">
+            <div className="bg-bg-200/60 rounded-md w-full h-full flex flex-col p-2">
                 {/* Logo and Toggle */}
                 <div className={`flex items-center mb-8 mt-2 gap-2 ${!isSideBarOpen && 'justify-center'}`}>
                     <button 
