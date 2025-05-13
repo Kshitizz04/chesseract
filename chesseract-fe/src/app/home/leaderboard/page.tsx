@@ -6,7 +6,7 @@ import RatingLeaderboard from '@/components/leaderboard/RatingLeaderboard'
 import PuzzleLeaderboard from '@/components/leaderboard/PuzzleLeaderboard'
 import RatingJumpLeaderboard from '@/components/leaderboard/RatingJumpLeaderboard'
 import TotalGamesLeaderboard from '@/components/leaderboard/TotalGamesLeaderboard'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 const LeaderBoard = () => {
     const [activeTab, setActiveTab] = useState("global")
