@@ -175,8 +175,8 @@ const SideBar = ({
                     
                     <NavItem 
                         icon={<FaUsers size={20} />} 
-                        title="Friends" 
-                        href="/home/friends" 
+                        title="People" 
+                        href="/home/people" 
                         isSideBarOpen={isSideBarOpen}
                     />
 

@@ -395,21 +395,34 @@ export const getSuggestions = async (req: Request, res: Response, next: NextFunc
         }
         
         const randomMostActive = getRandomSubset(mostActiveUsers, 5).map(u => ({
-        ...userDetailsMap.get(u._id.toString())?.toObject(),
-        suggestionReason: 'most_active'
+            ...userDetailsMap.get(u._id.toString())?.toObject(),
+            gamesCount: u.gamesCount
         }));
         
         const randomRecentOpponents = getRandomSubset(recentOpponents, 5).map(u => ({
-        ...userDetailsMap.get(u._id.toString())?.toObject(),
-        suggestionReason: 'recent_opponent',
-        lastPlayed: u.lastPlayedDate
+            ...userDetailsMap.get(u._id.toString())?.toObject(),
+            lastPlayed: u.lastPlayedDate
         }));
         
-        const randomMutualFriends = getRandomSubset(friendsOfFriends, 5).map(u => ({
-        ...userDetailsMap.get(u._id.toString())?.toObject(),
-        suggestionReason: 'mutual_friends',
-        mutualFriendCount: u.mutualFriendCount
-        }));
+        const randomMutualFriends = await Promise.all (
+            getRandomSubset(friendsOfFriends, 5).map(async (u) => {
+                // Find up to 2 mutual friends between currentUser and this user
+                const mutuals = await User.aggregate([
+                    { $match: { 
+                        _id: { $in: currentUser.friends },
+                        friends: new mongoose.Types.ObjectId(u._id)
+                    }},
+                    { $project: { _id: 1, username: 1, profilePicture: 1 }},
+                    { $limit: 2 }
+                ]);
+                
+                return {
+                    ...userDetailsMap.get(u._id.toString())?.toObject(),
+                    mutualFriendCount: u.mutualFriendCount,
+                    mutualFriends: mutuals // Up to 2 mutual friends
+                };
+            })
+        );
         
         res.status(200).json({
             success: true,
