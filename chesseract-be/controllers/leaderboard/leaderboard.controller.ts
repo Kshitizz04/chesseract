@@ -23,8 +23,8 @@ export const getTopPlayersByRating = async (req: Request, res: Response, next: N
         const formatPath = `rating.${format}`;
         
         const query: any = {};
-        if (country) {
-            query.country = country;
+        if (country && country !== "null") {
+            query.country = country
         }
         
         // Get top 5 players
@@ -81,7 +81,7 @@ export const getTopPlayersByPuzzleScore = async (req: Request, res: Response, ne
         const formatPath = `puzzleScores.${format}`;
         
         const query: any = {};
-        if (country) {
+        if (country && country !== "null") {
             query.country = country;
         }
         
@@ -130,7 +130,7 @@ export const getTopPlayersByGamesPlayed = async (req: Request, res: Response, ne
         const { country } = req.query;
         
         const query: any = {};
-        if (country) {
+        if (country && country !== "null") {
             query.country = country;
         }
         
@@ -203,7 +203,7 @@ export const getTopFriendsByRating = async (req: Request, res: Response, next: N
         const query: any = {
             _id: { $in: friendIds }
         };
-        if (country) {
+        if (country && country !== "null") {
             query.country = country;
         }
         
@@ -265,7 +265,7 @@ export const getTopFriendsByPuzzleScore = async (req: Request, res: Response, ne
         const query: any = {
             _id: { $in: friendIds }
         };
-        if (country) {
+        if (country && country !== "null") {
             query.country = country;
         }
         

@@ -86,7 +86,7 @@ const SignIn = () => {
                     zIndex: -1,
                 }}
             /> */}
-            <div className="relative w-full md:w-2/5 flex flex-col items-center justify-center p-2 bg-bg-100/70 bg-bg-100">
+            <div className="relative w-full md:w-2/5 flex flex-col items-center justify-center p-2 bg-bg-100/70 md:bg-bg-100">
                 <div className="absolute top-0 left-0 flex flex-col justify-start w-max m-4">
                     <LogoTextSvg id="sign-in" className="w-1/2" />
                     <p className="gradient-text">Think Inside The Chesseract</p>
