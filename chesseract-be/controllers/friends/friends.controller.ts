@@ -1,10 +1,11 @@
 import { NextFunction, Request, Response } from 'express';
 import User from '../../models/user.model.ts';
 import FriendRequest from '../../models/friend-request.model.ts';
-import mongoose from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 import { CustomError } from '../../utils/CustomError.ts';
 import { AcceptRejectFriendRequestBody, GetAllFriendsResponse, GetAllFriendsResponseData, SendFriendRequestBody } from './friends.types.ts';
 import Notification from '../../models/notification.model.ts';
+import Game from '../../models/game.model.ts';
 
 // Get all friends of the current user
 export const getFriends = async (req: Request, res: Response<GetAllFriendsResponse>, next: NextFunction) => {
@@ -272,6 +273,152 @@ export const removeFriend = async (req: Request, res: Response, next: NextFuncti
             success: true, 
             message: "Friend removed successfully",
             data: null
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const getSuggestions = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const currentUserId = req.user?.userId; 
+        
+        if (!currentUserId) {
+            const error = new CustomError('Unauthorized', 401);
+            throw error;
+        }
+        
+        const currentUser = await User.findById(currentUserId);
+        if (!currentUser) {
+            const error = new CustomError('User not found', 404);
+            throw error;
+        }
+        
+        // 1. Users with most games played (who aren't friends)
+        const mostActiveUsers = await Game.aggregate([
+            {
+                $match: {
+                $or: [
+                    { whitePlayer: { $ne: new mongoose.Types.ObjectId(currentUserId) } },
+                    { blackPlayer: { $ne: new mongoose.Types.ObjectId(currentUserId) } }
+                ],
+                status: "finished"
+                }
+            },
+            {
+                $group: {
+                _id: {
+                    $cond: [
+                    { $eq: ["$whitePlayer", new mongoose.Types.ObjectId(currentUserId)] },
+                    "$blackPlayer",
+                    "$whitePlayer"
+                    ]
+                },
+                gamesCount: { $sum: 1 }
+                }
+            },
+            { $match: { _id: { $nin: currentUser.friends } } }, // Exclude friends
+            { $sort: { gamesCount: -1 } },
+            { $limit: 20 } // Get top 20 to randomly select from
+        ]);
+        
+        // 2. Recent opponents (who aren't friends)
+        const recentOpponents = await Game.aggregate([
+            {
+                $match: {
+                $or: [
+                    { whitePlayer: new mongoose.Types.ObjectId(currentUserId) },
+                    { blackPlayer: new mongoose.Types.ObjectId(currentUserId) }
+                ],
+                status: "finished"
+                }
+            },
+            {
+                $sort: { createdAt: -1 }
+            },
+            {
+                $group: {
+                _id: {
+                    $cond: [
+                    { $eq: ["$whitePlayer", new mongoose.Types.ObjectId(currentUserId)] },
+                    "$blackPlayer",
+                    "$whitePlayer"
+                    ]
+                },
+                lastPlayedDate: { $first: "$createdAt" }
+                }
+            },
+            { $match: { _id: { $nin: currentUser.friends } } }, // Exclude friends
+            { $sort: { lastPlayedDate: -1 } },
+            { $limit: 20 } // Get 20 most recent to randomly select from
+        ]);
+        
+        // 3. Users with mutual friends
+        // First, get all friends of current user's friends 
+        const friendsOfFriends = await User.aggregate([
+            { $match: { _id: { $in: currentUser.friends } } },
+            { $unwind: "$friends" },
+            { $group: { _id: "$friends", mutualFriendCount: { $sum: 1 } } },
+            { $match: {
+                $and: [
+                    { _id: { $ne: new mongoose.Types.ObjectId(currentUserId) } }, // Exclude current user
+                    { _id: { $nin: currentUser.friends } } // Exclude direct friends
+                ]}
+            },
+            { $sort: { mutualFriendCount: -1 } },
+            { $limit: 20 } // Get top 20 to randomly select from
+        ]);
+
+        // Get detailed user information for all candidates
+        const mostActiveUserIds = mostActiveUsers.map(u => u._id);
+        const recentOpponentIds = recentOpponents.map(u => u._id);
+        const mutualFriendUserIds = friendsOfFriends.map(u => u._id);
+        
+        // Combine all IDs for a single query
+        const allCandidateIds = [
+        ...new Set([...mostActiveUserIds, ...recentOpponentIds, ...mutualFriendUserIds])
+        ];
+        
+        const userDetails = await User.find(
+        { _id: { $in: allCandidateIds } }
+        ).select('username profilePicture rating isOnline country _id fullname');
+        
+        // Create a map for quick lookup
+        const userDetailsMap = new Map(
+            userDetails.map(user => [(user._id as Types.ObjectId).toString(), user])
+        );
+        
+        // Randomly select 5 users from each category
+        function getRandomSubset(array: any[], count: number) {
+        const shuffled = [...array].sort(() => 0.5 - Math.random());
+        return shuffled.slice(0, Math.min(count, shuffled.length));
+        }
+        
+        const randomMostActive = getRandomSubset(mostActiveUsers, 5).map(u => ({
+        ...userDetailsMap.get(u._id.toString())?.toObject(),
+        suggestionReason: 'most_active'
+        }));
+        
+        const randomRecentOpponents = getRandomSubset(recentOpponents, 5).map(u => ({
+        ...userDetailsMap.get(u._id.toString())?.toObject(),
+        suggestionReason: 'recent_opponent',
+        lastPlayed: u.lastPlayedDate
+        }));
+        
+        const randomMutualFriends = getRandomSubset(friendsOfFriends, 5).map(u => ({
+        ...userDetailsMap.get(u._id.toString())?.toObject(),
+        suggestionReason: 'mutual_friends',
+        mutualFriendCount: u.mutualFriendCount
+        }));
+        
+        res.status(200).json({
+            success: true,
+            message: "Suggestions fetched successfully",
+            data: {
+                mostActive: randomMostActive.filter(Boolean),
+                recentOpponents: randomRecentOpponents.filter(Boolean),
+                mutualFriends: randomMutualFriends.filter(Boolean),
+            }
         });
     } catch (error) {
         next(error);

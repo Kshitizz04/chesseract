@@ -188,7 +188,7 @@ const UserInfoCard = ({ isForProfile, userId, totalGames }: UserInfoCardProps) =
                                 ) : (
                                     <FaUser size={90}/>
                                 )}
-                                <div className="absolute inset-0 hover:bg-black/50 hover:cursor-pointer transition-all rounded-full opacity-0 hover:opacity-100 flex items-center justify-center z-10">
+                                <div className="absolute inset-0 max-md:bg-black/30 hover:bg-black/30 hover:cursor-pointer transition-all rounded-full md:opacity-0 hover:opacity-100 flex items-center justify-center z-10">
                                     <BiImageAdd size={50} className="text-white" />
                                 </div>
                             </div>
