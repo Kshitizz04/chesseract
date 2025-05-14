@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import getUserBySearch, { GetUsersBySearchData } from "@/services/getUsersBySearch";
 import getSuggestions, { GetSuggestionsData } from "@/services/getSuggestions";
 import Image from "next/image";
@@ -8,20 +8,17 @@ import { IoSearch } from "react-icons/io5";
 import { FaUserFriends } from "react-icons/fa";
 import { MdSportsEsports } from "react-icons/md";
 import { FiClock } from "react-icons/fi";
-import { FaCircle } from "react-icons/fa";
 import LoadingSpinner from "@/components/utilities/LoadingSpinner";
 import Avatar from "@/components/utilities/Avatar";
 import FriendButton from "@/components/utilities/FriendButton";
 import { getTimeAgo } from "@/utils/getTimeAgo";
 import useUserRedirection from "@/utils/hooks/userRedirection";
-import CountryFlag from "@/utils/countryFlag";
 
 const People = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [searchResults, setSearchResults] = useState<GetUsersBySearchData | null>(null);
   const [suggestions, setSuggestions] = useState<GetSuggestionsData | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [activePopover, setActivePopover] = useState<string | null>(null);
   const userRouter = useUserRedirection();
 
   // Fetch suggestions on component mount
@@ -69,7 +66,7 @@ const People = () => {
     handleSearch(query);
   };
 
-  const UserCard = ({ user, reason, additionalInfo }: any) => (
+  const UserCard = ({ user }: any) => (
     <div className="relative">
       <div 
         className="flex items-center p-3 bg-bg-200 rounded-lg mb-2 hover:bg-bg-300 transition-colors cursor-pointer gap-2"
@@ -146,9 +143,9 @@ const People = () => {
                 )}
                 
                 {(!searchResults.friends || searchResults.friends.length === 0) && 
-                 (!searchResults.nonFriends || searchResults.nonFriends.length === 0) && (
+                 (!searchResults.nonFriends || searchResults.nonFriends.length === 0) &&(
                   <p className="text-center py-8 text-[var(--color-text-100)]">
-                    No users found matching "{searchTerm}"
+                    No users found {searchTerm ? `matching "${searchTerm}"` : ""}.
                   </p>
                 )}
               </div>
