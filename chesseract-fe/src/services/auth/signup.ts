@@ -1,6 +1,7 @@
 import CommonResponse from "@/models/CommonResponse";
 import API_ENDPOINTS from "../../../config/apiConfig";
 import { IUser } from "../../models/user";
+import { AuthData } from "@/models/AuthData";
 
 interface SignUpData {
     username: string;
@@ -10,7 +11,7 @@ interface SignUpData {
 
 interface SignUpResponseData {
     token: string;
-    user: IUser;
+    user: AuthData;
 }
 
 const signUp = async (data: SignUpData): Promise<CommonResponse<SignUpResponseData>> => {

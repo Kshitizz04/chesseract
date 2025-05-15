@@ -46,8 +46,7 @@ const Home = () => {
         <div className="h-full w-full p-4 flex flex-col gap-6">
             {/* Welcome Section */}
             <div className="w-full p-6 rounded-lg shadow-lg text-center">
-                <h1 className="text-4xl font-bold mb-2 gradient-text">Welcome to Chesseract</h1>
-                {/* <p className="text-xl text-text-200 gradeint-text">Where strategy meets elegance</p> */}
+                
             </div>
             
             {/* Asymmetric Grid Layout */}

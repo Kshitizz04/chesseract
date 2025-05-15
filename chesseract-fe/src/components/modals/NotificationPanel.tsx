@@ -3,7 +3,7 @@ import { useToast } from '@/contexts/ToastContext';
 import handleChallengeFromNotification, { GameChallenge } from '@/services/handleChallengeFromNotification';
 import handleRequestFromNotification from '@/services/handleRequestFromNotification';
 import markNotificationAsRead from '@/services/markNotificationAsRead';
-import { useLayout } from '@/utils/hooks/useLayout';
+import { useLayout } from '@/contexts/useLayout';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Avatar from '../utilities/Avatar';
@@ -20,7 +20,7 @@ const NotificationPanel = () => {
         toggleNotificationPanel,
         notifications,
         refreshNotifications,
-        loading
+        loadingNotifications
     } = useLayout();
     const router = useRouter();
     const { showToast } = useToast();
@@ -199,7 +199,7 @@ const NotificationPanel = () => {
             onClose={toggleNotificationPanel}
             title="Notifications"
         >
-            {loading ? (
+            {loadingNotifications ? (
                 <div className="flex justify-center items-center h-40">
                     <LoadingSpinner />
                 </div>

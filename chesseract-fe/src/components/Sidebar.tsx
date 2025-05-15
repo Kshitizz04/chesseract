@@ -10,7 +10,7 @@ import { getLocalStorage } from "@/utils/localstorage";
 import Avatar from './utilities/Avatar';
 import { MdDarkMode, MdLightMode } from "react-icons/md";
 import { useTheme } from '@/contexts/ThemeContext';
-import { useLayout } from "@/utils/hooks/useLayout";
+import { useLayout } from "@/contexts/useLayout";
 import LogoTextSvg from "@/assets/LogoTextSvg";
 
 interface SideBarProps {

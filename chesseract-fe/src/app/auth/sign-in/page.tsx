@@ -11,6 +11,7 @@ import bgImage from "@/assets/auth-desk-bg.png";
 import bgImagePhone from "@/assets/auth-phone-bg.png";
 import LogoTextSvg from "@/assets/LogoTextSvg";
 import Image from "next/image";
+import { useLayout } from "@/contexts/useLayout";
 
 const SignIn = () => {
     const [email, setEmail] = useState("");
@@ -19,6 +20,7 @@ const SignIn = () => {
     const [loading, setLoading] = useState(false);
     const {showToast} = useToast();
 
+    const {setAuthData} = useLayout();
     const router = useRouter();
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -35,9 +37,10 @@ const SignIn = () => {
             const response = await signIn({ email, password });
             if (response.success) {
                 showToast("Sign-in successful!", "success");
-                setLocalStorage("token", response.data?.token);
-                setLocalStorage("user", response.data?.user);
-                setLocalStorage("userId", response.data?.user._id);
+                setLocalStorage("token", response.data.token);
+                setLocalStorage("user", response.data.user);
+                setLocalStorage("userId", response.data.user._id);
+                setAuthData(response.data.user);
                 router.push("/home");
             } else {
                 const error = response.error || "An error occurred";

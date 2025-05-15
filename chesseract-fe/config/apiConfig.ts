@@ -5,7 +5,7 @@ const API_ENDPOINTS = {
     auth:{
         signIn:  `${API_BASE_URL}/auth/sign-in`, //post
         signUp: `${API_BASE_URL}/auth/sign-up`, //post
-        signOut: `${API_BASE_URL}/auth/sign-out`, //post
+        refreshToken: `${API_BASE_URL}/auth/refresh-token`, //get
     },
     users:{
         getAll : (query: string) => `${API_BASE_URL}/users?query=${query}`, //get

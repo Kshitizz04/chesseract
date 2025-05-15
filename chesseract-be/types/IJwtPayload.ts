@@ -1,3 +1,6 @@
 export interface IJwtPayload {
-    userId: number;
+    userId: string | number;
+    iat?: number;  
+    exp?: number;  
+    nbf?: number;   
 }
