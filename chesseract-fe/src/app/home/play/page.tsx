@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react"
 import StaticBoard from "@/components/StaticBoard"
 import { FaHandshake, FaRobot } from "react-icons/fa6"
 import { useRouter } from "next/navigation"
+import Image from "next/image"
+import playImage from "@/assets/play-game.png"
 
 const Play = () => {
     const [size, setSize] = useState(0);
@@ -36,6 +38,12 @@ const Play = () => {
             </div>
             <div className="h-full w-full  md:w-1/3 bg-bg-100/60 rounded-md p-4 flex flex-col items-center gap-4">
                 <h2 className="text-4xl font-semibold text-center mb-4">Play Chess</h2>
+                <Image 
+                    src={playImage.src} 
+                    alt="play game"
+                    width={200}
+                    height={200}
+                />
                 <div
                     className="mb-4 w-full rounded-md bg-accent-200 pb-[3px] cursor-pointer"
                     onClick={() => router.push('play/online')}

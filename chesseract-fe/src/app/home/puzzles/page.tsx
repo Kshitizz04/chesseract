@@ -1,11 +1,11 @@
 "use client"
-import Button from "@/components/utilities/CustomButton"
-import { SiStackblitz } from "react-icons/si"
 import { useEffect, useRef, useState } from "react"
 import StaticBoard from "@/components/StaticBoard"
-import { FaHandshake, FaPuzzlePiece, FaRobot } from "react-icons/fa6"
+import { FaPuzzlePiece} from "react-icons/fa6"
 import { useRouter } from "next/navigation"
 import { GiBattleGear, GiPuzzle } from "react-icons/gi"
+import Image from "next/image"
+import playPuzzle from "@/assets/play-puzzle.png"
 
 const Puzzle = () => {
     const [size, setSize] = useState(0);
@@ -38,6 +38,13 @@ const Puzzle = () => {
             </div>
             <div className="h-full w-full  md:w-1/3 bg-bg-100/60 rounded-md p-4 flex flex-col items-center gap-4">
                 <h2 className="text-4xl font-semibold text-center mb-4">Puzzles</h2>
+                <Image
+                    src={playPuzzle.src} 
+                    alt="play game"
+                    width={200}
+                    height={200}
+                    className="rounded-md"
+                />
                 <div
                     className="mb-4 w-full rounded-md bg-accent-200 pb-[3px] cursor-pointer"
                     onClick={() => router.push('puzzles/puzzle-rush')}
