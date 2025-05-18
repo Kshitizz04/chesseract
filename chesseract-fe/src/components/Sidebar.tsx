@@ -130,7 +130,9 @@ const SideBar = ({
                             <HiMenuAlt2 size={20} />
                         )}
                     </button>
-                    <LogoTextSvg id="sidebar" className={`${!isSideBarOpen && 'hidden'}`}/>
+                    <div onClick={()=> router.push("/home")}>
+                        <LogoTextSvg id="sidebar" className={`${!isSideBarOpen && 'hidden'} cursor-pointer`}/>
+                    </div>
                 </div>
                 
                 {/* Navigation Items */}

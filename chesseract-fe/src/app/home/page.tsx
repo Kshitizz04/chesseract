@@ -1,190 +1,220 @@
 "use client"
 import { useRouter } from "next/navigation"
-import { FaChessKnight, FaChessKing, FaChartLine } from "react-icons/fa6"
+import { FaChessKnight, FaChessKing } from "react-icons/fa6"
 import { GiPuzzle } from "react-icons/gi"
 import { FiUsers } from "react-icons/fi"
 import { IoStatsChartSharp } from "react-icons/io5"
-import { LuLightbulb } from "react-icons/lu"
-import { FaHistory } from "react-icons/fa"
-import Image from "next/image"
-import { useState, useEffect } from "react"
+import { useState, useEffect, JSX } from "react"
+import Avatar from "@/components/utilities/Avatar"
+import { useLayout } from "@/contexts/useLayout"
+import getUserGames, { GetGameHistoryData } from "@/services/getUserGames"
+import { getLocalStorage } from "@/utils/localstorage"
+import { TimeFormats } from "@/models/GameUtilityTypes"
+import { useToast } from "@/contexts/ToastContext"
+import GameHistory from "@/components/GameHistory"
+import { IconType } from "react-icons"
+import getUserRatingHistory, { GetUserRatingHistoryData } from "@/services/getUserRatingHistory"
+import fillMissingHistory, { getStartDate } from "@/utils/fillMissingHistory"
+import LoadingSpinner from "@/components/utilities/LoadingSpinner"
+import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 
 const Home = () => {
-    const router = useRouter();
-    //const [dailyPuzzle, setDailyPuzzle] = useState<string | null>(null);
-    const [recentGames, setRecentGames] = useState<any[]>([]);
-    const [dailyTip, setDailyTip] = useState<string>("");
-    const [weeklyRatings, setWeeklyRatings] = useState<any[]>([]);
-
-    const dailyPuzzle = null;
+    const [historyTab, setHistoryTab] = useState('all');
+    const [gameHistory, setGameHistory] = useState<GetGameHistoryData | null>(null);
+    const [loadingGameHistory, setLoadingGameHistory] = useState(false);
+    const [loadingRatingHistory, setLoadingRatingHistory] = useState(false);
+	const [ratingHistory, setRatingHistory] = useState<GetUserRatingHistoryData | null>(null);
+    const [page, setPage] = useState(1);
     
-    // Mock data - would be replaced with real API calls
-    useEffect(() => {
-        // Mock recent games
-        setRecentGames([
-            { id: 1, opponent: "ChessMaster45", result: "win", date: "2 hours ago" },
-            { id: 2, opponent: "QueenGambit", result: "loss", date: "Yesterday" },
-            { id: 3, opponent: "KnightRider", result: "draw", date: "2 days ago" },
-        ]);
+    const router = useRouter();
+    const userId = getLocalStorage('userId')
+    const limit = 10;
+    const {authData} = useLayout()
+    const {showToast} = useToast()
 
-        // Mock chess tip
-        setDailyTip("Control the center! Occupying the middle of the board gives your pieces maximum mobility and impact.");
-        
-        // Mock weekly rating data
-        setWeeklyRatings([
-            { day: "Mon", rating: 1200 },
-            { day: "Tue", rating: 1220 },
-            { day: "Wed", rating: 1210 },
-            { day: "Thu", rating: 1250 },
-            { day: "Fri", rating: 1280 },
-            { day: "Sat", rating: 1260 },
-            { day: "Sun", rating: 1290 },
-        ]);
-    }, []);
+    const selectHistoryTab = (tab: string) => {
+		setHistoryTab(tab);
+	}
+
+    useEffect(()=>{
+		const fetchGameHistory = async (tab: string) => {
+			let format = null;
+			if(['bullet', 'blitz', 'rapid'].includes(tab)){
+				format = tab as TimeFormats;
+			}
+			try{
+				setLoadingGameHistory(true);
+				const response = await getUserGames(userId as string, format, limit, page);
+				if(response.success){
+					setGameHistory(response.data);
+				}else {
+					const error = response.error || "An error occurred";
+					showToast(error, "error");
+				}
+			}catch(err){
+				console.log("failed to fetch game history", err);
+			}finally{
+				setLoadingGameHistory(false);
+			}
+		}
+		fetchGameHistory(historyTab);
+	},[page, historyTab]);
+
+    useEffect(()=>{
+		const fetchRatingHistory = async () => {
+			try{
+				setLoadingRatingHistory(true);
+				const response = await getUserRatingHistory(userId as string, null, "1w");
+				if(response.success){
+					const startDate = getStartDate("1w");
+					const endDate = new Date();
+					const filledHistory = fillMissingHistory(response.data, startDate, endDate);
+					setRatingHistory(filledHistory);
+				}else {
+					const error = response.error || "An error occurred";
+					showToast(error, "error");
+				}
+			}catch(err){
+				console.log("failed to fetch user rating history", err);
+			}finally{
+				setLoadingRatingHistory(false);
+			}
+		}
+		fetchRatingHistory();
+	}, [userId]);
+
+    const Card = ({path, Icon, heading, desc, iconClasses}:{path: string, Icon: IconType, heading:string, desc: string, iconClasses:string})=>{
+        return(
+            <div 
+                className="w-64 h-40 bg-gradient-to-br from-bg-200 to-bg-300 rounded-lg p-5 shadow-lg flex flex-col items-center justify-center cursor-pointer hover:scale-[1.03] transition-transform flex-shrink-0"
+                onClick={() => router.push(path)}
+            >
+                <div className="flex gap-2 items-center">
+                    <Icon size={40} className={iconClasses}/>
+                    <h2 className="text-lg font-semibold mb-2">{heading}</h2>
+                </div>
+                <p className="text-center text-text-200 text-md">{desc}</p>
+            </div>
+        )
+    }
 
     return(
-        <div className="h-full w-full p-4 flex flex-col gap-6">
-            {/* Welcome Section */}
-            <div className="w-full p-6 rounded-lg shadow-lg text-center">
-                
-            </div>
-            
-            {/* Asymmetric Grid Layout */}
-            <div className="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-12 gap-4 flex-grow">
-                {/* Play Card - Span 4 columns */}
-                <div 
-                    className="md:col-span-3 lg:col-span-4 bg-gradient-to-br from-bg-200 to-bg-300 rounded-lg p-5 shadow-lg flex flex-col items-center justify-center cursor-pointer hover:scale-[1.01] transition-transform"
-                    onClick={() => router.push('/home/play')}
-                >
-                    <FaChessKnight size={60} className="text-accent-200 mb-4" />
-                    <h2 className="text-2xl font-semibold mb-2">Play Chess</h2>
-                    <p className="text-center text-text-200">Challenge players online, face your friends, or test yourself against bots</p>
-                </div>
-                
-                {/* Puzzles Card - Span 3 columns */}
-                <div 
-                    className="md:col-span-3 lg:col-span-3 bg-gradient-to-br from-bg-200 to-bg-300 rounded-lg p-5 shadow-lg flex flex-col items-center justify-center cursor-pointer hover:scale-[1.01] transition-transform"
-                    onClick={() => router.push('/home/puzzles')}
-                >
-                    <GiPuzzle size={60} className="text-[#F7C631] mb-4" />
-                    <h2 className="text-2xl font-semibold mb-2">Puzzles</h2>
-                    <p className="text-center text-text-200">Train your mind with daily challenges and tactical puzzles</p>
-                </div>
-                
-                {/* Tips & Tricks Card - Span 5 columns */}
-                <div className="md:col-span-6 lg:col-span-5 bg-gradient-to-br from-bg-200 to-bg-300 rounded-lg p-5 shadow-lg flex flex-col">
-                    <div className="flex items-center mb-3">
-                        <LuLightbulb size={32} className="text-[#F7C631] mr-3" />
-                        <h2 className="text-2xl font-semibold">Daily Tip</h2>
-                    </div>
-                    <div className="bg-bg-100/30 rounded-md p-4 flex-grow">
-                        <p className="text-text-100 italic">{dailyTip}</p>
-                    </div>
-                </div>
-                
-                {/* People Card - Span 3 columns */}
-                <div 
-                    className="md:col-span-3 lg:col-span-3 bg-gradient-to-br from-bg-200 to-bg-300 rounded-lg p-5 shadow-lg flex flex-col items-center justify-center cursor-pointer hover:scale-[1.01] transition-transform"
-                    onClick={() => router.push('/home/people')}
-                >
-                    <FiUsers size={60} className="text-accent-100 mb-4" />
-                    <h2 className="text-2xl font-semibold mb-2">Connect</h2>
-                    <p className="text-center text-text-200">Find friends, challenge rivals, and build your chess network</p>
-                </div>
-                
-                {/* Weekly Ratings Chart - Span 5 columns */}
-                <div className="md:col-span-6 lg:col-span-5 bg-gradient-to-br from-bg-200 to-bg-300 rounded-lg p-5 shadow-lg">
-                    <div className="flex items-center mb-3">
-                        <FaChartLine size={24} className="text-accent-200 mr-3" />
-                        <h2 className="text-xl font-semibold">Your Rating This Week</h2>
-                    </div>
-                    <div className="h-40 bg-bg-100/30 rounded-md p-2 flex items-end justify-between">
-                        {weeklyRatings.map((day, i) => (
-                            <div key={i} className="flex flex-col items-center w-full">
-                                <div className="relative w-full flex justify-center">
-                                    <div 
-                                        className="bg-accent-200 rounded-sm w-4" 
-                                        style={{ height: `${(day.rating - 1150) / 2}px` }}
-                                    />
-                                </div>
-                                <span className="text-xs mt-1">{day.day}</span>
-                            </div>
-                        ))}
-                    </div>
-                    <div className="mt-2 text-right">
-                        <span className="text-sm text-text-200">Current: {weeklyRatings[6]?.rating || 'N/A'}</span>
-                    </div>
-                </div>
-                
-                {/* Leaderboard Card - Span 3 columns */}
-                <div 
-                    className="md:col-span-3 lg:col-span-3 bg-gradient-to-br from-bg-200 to-bg-300 rounded-lg p-5 shadow-lg flex flex-col items-center justify-center cursor-pointer hover:scale-[1.01] transition-transform"
-                    onClick={() => router.push('/home/leaderboard')}
-                >
-                    <IoStatsChartSharp size={60} className="text-gradient-end mb-4" />
-                    <h2 className="text-2xl font-semibold mb-2">Leaderboard</h2>
-                    <p className="text-center text-text-200">See how you rank among the best chess players</p>
-                </div>
-                
-                {/* Recent Games - Span 4 columns */}
-                <div className="md:col-span-3 lg:col-span-4 bg-gradient-to-br from-bg-200 to-bg-300 rounded-lg p-5 shadow-lg">
-                    <div className="flex items-center mb-3">
-                        <FaHistory size={24} className="text-gradient-end mr-3" />
-                        <h2 className="text-xl font-semibold">Recent Games</h2>
-                    </div>
-                    <div className="space-y-2">
-                        {recentGames.map((game) => (
-                            <div 
-                                key={game.id}
-                                className="bg-bg-100/30 rounded-md p-3 flex items-center justify-between cursor-pointer hover:bg-bg-100/50 transition-colors"
-                                onClick={() => router.push(`/home/game/${game.id}`)}
-                            >
-                                <div className="flex items-center">
-                                    <div className={`w-3 h-3 rounded-full mr-3 ${
-                                        game.result === 'win' ? 'bg-green-500' : 
-                                        game.result === 'loss' ? 'bg-red-500' : 'bg-gray-400'
-                                    }`} />
-                                    <span>{game.opponent}</span>
-                                </div>
-                                <span className="text-sm text-text-200">{game.date}</span>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-                
-                {/* Profile Card - Span 3 columns */}
-                <div 
-                    className="md:col-span-3 lg:col-span-3 bg-gradient-to-br from-bg-200 to-bg-300 rounded-lg p-5 shadow-lg flex flex-col items-center justify-center cursor-pointer hover:scale-[1.01] transition-transform"
+        <div className="h-full p-4 flex flex-col gap-6">
+            <div className="w-full rounded-lg shadow-lg text-center pb-2">
+                <Avatar 
+                    profileImage={authData?.profilePicture} 
+                    username={authData?.username || "User"}
+                    size={40}
+                    showUsername={true}
                     onClick={() => router.push('/home/profile')}
-                >
-                    <FaChessKing size={60} className="text-[#81B64C] mb-4" />
-                    <h2 className="text-2xl font-semibold mb-2">Your Profile</h2>
-                    <p className="text-center text-text-200">Track your progress and analyze your gameplay</p>
+                />
+            </div>
+
+            {/* Options tape */}
+            <div className="flex flex-shrink-0 w-full overflow-x-scroll gap-4 p-1">
+                <Card
+                    path="/home/play"
+                    Icon={FaChessKnight}
+                    iconClasses="text-accent-200 mb-4"
+                    heading="Play Chess"
+                    desc="Challenge players online, face your friends, or test yourself against bots"
+                />
+                <Card
+                    path="/home/puzzles"
+                    Icon={GiPuzzle}
+                    iconClasses="text-[#F7C631] mb-4"
+                    heading="Puzzles"
+                    desc="Train your mind with daily challenges and tactical puzzles"
+                />
+                <Card
+                    path="/home/people"
+                    Icon={FiUsers}
+                    iconClasses="text-accent-100 mb-4"
+                    heading="Connect"
+                    desc="Find friends, challenge rivals, and build your chess network"
+                />
+                <Card
+                    path="/home/leaderboard"
+                    Icon={IoStatsChartSharp}
+                    iconClasses="text-gradient-end mb-4"
+                    heading="Leaderboard"
+                    desc="See how you rank among the best chess players"
+                />
+                <Card
+                    path="/home/profile"
+                    Icon={FaChessKing}
+                    iconClasses="text-[#81B64C] mb-4"
+                    heading="Your Profile"
+                    desc="Track your progress and analyze your gameplay"
+                />
+            </div>
+
+            <div className="flex max-md:flex-col w-full gap-2">
+
+                {/* game history */}
+                <div className="w-full md:w-3/4">
+                    <GameHistory
+                        gameHistory={gameHistory}
+                        loadingGameHistory={loadingGameHistory}
+                        setPage={setPage}
+                        page={page}
+                        setHistoryTab={selectHistoryTab}
+                        historyTab={historyTab}
+                        userId={userId as string}
+                    />
                 </div>
-                
-                {/* Daily Puzzle Teaser - Span 5 columns */}
-                <div 
-                    className="md:col-span-6 lg:col-span-5 bg-gradient-to-br from-bg-200 to-bg-300 rounded-lg shadow-lg flex flex-col cursor-pointer hover:scale-[1.01] transition-transform overflow-hidden"
-                    onClick={() => router.push('/home/puzzles/daily-puzzle')}
-                >
-                    <div className="w-full h-48 bg-bg-100/30 flex items-center justify-center">
-                        {dailyPuzzle ? (
-                            <Image 
-                                src={dailyPuzzle} 
-                                alt="Daily Puzzle" 
-                                width={200} 
-                                height={200} 
-                                className="object-contain"
-                            />
-                        ) : (
-                            <div className="w-48 h-48 bg-bg-300 rounded-md flex items-center justify-center">
-                                <span className="text-lg font-medium">Today&apos;s Challenge</span>
+
+                <div className="w-full md:w-1/4 h-full">
+                    <div className="h-96 w-full mt-2 bg-bg-100/60 rounded-md pt-6 p-2 flex flex-col">
+                        <h2 className="text-lg font-semibold mb-2 text-center">You In The Last Week</h2>
+                        {loadingRatingHistory || !ratingHistory ? (
+                            <div className='flex items-center justify-center h-full w-full'>
+                                <LoadingSpinner/>
                             </div>
-                        )}
-                    </div>
-                    <div className="p-4 text-center">
-                        <h2 className="text-2xl font-semibold mb-2">Daily Puzzle</h2>
-                        <p className="text-text-200">Solve today&apos;s chess puzzle</p>
+                        ): (ratingHistory.blitz.length>0 || ratingHistory.bullet.length>0 || ratingHistory.rapid.length>0) ? (
+                        <ResponsiveContainer width="100%" height={"100%"}>
+                            <LineChart
+                            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                            >
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis
+                                dataKey="date" 
+                                allowDuplicatedCategory={false} 
+                            />
+                            <YAxis domain={['dataMin - 100', 'dataMax + 100']} />
+                            <Tooltip />
+                            <Legend />
+                            <Line
+                                type="monotone" 
+                                dataKey="rating" 
+                                name="Bullet" 
+                                data={ratingHistory?.bullet} 
+                                stroke="#ff6b6b" 
+                                strokeWidth={2} 
+                            />
+                            <Line 
+                                type="monotone" 
+                                dataKey="rating" 
+                                name="Blitz" 
+                                data={ratingHistory?.blitz} 
+                                stroke="#4dabf7" 
+                                strokeWidth={2} 
+                            />
+                            <Line 
+                                type="monotone" 
+                                dataKey="rating" 
+                                name="Rapid" 
+                                data={ratingHistory?.rapid} 
+                                stroke="#40c057" 
+                                strokeWidth={2} 
+                            />
+                            </LineChart>
+                        </ResponsiveContainer>
+                    ) : (
+                        <div className='flex items-center justify-center h-full w-full'>
+                            <p className="text-muted-foreground">No rating history found</p>
+                        </div>
+                    )}
                     </div>
                 </div>
             </div>

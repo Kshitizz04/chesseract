@@ -3,14 +3,16 @@ import { MdDarkMode, MdLightMode } from 'react-icons/md';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLayout } from '@/contexts/useLayout';
 import LogoTextSvg from '@/assets/LogoTextSvg';
+import { useRouter } from 'next/navigation';
 
 const MobileHeader = () => {
 	const { theme, toggleTheme } = useTheme();
 	const {toggleNotificationPanel, toggleSettingsPanel, unreadCount} = useLayout();
+	const router = useRouter();
 
     return (
 		<header className="md:hidden fixed top-0 left-0 right-0 h-14 bg-bg-200 border-b border-bg-300 px-4 flex items-center justify-between z-20">
-			<div className="flex items-center">
+			<div className="flex items-center" onClick={()=> router.push('/home')}>
 					<LogoTextSvg id="mobile-header" className='w-40'/>
 			</div>
 
