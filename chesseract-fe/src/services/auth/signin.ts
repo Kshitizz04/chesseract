@@ -1,6 +1,5 @@
 import CommonResponse from "@/models/CommonResponse";
 import API_ENDPOINTS from "../../../config/apiConfig";
-import { IUser } from "../../models/user";
 import { AuthData } from "@/models/AuthData";
 
 interface SignInData {
