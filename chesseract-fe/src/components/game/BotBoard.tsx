@@ -1,6 +1,6 @@
 import { ChessEngine } from '@/Engine';
 import { Chess } from 'chess.js';
-import { Dispatch, SetStateAction, useEffect, useMemo, useRef, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { Chessboard } from 'react-chessboard';
 import { Piece, Square } from 'react-chessboard/dist/chessboard/types';
 
@@ -14,14 +14,13 @@ interface BotBoardProps {
     gameStarted: boolean;
     isViewingHistory?: boolean;
     historyFen?: string;
+    size: number;
 }
  
-const BotBoard = ({position, setPosition, chess, setResult, myColor, difficulty="easy", gameStarted, isViewingHistory, historyFen}:BotBoardProps) => {
-    const [boardWidth, setBoardWidth] = useState(500);
+const BotBoard = ({position, setPosition, chess, setResult, myColor, difficulty="easy", gameStarted, isViewingHistory, historyFen, size}:BotBoardProps) => {
     const [optionSquares,setOptionSquares]=useState({})
     const [isMyTurn, setIsMyTurn] = useState(myColor === "w")
 
-    const containerRef = useRef<HTMLDivElement>(null);
     const chessEngine = useMemo(() => new ChessEngine(), []);
     const difficultyToSkillLevel = {
         "easy": 1,
@@ -38,22 +37,6 @@ const BotBoard = ({position, setPosition, chess, setResult, myColor, difficulty=
     useEffect(()=>{
         setIsMyTurn(myColor === chess.turn())
     }, [position, myColor])
-
-    useEffect(() => {
-        const handleResize = () => {
-            if (containerRef.current) {
-                const { width, height } = containerRef.current.getBoundingClientRect();
-                const size = Math.max(width, height);
-                setBoardWidth(Math.floor(size));
-            }
-        }
-        handleResize(); // Set initial size
-        window.addEventListener("resize", handleResize);
-
-        return () => {
-            window.removeEventListener("resize", handleResize);
-        };
-    },[]);
 
     useEffect(()=>{
         if(!isMyTurn && gameStarted){
@@ -165,10 +148,15 @@ const BotBoard = ({position, setPosition, chess, setResult, myColor, difficulty=
     }
 
     return ( 
-        <div className={`w-full h-max md:h-full md:w-max ${(!gameStarted || isViewingHistory) && 'pointer-events-none'}`} ref={containerRef}>
+        <div    
+            className={`w-full h-max md:h-full md:w-max ${(!gameStarted || isViewingHistory) && 'pointer-events-none'}`} 
+            style={{
+                width: size-112,
+                height: size-112,
+            }}
+        >
             <Chessboard 
                 id="standard-board"
-                boardWidth={boardWidth}
                 position={isViewingHistory ? historyFen : position}
                 onPieceDrop={handleDrop}
                 onSquareClick={handleClick}

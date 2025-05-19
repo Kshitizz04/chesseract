@@ -26,7 +26,7 @@ const MobileNavBar = () => {
         { icon: <HiPuzzlePiece size={24} />, title: "Puzzles", href: "/home/puzzles" },
         { icon: <FaTrophy size={24} />, title: "Ranks", href: "/home/leaderboard" },
         { icon: <BiSolidChess size={24} />, title: "Play", href: "/home/play" },
-        { icon: <FaUsers size={24} />, title: "Friends", href: "/home/friends" },
+        { icon: <FaUsers size={24} />, title: "People", href: "/home/people" },
     ];
 
     return (

@@ -3,12 +3,12 @@ import { API_BASE_URL } from "./env";
 
 const API_ENDPOINTS = {
     auth:{
-        signIn: `${API_BASE_URL}/auth/sign-in`, //post
+        signIn:  `${API_BASE_URL}/auth/sign-in`, //post
         signUp: `${API_BASE_URL}/auth/sign-up`, //post
-        signOut: `${API_BASE_URL}/auth/sign-out`, //post
+        refreshToken: `${API_BASE_URL}/auth/refresh-token`, //get
     },
     users:{
-        getAll : `${API_BASE_URL}/users`, //get
+        getAll : (query: string) => `${API_BASE_URL}/users?query=${query}`, //get
         getById : (id: string) => `${API_BASE_URL}/users/${id}`, //get
         editProfile : `${API_BASE_URL}/users`,  //put
     },
@@ -22,12 +22,13 @@ const API_ENDPOINTS = {
         getAdvancedAnalytics: (userId: string, format: TimeFormats | null) => `${API_BASE_URL}/analytics/advanced-analytics/${userId}?format=${format}`, //get
     },
     friends:{
-        getAllFriends: (userId: string, limit: number | null, page: number | null) => `${API_BASE_URL}/friends/${userId}?limit=${limit}&page=${page}`, //get
+        getAllFriends: (userId: string, limit: number | null, page: number | null) => `${API_BASE_URL}/friends/all-friends/${userId}?limit=${limit}&page=${page}`, //get
         sendRequest: `${API_BASE_URL}/friends/request`, //post
         acceptRequest: `${API_BASE_URL}/friends/accept`, //put
         rejectRequest: `${API_BASE_URL}/friends/reject`, //put
         removeFriends: (friendId: string) => `${API_BASE_URL}/friends/${friendId}`, //delete
         cancelRequest: (friendId: string) => `${API_BASE_URL}/friends/request/${friendId}`, //delete
+        getSuggestions: `${API_BASE_URL}/friends/suggestions`,
     },
     puzzles:{
         getInitialBatch: (startRating: number | null, endRating: number | null, batchSize: number | null) => `${API_BASE_URL}/puzzles/initial-batch?startRating=${startRating}&endRating=${endRating}&batchSize=${batchSize}`, //get
@@ -48,7 +49,7 @@ const API_ENDPOINTS = {
         getTopFriendsByRating: (format: TimeFormats, country: string | null) => `${API_BASE_URL}/leaderboard/friends/rating/${format}?country=${country}`, //get
         getTopFriendsByPuzzleScore: (format: PuzzleFormats, country: string | null) => `${API_BASE_URL}/leaderboard/friends/puzzle/${format}?country=${country}`, //get
         getTopFriendsByRatingJump: `${API_BASE_URL}/leaderboard/friends/rating-jump`, //get
-    }
+    },
 };
   
 export default API_ENDPOINTS; 

@@ -26,10 +26,36 @@ const Online = () => {
     const [time, setTime] = useState<{type:"bullet" | "blitz" | "rapid", time: string}>({type: "rapid", time: "10|0"});
     const [currentGameId, setCurrentGameId] = useState<string | null>(null);
     const [playerColor, setPlayerColor] = useState<"w" | "b">("w");
+    const [size, setSize] = useState(0);
 
     const userId = getLocalStorage("userId");
     const chessRef = useRef(new Chess());
+    const containerRef = useRef<HTMLDivElement>(null);
+
     const { showToast } = useToast();
+
+    //sizing of the board
+    useEffect(() => {
+        const updateSize = () => {
+            if (containerRef.current) {
+                const container = containerRef.current;
+                const width = container.clientWidth;
+                const height = container.clientHeight;
+                
+                if(window.innerWidth<= 768){  //less than md breakpoint of tailwind
+                    setSize(width + 112);
+                } else{
+                    const squareSize = Math.min(width, height);
+                    setSize(squareSize);
+                }
+            }
+        };
+
+        updateSize();
+        window.addEventListener('resize', updateSize);
+        
+        return () => window.removeEventListener('resize', updateSize);
+    }, []);
 
     // Connect to socket when component mounts
     useEffect(() => {
@@ -252,9 +278,11 @@ const Online = () => {
     }
 
     return (
-        <div className="h-full w-full flex justify-around max-md:flex-col rounded-md gap-2">
+        <div className="page flex flex-col md:flex-row flex-grow justify-around gap-2">
             {/* Main Section */}
-            <div className="flex flex-col justify-center w-full h-max md:h-full md:w-max rounded-md md:p-2 gap-2">
+            <div className="flex flex-col justify-center h-full w-full md:w-2/3"
+                ref={containerRef}
+            >
                 <Timer
                     profileImage = {opponentData.profileImage}
                     name = {opponentData.username}
@@ -275,6 +303,7 @@ const Online = () => {
                     gameId={currentGameId}
                     playerColor={playerColor}
                     setIsMyTurn={setIsMyTurn}
+                    size={size}
                 />
                 <Timer
                     profileImage = {userData.profileImage}
@@ -288,7 +317,7 @@ const Online = () => {
             </div>
 
             {/* Right Section */}
-            <div className="md:w-1/4 w-full md:h-full max-w-md min-w-[225px] md:p-2 bg-bg-200/60 rounded-md flex flex-col gap-6 place-self-center">
+            <div className="md:w-1/4 w-full md:h-full max-w-md min-w-[225px] p-2 bg-bg-200/60 rounded-md flex flex-col gap-6 place-self-center">
                 {!gameStarted ? (
                     <TimeSelector
                         setTime={handleTimeSelect}
@@ -304,7 +333,7 @@ const Online = () => {
                 )}
 
                 {!gameStarted && (
-                    <Button className="mt-auto" onCLick={handlePlay}>
+                    <Button className="mt-auto" onClick={handlePlay}>
                         Play
                     </Button>
                 )}

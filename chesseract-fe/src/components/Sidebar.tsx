@@ -10,7 +10,7 @@ import { getLocalStorage } from "@/utils/localstorage";
 import Avatar from './utilities/Avatar';
 import { MdDarkMode, MdLightMode } from "react-icons/md";
 import { useTheme } from '@/contexts/ThemeContext';
-import { useLayout } from "@/utils/hooks/useLayout";
+import { useLayout } from "@/contexts/useLayout";
 import LogoTextSvg from "@/assets/LogoTextSvg";
 
 interface SideBarProps {
@@ -130,7 +130,9 @@ const SideBar = ({
                             <HiMenuAlt2 size={20} />
                         )}
                     </button>
-                    <LogoTextSvg id="sidebar" className={`${!isSideBarOpen && 'hidden'}`}/>
+                    <div onClick={()=> router.push("/home")}>
+                        <LogoTextSvg id="sidebar" className={`${!isSideBarOpen && 'hidden'} cursor-pointer`}/>
+                    </div>
                 </div>
                 
                 {/* Navigation Items */}
@@ -175,8 +177,8 @@ const SideBar = ({
                     
                     <NavItem 
                         icon={<FaUsers size={20} />} 
-                        title="Friends" 
-                        href="/home/friends" 
+                        title="People" 
+                        href="/home/people" 
                         isSideBarOpen={isSideBarOpen}
                     />
 

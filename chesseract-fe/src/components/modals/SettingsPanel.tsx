@@ -1,5 +1,5 @@
 import RightModalLayer from '@/components/modals/RightModalLayer';
-import { useLayout } from '@/utils/hooks/useLayout';
+import { useLayout } from '@/contexts/useLayout';
 
 const SettingsPanel = () => {
     const {isSettingsPanelOpen,toggleSettingsPanel} = useLayout();

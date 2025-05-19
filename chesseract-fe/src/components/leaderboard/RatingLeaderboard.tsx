@@ -68,8 +68,6 @@ const RatingLeaderboard = ({
         : (data as TopPlayersByRatingData).userData
     ) : null
 
-    console.log('for', format,'data', data)
-
     return (
         <div className="bg-bg-100/60 rounded-lg shadow-md overflow-hidden w-full h-full">
             <div className="p-4 border-b border-accent-100">

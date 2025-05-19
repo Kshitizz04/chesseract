@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Chess } from "chess.js";
 import { Chessboard } from "react-chessboard";
 import { Square } from "react-chessboard/dist/chessboard/types";
@@ -13,10 +13,10 @@ interface PuzzleProps {
     } | null;
     onComplete: (isCorrect: boolean) => void;
     gameStarted: boolean;
+    size: number;
 }
 
-const PuzzleBoard: React.FC<PuzzleProps> = ({ chess, puzzle, onComplete, gameStarted }) => {
-    const [boardWidth, setBoardWidth] = useState(500);
+const PuzzleBoard: React.FC<PuzzleProps> = ({ chess, puzzle, onComplete, gameStarted, size }) => {
     const [rightMoves, setRightMoves] = useState<string[]>([]);
     const [currentMoveIndex, setCurrentMoveIndex] = useState(0);
     const [computerThinking, setComputerThinking] = useState(false);
@@ -24,24 +24,7 @@ const PuzzleBoard: React.FC<PuzzleProps> = ({ chess, puzzle, onComplete, gameSta
     const [boardOrientation, setBoardOrientation] = useState<"white" | "black">("white");
     const [position, setPosition] = useState<string>("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 
-    const containerRef = useRef<HTMLDivElement>(null);
     const {showToast} = useToast();
-
-    useEffect(() => {
-        const handleResize = () => {
-            if (containerRef.current) {
-                const { width, height } = containerRef.current.getBoundingClientRect();
-                const size = Math.max(width, height);
-                setBoardWidth(Math.floor(size));
-            }
-        }
-        handleResize(); // Set initial size
-        window.addEventListener("resize", handleResize);
-
-        return () => {
-            window.removeEventListener("resize", handleResize);
-        };
-    },[]);
 
     // Parse puzzle moves when a new puzzle is loaded
     useEffect(() => {
@@ -127,9 +110,14 @@ const PuzzleBoard: React.FC<PuzzleProps> = ({ chess, puzzle, onComplete, gameSta
     };
 
     return (
-        <div className={`w-full h-max md:h-full md:w-max ${(!gameStarted) && 'pointer-events-none'}`} ref={containerRef}>
+        <div 
+            className={`${(!gameStarted) && 'pointer-events-none'}`} 
+            style={{
+                width: size-44,
+                height: size-44,
+            }}
+        >
             <Chessboard
-                    boardWidth={boardWidth}
                     position={position}
                     onPieceDrop={onDrop}
                     customDarkSquareStyle={{backgroundColor:'#B7C0D8'}}

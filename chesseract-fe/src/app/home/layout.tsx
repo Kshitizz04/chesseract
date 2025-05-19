@@ -5,8 +5,9 @@ import MobileNavBar from "@/components/MobileNavBar";
 import NotificationPanel from "@/components/modals/NotificationPanel";
 import SettingsPanel from "@/components/modals/SettingsPanel";
 import SideBar from "@/components/Sidebar";
-import { useLayout } from "@/utils/hooks/useLayout";
+import { useLayout } from "@/contexts/useLayout";
 import { ReactNode } from "react";
+import NavigationLoader from '@/components/NavigationLoader';
 
 type LayoutProps = {
     children: ReactNode;
@@ -16,27 +17,33 @@ const Layout = ({ children }: LayoutProps) => {
     const {
         isSideBarOpen,
         toggleSideBar,
+        authData,
     } = useLayout();
 
     return (
-        <div className="relative flex min-h-screen overflow-hidden bg-bg-100/80">
+        <>
+            {!authData ? (
+                <NavigationLoader/>
+            ) : 
+            (<div className="relative flex min-h-screen overflow-hidden bg-bg-100/80">
 
-            <SideBar isSideBarOpen={isSideBarOpen} toggleSideBar={toggleSideBar}/>
+                <SideBar isSideBarOpen={isSideBarOpen} toggleSideBar={toggleSideBar}/>
 
-            <MobileHeader />
+                <MobileHeader />
 
-            <main className={`transition-all duration-300 w-screen ${isSideBarOpen ? "md:ml-56" : "md:ml-22"}`}>
+                <main className={`transition-all duration-300 w-screen ${isSideBarOpen ? "md:pl-56" : "md:pl-22"}`}>
 
-                <section className="w-full h-screen md:py-2 md:pr-2 max-md:pb-16 max-md:pt-14">
-                    {children}
-                </section>
-            </main>
+                    <section>
+                        {children}
+                    </section>
+                </main>
 
-            <NotificationPanel/>
-            <SettingsPanel/>
+                <NotificationPanel/>
+                <SettingsPanel/>
 
-            <MobileNavBar/>
-        </div>
+                <MobileNavBar/>
+            </div>)}
+        </>
     );
 };
 

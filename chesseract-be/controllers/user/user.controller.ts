@@ -3,17 +3,57 @@ import User, { IUser } from "../../models/user.model.ts";
 import { EditProfileBody, GetUserResponse, GetUsersResponse } from "./user.types.ts";
 import { CustomError } from "../../utils/CustomError.ts";
 import FriendRequest from "../../models/friend-request.model.ts";
+import { Types } from "mongoose";
 
-export const getUsers = async (req: Request, res: Response<GetUsersResponse>, next: NextFunction) => {
-    try{
-        const users = await User.find().select("-password"); 
+export const getUsers = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { query } = req.query;
+        const currentUserId = req.user?.userId;
+        
+        if (!query || typeof query !== 'string') {
+            const error = new CustomError("Search query is required", 400);
+            throw error;
+        }
+        
+        // Get current user to access friends list
+        const currentUser = await User.findById(currentUserId);
+        
+        if (!currentUser) {
+            const error = new CustomError("User not found", 404);
+            throw error;
+        }
+        
+        // Create regex for case-insensitive search
+        const searchRegex = new RegExp(query, 'i');
+        
+        // Find users matching the search query
+        const users = await User.find({
+            $or: [
+                { username: { $regex: searchRegex } },
+                { fullname: { $regex: searchRegex } }
+            ],
+            _id: { $ne: currentUserId } // Exclude current user
+        }).select('username profilePicture rating isOnline country _id fullname');
+        
+        // Separate users into friends and non-friends
+        const friends = users.filter(user => 
+            currentUser.friends.includes(user._id as Types.ObjectId)
+        );
+        
+        const nonFriends = users.filter(user => 
+            !currentUser.friends.includes(user._id as Types.ObjectId)
+        );
+        
         res.status(200).json({
             success: true,
             message: "Users fetched successfully",
-            data: users,
+            data: {
+                friends: friends,
+                nonFriends: nonFriends,
+            }
         });
-    }catch(err){
-        next(err);
+    } catch (error) {
+        next(error);
     }
 }
 
@@ -72,6 +112,7 @@ export const editProfile = async (req: Request<{}, any, EditProfileBody>, res: R
         }
 
         const { fullname, bio, profilePicture, country } = req.body;
+        console.log(req.body);
 
         const updateFields: Partial<IUser> = {};
 

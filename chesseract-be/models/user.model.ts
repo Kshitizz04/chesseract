@@ -79,7 +79,6 @@ const userSchema = new Schema<IUser>({
     fullname:{
         type: String,
         maxLength: [50, "FullName should not exceed 50 characters"],
-        minLength: [3, "FullName should be at least 3 characters"],
         trim: true,
     },
     rating:{

@@ -19,6 +19,7 @@ interface FriendActionButtonProps {
   className?: string;
   width?: string;
   showText?: boolean;
+  bgColor?: string;
 }
 
 const FriendButton: React.FC<FriendActionButtonProps> = ({
@@ -27,7 +28,8 @@ const FriendButton: React.FC<FriendActionButtonProps> = ({
   onActionComplete,
   className = "",
   width = "w-32",
-  showText = false
+  showText = false,
+  bgColor = "bg-bg-200"
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const myId = localStorage.getItem("userId") || "";
@@ -111,7 +113,8 @@ const FriendButton: React.FC<FriendActionButtonProps> = ({
   return (
     <Button
       width={width}
-      className={`flex items-center bg-bg-200 justify-center${className}`}
+      className={`flex items-center justify-center ${className}`}
+      bg={bgColor}
       onClick={handleAction}
       disabled={isLoading}
       title={getButtonText()}

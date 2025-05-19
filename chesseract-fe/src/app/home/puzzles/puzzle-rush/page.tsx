@@ -42,8 +42,10 @@ const PuzzleRush = () => {
 	const [profilePicture, setProfilePicture] = useState<string>("");
 	const [username, setUsername] = useState<string>("");
 	const [playerColor, setPlayerColor] = useState<"White"|"Black"|"none">("none");
+	const [size, setSize] = useState(0);
 
 	const chessRef = useRef(new Chess());
+	const containerRef = useRef<HTMLDivElement>(null);
 	let userId = "";
 	const timerRef = useRef<NodeJS.Timeout | null>(null);
 	const endRatingRef = useRef(1000);
@@ -53,7 +55,34 @@ const PuzzleRush = () => {
 		userId = getLocalStorage("userId") || "";
 	})
 
-  // Handle timer countdown
+	//sizing of the board
+	useEffect(() => {
+		const updateSize = () => {
+			if (containerRef.current) {
+				const container = containerRef.current;
+				const width = container.clientWidth;
+				const height = container.clientHeight;
+				
+				if(width<= 768){  //less than md breakpoint of tailwind
+					setSize(width+44);
+				} else{
+					const squareSize = Math.min(width, height);
+					if(hasStarted){
+						setSize(squareSize);
+					}else{
+						setSize(squareSize + 44);
+					}
+				}
+			}
+		};
+
+		updateSize();
+		window.addEventListener('resize', updateSize);
+		
+		return () => window.removeEventListener('resize', updateSize);
+	}, []);
+
+  	// Handle timer countdown
 	useEffect(() => {
 		if (hasStarted && timeLeft > 0) {
 		timerRef.current = setTimeout(() => {
@@ -209,9 +238,11 @@ const PuzzleRush = () => {
 	};
 
 	return (
-		<div className="h-full w-full flex justify-around max-md:flex-col rounded-md gap-2">
+		<div className="page flex justify-around max-md:flex-col rounded-md gap-2">
 			{/* Main Section */}
-			<div className="flex flex-col justify-center w-full h-max md:h-full md:w-max rounded-md md:p-2 gap-2">
+			<div className="flex flex-col justify-center h-full w-full md:w-2/3"
+                ref={containerRef}
+            >
 				<div className="p-2 flex gap-2 items-center w-full max-w-md max-md:place-self-center">
 					{playerColor!=="none" && <h2 className="text-lg font-semibold">{playerColor} to move</h2>}
 					{hasStarted && <p className="text-sm">
@@ -224,11 +255,12 @@ const PuzzleRush = () => {
 					puzzle={puzzles[currentPuzzleIndex]}
 					onComplete={handlePuzzleComplete}
 					gameStarted={hasStarted}
+					size={size}
 				/>
 			</div>
 
 			{/* Right Section */}
-			<div className="md:w-1/4 w-full md:h-full max-w-md min-w-[225px] md:p-2 bg-bg-200/60 rounded-md flex flex-col gap-6 place-self-center">
+			<div className="md:w-1/4 w-full md:h-full max-w-md min-w-[225px] p-2 bg-bg-200/60 rounded-md flex flex-col gap-6 place-self-center">
 				{!hasStarted ? (
 				<div className="w-full h-full text-text-200">
 					<h2 className="text-xl font-bold mb-2">Puzzle Rush</h2>

@@ -1,6 +1,5 @@
 import React from 'react';
 import Image from 'next/image';
-import { FaUser } from 'react-icons/fa';
 
 interface AvatarProps {
   username: string;
@@ -38,7 +37,9 @@ const Avatar: React.FC<AvatarProps> = ({
             className="object-cover w-full h-full"
           />
         ) : (
-            <FaUser size={size-10}/>
+            <div className="h-full w-full flex items-center justify-center text-xl bg-[var(--color-primary-200)]">
+              {username.charAt(0).toUpperCase()}
+            </div>
         )}
       </div>
       
