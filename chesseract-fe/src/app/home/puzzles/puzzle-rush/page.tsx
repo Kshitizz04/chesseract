@@ -67,7 +67,11 @@ const PuzzleRush = () => {
 					setSize(width+44);
 				} else{
 					const squareSize = Math.min(width, height);
-					hasStarted ? setSize(squareSize) : setSize(squareSize + 44);
+					if(hasStarted){
+						setSize(squareSize);
+					}else{
+						setSize(squareSize + 44);
+					}
 				}
 			}
 		};
