@@ -31,9 +31,9 @@ const Layout = ({ children }: LayoutProps) => {
 
                 <MobileHeader />
 
-                <main className={`transition-all duration-300 w-screen ${isSideBarOpen ? "md:ml-56" : "md:ml-22"}`}>
+                <main className={`transition-all duration-300 w-screen ${isSideBarOpen ? "md:pl-56" : "md:pl-22"}`}>
 
-                    <section className="w-full h-screen md:py-2 md:pr-2 max-md:pb-16 max-md:pt-14">
+                    <section>
                         {children}
                     </section>
                 </main>

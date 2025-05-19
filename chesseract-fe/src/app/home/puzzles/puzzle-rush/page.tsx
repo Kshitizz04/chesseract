@@ -234,7 +234,7 @@ const PuzzleRush = () => {
 	};
 
 	return (
-		<div className="h-full w-full flex justify-around max-md:flex-col rounded-md gap-2">
+		<div className="page flex justify-around max-md:flex-col rounded-md gap-2">
 			{/* Main Section */}
 			<div className="flex flex-col justify-center h-full w-full md:w-2/3"
                 ref={containerRef}
@@ -256,7 +256,7 @@ const PuzzleRush = () => {
 			</div>
 
 			{/* Right Section */}
-			<div className="md:w-1/4 w-full md:h-full max-w-md min-w-[225px] md:p-2 bg-bg-200/60 rounded-md flex flex-col gap-6 place-self-center">
+			<div className="md:w-1/4 w-full md:h-full max-w-md min-w-[225px] p-2 bg-bg-200/60 rounded-md flex flex-col gap-6 place-self-center">
 				{!hasStarted ? (
 				<div className="w-full h-full text-text-200">
 					<h2 className="text-xl font-bold mb-2">Puzzle Rush</h2>

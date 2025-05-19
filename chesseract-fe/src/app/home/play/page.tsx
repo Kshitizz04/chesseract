@@ -32,7 +32,7 @@ const Play = () => {
     }, []);
 
     return(
-        <div className="h-full w-full flex justify-around max-md:flex-col rounded-md gap-2">
+        <div className="page flex justify-around max-md:flex-col rounded-md gap-2">
             <div ref={containerRef} className="h-full w-2/3 flex items-center justify-center max-md:hidden">
                 <StaticBoard size={size}/>
             </div>

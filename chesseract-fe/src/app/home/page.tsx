@@ -99,8 +99,8 @@ const Home = () => {
     }
 
     return(
-        <div className="h-full p-4 flex flex-col gap-6">
-            <div className="w-full rounded-lg shadow-lg text-center pb-2">
+        <div className="page p-4 flex flex-col gap-6">
+            <div className="w-full rounded-lg shadow-lg text-center p-2">
                 <Avatar 
                     profileImage={authData?.profilePicture} 
                     username={authData?.username || "User"}
@@ -149,10 +149,10 @@ const Home = () => {
                 />
             </div>
 
-            <div className="flex max-md:flex-col w-full gap-2">
+            <div className="h-full flex max-md:flex-col w-full gap-2">
 
                 {/* game history */}
-                <div className="w-full md:w-3/4">
+                <div className="h-full w-full md:w-3/4">
                     <GameHistory
                         gameHistory={gameHistory}
                         loadingGameHistory={loadingGameHistory}
@@ -165,7 +165,7 @@ const Home = () => {
                 </div>
 
                 <div className="w-full md:w-1/4 h-full">
-                    <div className="h-96 w-full mt-2 bg-bg-100/60 rounded-md pt-6 p-2 flex flex-col">
+                    <div className="h-96 w-full bg-bg-100/60 rounded-md pt-6 p-2 flex flex-col">
                         <h2 className="text-lg font-semibold mb-2 text-center">You In The Last Week</h2>
                         {loadingRatingHistory || !ratingHistory ? (
                             <div className='flex items-center justify-center h-full w-full'>

@@ -19,7 +19,7 @@ interface GameHistoryProps {
 
 const GameHistory = ({historyTab, setHistoryTab, gameHistory, loadingGameHistory, page, setPage, userId}: GameHistoryProps)=>{
     return(
-        <Card className="shadow-lg mt-2 bg-bg-100/60">
+        <Card className="shadow-lg bg-bg-100/60 h-full">
             <CardHeader>
                 <CardTitle>Game History</CardTitle>
                 <Tabs className="w-full">

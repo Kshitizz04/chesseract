@@ -12,8 +12,10 @@ const LeaderBoard = () => {
     const [activeTab, setActiveTab] = useState("global")
 
     return (
-        <div className="h-full w-full p-4 md:p-6 flex flex-col">
-            <h1 className="text-2xl font-bold mb-6">Player Rankings</h1>
+        <div className="page flex flex-col">
+            <div className="w-full rounded-lg shadow-lg p-2 mb-2">
+                <h1 className="text-2xl font-bold">Player Rankings</h1>
+            </div>
             <Tabs className="w-full">
                 <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="Global Rankings" active={activeTab === 'global'} onClick={()=>{setActiveTab("global")}}>Global Rankings</TabsTrigger>

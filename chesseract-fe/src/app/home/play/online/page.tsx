@@ -42,7 +42,7 @@ const Online = () => {
                 const width = container.clientWidth;
                 const height = container.clientHeight;
                 
-                if(width<= 768){  //less than md breakpoint of tailwind
+                if(window.innerWidth<= 768){  //less than md breakpoint of tailwind
                     setSize(width + 112);
                 } else{
                     const squareSize = Math.min(width, height);
@@ -278,7 +278,7 @@ const Online = () => {
     }
 
     return (
-        <div className="h-full w-full flex justify-around max-md:flex-col rounded-md gap-2">
+        <div className="page flex flex-col md:flex-row flex-grow justify-around gap-2">
             {/* Main Section */}
             <div className="flex flex-col justify-center h-full w-full md:w-2/3"
                 ref={containerRef}
@@ -317,7 +317,7 @@ const Online = () => {
             </div>
 
             {/* Right Section */}
-            <div className="md:w-1/4 w-full md:h-full max-w-md min-w-[225px] md:p-2 bg-bg-200/60 rounded-md flex flex-col gap-6 place-self-center">
+            <div className="md:w-1/4 w-full md:h-full max-w-md min-w-[225px] p-2 bg-bg-200/60 rounded-md flex flex-col gap-6 place-self-center">
                 {!gameStarted ? (
                     <TimeSelector
                         setTime={handleTimeSelect}
@@ -333,7 +333,7 @@ const Online = () => {
                 )}
 
                 {!gameStarted && (
-                    <Button className="mt-auto" onCLick={handlePlay}>
+                    <Button className="mt-auto" onClick={handlePlay}>
                         Play
                     </Button>
                 )}

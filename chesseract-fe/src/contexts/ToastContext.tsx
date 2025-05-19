@@ -32,7 +32,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         <ToastContext.Provider value={{ showToast }}>
             {children}
             {toast.visible && (
-                <div className="fixed top-4 right-4 p-4 rounded-md shadow-md bg-primary-100 flex items-center gap-3 z-30">
+                <div className="fixed top-4 right-1/2 max-md:translate-x-1/2 md:right-4 p-4 rounded-md shadow-md bg-primary-100 flex items-center gap-3 z-30">
                     {/* Icon */}
                     {toast.type === "success" && (
                         <IoMdCheckmarkCircleOutline className="text-green-500" size={24} />
