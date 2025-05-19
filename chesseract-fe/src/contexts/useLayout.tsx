@@ -3,6 +3,7 @@ import { useToast } from '@/contexts/ToastContext';
 import { AuthData } from '@/models/AuthData';
 import refreshToken from '@/services/auth/refreshToken';
 import getNotifications, { Notification } from '@/services/getNotifications';
+import { setLocalStorage } from '@/utils/localstorage';
 import { useRouter } from 'next/navigation';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
@@ -75,8 +76,9 @@ export const LayoutProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             const res = await refreshToken();
             if (res.success) {
                 setAuthData(res.data.user);
+                setLocalStorage("user", res.data.user);
                 if(res.data.token) {
-                    localStorage.setItem("token", res.data.token);
+                    setLocalStorage("token", res.data.token);
                 }
             } else{
                 const error = res.message || "An error occurred";

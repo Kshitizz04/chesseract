@@ -19,8 +19,10 @@ const Bot = () => {
     const [isViewingHistory, setIsViewingHistory] = useState(false);
     const [historyFen, setHistoryFen] = useState("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
     const [currentPosition, setCurrentPosition] = useState("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+    const [size, setSize] = useState(0);
 
     const chessRef = useRef(new Chess());
+    const containerRef = useRef<HTMLDivElement>(null);
     const botSkillLevel = [{difficulty: "easy", rating: 500}, {difficulty: "medium", rating: 1000}, {difficulty: "hard", rating: 1500}]
 
     useEffect(()=>{
@@ -33,6 +35,29 @@ const Bot = () => {
             })
         }
     },[])
+
+    //sizing of the board
+    useEffect(() => {
+        const updateSize = () => {
+            if (containerRef.current) {
+                const container = containerRef.current;
+                const width = container.clientWidth;
+                const height = container.clientHeight;
+                
+                if(width<= 768){  //less than md breakpoint of tailwind
+                    setSize(width + 112);
+                } else{
+                    const squareSize = Math.min(width, height);
+                    setSize(squareSize);
+                }
+            }
+        };
+
+        updateSize();
+        window.addEventListener('resize', updateSize);
+        
+        return () => window.removeEventListener('resize', updateSize);
+    }, []);
 
     const startGame = () => {
         if(Math.floor(Math.random() * 2) === 0){
@@ -60,7 +85,9 @@ const Bot = () => {
     return (
         <div className="h-full w-full flex justify-around max-md:flex-col rounded-md gap-2">
             {/* Main Section */}
-            <div className="flex flex-col justify-center w-full h-max md:h-full md:w-max rounded-md md:p-2 gap-2">
+            <div className="flex flex-col justify-center h-full w-full md:w-2/3"
+                ref={containerRef}
+            >
                 <div className="p-2 flex gap-2 items-center w-full max-w-md max-md:place-self-center">
                     <Avatar
                         username="Bot"
@@ -79,6 +106,7 @@ const Bot = () => {
                     gameStarted={gameStarted}
                     isViewingHistory={isViewingHistory}
                     historyFen={historyFen}
+                    size={size}
                 />
                 <div className="p-2 flex gap-2 items-center w-full max-w-md max-md:place-self-center">
                     <Avatar

@@ -80,6 +80,7 @@ export const signIn = async (req: Request<SignInRequestBody>, res: Response, nex
                     _id: existingUser._id,
                     username: existingUser.username,
                     profilePicture: existingUser.profilePicture,
+                    rating: existingUser.rating,
                 }
             },
         });
@@ -98,7 +99,7 @@ export const refreshToken = async (req: Request, res: Response, next: NextFuncti
         
         try {
             const decoded = jwt.verify(token, JWT_SECRET as Secret) as IJwtPayload;
-            const user = await User.findById(decoded.userId).select('_id username profilePicture');
+            const user = await User.findById(decoded.userId).select('_id username profilePicture rating');
             
             if (!user) {
                 const error = new CustomError('User does not exist', 404);

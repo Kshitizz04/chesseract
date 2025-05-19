@@ -1,5 +1,5 @@
 import { Chess } from 'chess.js';
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { Chessboard } from 'react-chessboard';
 import { Piece, Square } from 'react-chessboard/dist/chessboard/types';
 import SocketService from '@/SocketService';
@@ -15,6 +15,7 @@ interface StandardBoardProps {
     gameId?: string | null;
     playerColor?: "w" | "b";
     setIsMyTurn?: Dispatch<SetStateAction<boolean>>;
+    size: number;
 }
  
 const StandardBoard = ({
@@ -28,13 +29,11 @@ const StandardBoard = ({
     gameId = null,
     playerColor,
     setIsMyTurn = () => {},
+    size
 }: StandardBoardProps) => {
-    const [boardWidth, setBoardWidth] = useState(500);
     const [optionSquares, setOptionSquares] = useState<Record<string, React.CSSProperties>>({});
     const [moveFrom, setMoveFrom] = useState<Square | null>(null);
     const [moveSquares, setMoveSquares] = useState({});
-    
-    const containerRef = useRef<HTMLDivElement>(null);
     
     // Set up socket event listeners for online games
     useEffect(() => {
@@ -82,22 +81,6 @@ const StandardBoard = ({
             SocketService.off("opponent_move");
         };
     }, [,gameId, chess]);
-
-    useEffect(() => {
-        const handleResize = () => {
-            if (containerRef.current) {
-                const { width, height } = containerRef.current.getBoundingClientRect();
-                const size = Math.max(width, height);
-                setBoardWidth(Math.floor(size));
-            }
-        }
-        handleResize(); // Set initial size
-        window.addEventListener("resize", handleResize);
-
-        return () => {
-            window.removeEventListener("resize", handleResize);
-        };
-    }, []);
     
     // Check if game is over
     const checkGameOver = () => {
@@ -309,12 +292,14 @@ const StandardBoard = ({
 
     return ( 
         <div 
-            className={`w-full h-max md:h-full md:w-max ${(isViewingHistory || !gameStarted) ? 'pointer-events-none' : ''}`} 
-            ref={containerRef}
+            className={`${(isViewingHistory || !gameStarted) ? 'pointer-events-none' : ''}`} 
+            style={{
+                width: size-112,
+                height: size-112,
+            }}
         >
             <Chessboard 
                 id="standard-board"
-                boardWidth={boardWidth}
                 position={isViewingHistory ? historyFen : position}
                 onPieceDrop={handleDrop}
                 onSquareClick={handleClick}
