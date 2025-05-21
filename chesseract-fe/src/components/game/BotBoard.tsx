@@ -1,4 +1,6 @@
+import { useLayout } from '@/contexts/useLayout';
 import { ChessEngine } from '@/Engine';
+import { boardColors } from '@/models/BoardStyleData';
 import { Chess } from 'chess.js';
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { Chessboard } from 'react-chessboard';
@@ -20,6 +22,8 @@ interface BotBoardProps {
 const BotBoard = ({position, setPosition, chess, setResult, myColor, difficulty="easy", gameStarted, isViewingHistory, historyFen, size}:BotBoardProps) => {
     const [optionSquares,setOptionSquares]=useState({})
     const [isMyTurn, setIsMyTurn] = useState(myColor === "w")
+    const {boardStyle} = useLayout();
+    const boardColor = boardColors[boardStyle.style];
 
     const chessEngine = useMemo(() => new ChessEngine(), []);
     const difficultyToSkillLevel = {
@@ -160,13 +164,13 @@ const BotBoard = ({position, setPosition, chess, setResult, myColor, difficulty=
                 position={isViewingHistory ? historyFen : position}
                 onPieceDrop={handleDrop}
                 onSquareClick={handleClick}
-                customDarkSquareStyle={{backgroundColor:'#B7C0D8'}}
-                customLightSquareStyle={{backgroundColor:'#E8EDF9'}}
-                customSquareStyles={{...optionSquares}}
+                customDarkSquareStyle={boardColor.dark}
+                customLightSquareStyle={boardColor.light}
+                customSquareStyles={boardStyle.showLegalMoves ? {...optionSquares} : {}}
                 animationDuration={100}
                 arePremovesAllowed={true}
+                showBoardNotation={boardStyle.showCoordinates}
                 boardOrientation={myColor === "w" ? "white" : "black"}
-                showBoardNotation={true}
             />
         </div>
     );

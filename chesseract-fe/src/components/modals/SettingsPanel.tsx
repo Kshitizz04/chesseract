@@ -8,61 +8,58 @@ import { FaChessBoard } from 'react-icons/fa';
 import { useTheme } from '@/contexts/ThemeContext';
 import deleteAccount from '@/services/deleteAccount';
 import { useRouter } from 'next/navigation';
-import { getLocalStorage, setLocalStorage } from '@/utils/localstorage';
-import { BoardStyleData } from '@/models/BoardStyleData';
+import { setLocalStorage } from '@/utils/localstorage';
 import { IoMoveSharp } from 'react-icons/io5';
 import { TbAxisX } from 'react-icons/tb';
 import updateOnlineVisibility from '@/services/updateOnlineVisibility';
 import ConfirmationModal from './ConfirmationModal';
+import { BoardStyleData } from '@/models/BoardStyleData';
 
 const SettingsPanel = () => {
     const { isSettingsPanelOpen, toggleSettingsPanel } = useLayout();
     const router = useRouter();
     const { theme, toggleTheme } = useTheme();
     const { showToast } = useToast();
-    const boardStyleData: BoardStyleData = getLocalStorage('boardStyle') || {style: "classic", showCoordinates: true, showLegalMoves: true};
-    if(!boardStyleData) {
-        setLocalStorage('boardStyle', {style: "classic", showCoordinates: true, showLegalMoves: true});
-    }
+    const {boardStyle, setBoardStyle} = useLayout();
 
-    
     // States for settings
     const [isOnlineVisible, setIsOnlineVisible] = useState(true);
-    const [showCoordinates, setShowCoordinates] = useState(boardStyleData.showCoordinates);
-    const [showLegalMoves, setShowLegalMoves] = useState(boardStyleData.showLegalMoves);
-    const [boardStyle, setBoardStyle] = useState<'classic' | 'wooden' | 'marble'>(boardStyleData.style);
+    const [showCoordinates, setShowCoordinates] = useState(boardStyle.showCoordinates);
+    const [showLegalMoves, setShowLegalMoves] = useState(boardStyle.showLegalMoves);
+    const [style, setStyle] = useState<'classic' | 'wooden' | 'marble'>(boardStyle.style);
     
     // Password change states
-    const [showPasswordChange, setShowPasswordChange] = useState(false);
-    const [currentPassword, setCurrentPassword] = useState('');
-    const [newPassword, setNewPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
+    // const [showPasswordChange, setShowPasswordChange] = useState(false);
+    // const [currentPassword, setCurrentPassword] = useState('');
+    // const [newPassword, setNewPassword] = useState('');
+    // const [confirmPassword, setConfirmPassword] = useState('');
 
     const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     
     useEffect(() => {
-        const newData = {
-            style: boardStyle,
+        const newData: BoardStyleData = {
+            style: style,
             showCoordinates: showCoordinates,
             showLegalMoves: showLegalMoves
         };
         setLocalStorage('boardStyle', newData);
-    }, [showCoordinates, showLegalMoves, boardStyle]);
+        setBoardStyle(newData);
+    }, [showCoordinates, showLegalMoves, style]);
     
-    const handleChangePassword = () => {
-        if (newPassword !== confirmPassword) {
-            showToast('Passwords do not match', 'error');
-            return;
-        }
+    // const handleChangePassword = () => {
+    //     if (newPassword !== confirmPassword) {
+    //         showToast('Passwords do not match', 'error');
+    //         return;
+    //     }
         
-        // Password change logic would go here
-        showToast('Password updated successfully', 'success');
-        setShowPasswordChange(false);
-        setCurrentPassword('');
-        setNewPassword('');
-        setConfirmPassword('');
-    };
+    //     // Password change logic would go here
+    //     showToast('Password updated successfully', 'success');
+    //     setShowPasswordChange(false);
+    //     setCurrentPassword('');
+    //     setNewPassword('');
+    //     setConfirmPassword('');
+    // };
     
     const handleLogout = () => {
         router.push('/auth/sign-in');
@@ -143,25 +140,25 @@ const SettingsPanel = () => {
                                 <div className="space-y-3">
                                     <div className="flex gap-2">
                                         <Button
-                                            onClick={() => setBoardStyle('classic')}
-                                            bg={`${boardStyle === 'classic' ? 'bg-bg-100' : 'bg-bg-300'}`}
-                                            className={`border-accent-200 ${boardStyle === 'classic' ? 'border' : ''} gap-2`}
+                                            onClick={() => setStyle('classic')}
+                                            bg={`${style === 'classic' ? 'bg-bg-100' : 'bg-bg-300'}`}
+                                            className={`border-accent-200 ${style === 'classic' ? 'border' : ''} gap-2`}
                                         >
                                             <FaChessBoard />
                                             <span>Classic</span>
                                         </Button>
                                         <Button
-                                            onClick={() => setBoardStyle('wooden')}
-                                            bg={`${boardStyle === 'wooden' ? 'bg-bg-100' : 'bg-bg-300'}`}
-                                            className={`border-accent-200 ${boardStyle === 'wooden' ? 'border' : ''} gap-2`}
+                                            onClick={() => setStyle('wooden')}
+                                            bg={`${style === 'wooden' ? 'bg-bg-100' : 'bg-bg-300'}`}
+                                            className={`border-accent-200 ${style === 'wooden' ? 'border' : ''} gap-2`}
                                         >
                                             <FaChessBoard />
                                             <span>Wooden</span>
                                         </Button>
                                         <Button
-                                            onClick={() => setBoardStyle('marble')}
-                                            bg={`${boardStyle === 'marble' ? 'bg-bg-100' : 'bg-bg-300'}`}
-                                            className={`border-accent-200 ${boardStyle === 'marble' ? 'border' : ''} gap-2`}
+                                            onClick={() => setStyle('marble')}
+                                            bg={`${style === 'marble' ? 'bg-bg-100' : 'bg-bg-300'}`}
+                                            className={`border-accent-200 ${style === 'marble' ? 'border' : ''} gap-2`}
                                         >
                                             <FaChessBoard />
                                             <span>Marble</span>

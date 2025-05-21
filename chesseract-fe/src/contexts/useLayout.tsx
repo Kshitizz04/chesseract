@@ -1,9 +1,10 @@
 "use client";
 import { useToast } from '@/contexts/ToastContext';
 import { AuthData } from '@/models/AuthData';
+import { BoardStyleData } from '@/models/BoardStyleData';
 import refreshToken from '@/services/auth/refreshToken';
 import getNotifications, { Notification } from '@/services/getNotifications';
-import { setLocalStorage } from '@/utils/localstorage';
+import { getLocalStorage, setLocalStorage } from '@/utils/localstorage';
 import { useRouter } from 'next/navigation';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
@@ -21,6 +22,8 @@ interface LayoutContextType {
     setAuthData: React.Dispatch<React.SetStateAction<AuthData | null>>;
     loadingAuth: boolean;
     loadingNotifications: boolean;
+    boardStyle: BoardStyleData;
+    setBoardStyle: React.Dispatch<React.SetStateAction<BoardStyleData>>;
 }
 
 const LayoutContext = createContext<LayoutContextType | undefined>(undefined);
@@ -32,6 +35,12 @@ export const LayoutProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [unreadCount, setUnreadCount] = useState(0);
     const [authData, setAuthData] = useState<AuthData | null>(null);
+
+    const boardStyleData: BoardStyleData = getLocalStorage('boardStyle') || {style: "classic", showCoordinates: true, showLegalMoves: true};
+    if(!boardStyleData) {
+        setLocalStorage('boardStyle', {style: "classic", showCoordinates: true, showLegalMoves: true});
+    }
+    const [boardStyle, setBoardStyle] = useState<BoardStyleData>(boardStyleData)
 
     const [loadingAuth, setLoadingAuth] = useState(false);
     const [loadingNotifications, setLoadingNotifications] = useState(false);
@@ -114,6 +123,8 @@ export const LayoutProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             setAuthData,
             loadingAuth,
             loadingNotifications,
+            boardStyle,
+            setBoardStyle
         }}>
             {children}
         </LayoutContext.Provider>

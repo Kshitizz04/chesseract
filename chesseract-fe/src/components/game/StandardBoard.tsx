@@ -3,6 +3,8 @@ import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { Chessboard } from 'react-chessboard';
 import { Piece, Square } from 'react-chessboard/dist/chessboard/types';
 import SocketService from '@/SocketService';
+import { boardColors, BoardStyleData } from '@/models/BoardStyleData';
+import { useLayout } from '@/contexts/useLayout';
 
 interface StandardBoardProps {
     position: string;
@@ -34,6 +36,9 @@ const StandardBoard = ({
     const [optionSquares, setOptionSquares] = useState<Record<string, React.CSSProperties>>({});
     const [moveFrom, setMoveFrom] = useState<Square | null>(null);
     const [moveSquares, setMoveSquares] = useState({});
+
+    const {boardStyle} = useLayout();
+    const boardColor = boardColors[boardStyle.style];
     
     // Set up socket event listeners for online games
     useEffect(() => {
@@ -303,12 +308,12 @@ const StandardBoard = ({
                 position={isViewingHistory ? historyFen : position}
                 onPieceDrop={handleDrop}
                 onSquareClick={handleClick}
-                customDarkSquareStyle={{backgroundColor:'#B7C0D8'}}
-                customLightSquareStyle={{backgroundColor:'#E8EDF9'}}
-                customSquareStyles={{...optionSquares, ...moveSquares}}
+                customDarkSquareStyle={boardColor.dark}
+                customLightSquareStyle={boardColor.light}
+                customSquareStyles={boardStyle.showLegalMoves ? {...optionSquares, ...moveSquares} : {...moveSquares}}
                 animationDuration={200}
                 arePremovesAllowed={true}
-                showBoardNotation={true}
+                showBoardNotation={boardStyle.showCoordinates}
                 boardOrientation={playerColor === "b" ? "black" : "white"}
             />
         </div>

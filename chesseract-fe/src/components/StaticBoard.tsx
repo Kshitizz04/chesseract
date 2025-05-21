@@ -1,6 +1,10 @@
+import { useLayout } from "@/contexts/useLayout";
+import { boardColors } from "@/models/BoardStyleData";
 import { Chessboard } from "react-chessboard"
 
 const StaticBoard = ({size}:{size:number})=>{
+    const {boardStyle} = useLayout();
+    const boardColor = boardColors[boardStyle.style];
 
     return(
         <div 
@@ -11,8 +15,9 @@ const StaticBoard = ({size}:{size:number})=>{
             }}
         >
             <Chessboard
-                customDarkSquareStyle={{backgroundColor:'#B7C0D8'}}
-                customLightSquareStyle={{backgroundColor:'#E8EDF9'}}
+                customDarkSquareStyle={boardColor.dark}
+                customLightSquareStyle={boardColor.light}
+                showBoardNotation={boardStyle.showCoordinates}
             />
         </div>
     )

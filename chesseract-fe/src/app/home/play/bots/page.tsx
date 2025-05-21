@@ -83,7 +83,7 @@ const Bot = () => {
     }
 
     return (
-        <div className="page flex justify-around max-md:flex-col rounded-md gap-2">
+        <div className="page flex flex-col md:flex-row flex-grow justify-around gap-2">
             {/* Main Section */}
             <div className="flex flex-col justify-center h-full w-full md:w-2/3"
                 ref={containerRef}

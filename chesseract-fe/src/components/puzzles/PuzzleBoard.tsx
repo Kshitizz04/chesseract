@@ -4,6 +4,8 @@ import { Chess } from "chess.js";
 import { Chessboard } from "react-chessboard";
 import { Square } from "react-chessboard/dist/chessboard/types";
 import { useToast } from "@/contexts/ToastContext";
+import { useLayout } from "@/contexts/useLayout";
+import { boardColors } from "@/models/BoardStyleData";
 
 interface PuzzleProps {
     chess: Chess;
@@ -25,6 +27,8 @@ const PuzzleBoard: React.FC<PuzzleProps> = ({ chess, puzzle, onComplete, gameSta
     const [position, setPosition] = useState<string>("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 
     const {showToast} = useToast();
+    const {boardStyle} = useLayout();
+    const boardColor = boardColors[boardStyle.style];
 
     // Parse puzzle moves when a new puzzle is loaded
     useEffect(() => {
@@ -120,10 +124,12 @@ const PuzzleBoard: React.FC<PuzzleProps> = ({ chess, puzzle, onComplete, gameSta
             <Chessboard
                     position={position}
                     onPieceDrop={onDrop}
-                    customDarkSquareStyle={{backgroundColor:'#B7C0D8'}}
-                    customLightSquareStyle={{backgroundColor:'#E8EDF9'}}
+                    customDarkSquareStyle={boardColor.dark}
+                    customLightSquareStyle={boardColor.light}
+                    customSquareStyles={boardStyle.showLegalMoves ? {} : {}}
                     arePremovesAllowed={false}
                     boardOrientation={boardOrientation}
+                    showBoardNotation={boardStyle.showCoordinates}
             />
         </div>
     );
