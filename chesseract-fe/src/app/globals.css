@@ -73,6 +73,10 @@ body {
   color: transparent;
 }
 
+.bg-gradient {
+  background: linear-gradient(45deg, var(--color-gradient-start), var(--color-gradient-end));
+}
+
 .page {
   width: 100%;
   height: 100vh;

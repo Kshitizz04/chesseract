@@ -26,7 +26,10 @@ export interface IUser extends Document {
     },
     profilePicture?: string;
     bio?: string;
-    isOnline: boolean;
+    isOnline: {
+        isOnline: boolean;
+        showOnlineStatus: boolean;
+    };
     country: string;
     stats: {
         bullet: stat,
@@ -93,7 +96,10 @@ const userSchema = new Schema<IUser>({
     },
     profilePicture:{type: String},
     bio: {type: String},
-    isOnline: {type: Boolean, default: false},
+    isOnline: {
+        isOnline:{type: Boolean, default: false},
+        showOnlineStatus:{type: Boolean, default: true},
+    },
     country: {type: String, default: "Unknown"},
     stats:{
         bullet:{

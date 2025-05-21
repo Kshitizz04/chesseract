@@ -1,5 +1,5 @@
 import {Router} from 'express';
-import { editProfile, getUser, getUsers } from '../controllers/user/user.controller.ts';
+import { editProfile, getUser, getUsers, updateOnlineVisibility, deleteAccount } from '../controllers/user/user.controller.ts';
 import authorize from './../middlewares/auth.middleware.ts';
 
 const userRouter = Router();
@@ -10,8 +10,8 @@ userRouter.get('/:id', authorize, getUser);
 
 userRouter.put('', authorize, editProfile);
 
-userRouter.delete('/:id', (req, res) => {
-    res.send('DELETE user route');
-});
+userRouter.delete('/', authorize, deleteAccount);
+
+userRouter.put('/online-visibility', authorize, updateOnlineVisibility);
 
 export default userRouter;

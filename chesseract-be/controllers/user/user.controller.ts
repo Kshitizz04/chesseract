@@ -1,9 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 import User, { IUser } from "../../models/user.model.ts";
-import { EditProfileBody, GetUserResponse, GetUsersResponse } from "./user.types.ts";
+import { deleteAccountBody, EditProfileBody, GetUserResponse, GetUsersResponse, updateOnlineVisibilityBody } from "./user.types.ts";
 import { CustomError } from "../../utils/CustomError.ts";
 import FriendRequest from "../../models/friend-request.model.ts";
+import bcrypt from 'bcryptjs';
 import { Types } from "mongoose";
+import Game from "../../models/game.model.ts";
 
 export const getUsers = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -138,6 +140,87 @@ export const editProfile = async (req: Request<{}, any, EditProfileBody>, res: R
             data: updatedUser,
         });
     }catch(err){
+        next(err);
+    }
+}
+
+export const updateOnlineVisibility = async (req: Request<{}, any, updateOnlineVisibilityBody>, res: Response, next: NextFunction) => {
+    try {
+        const userId = req.user?.userId;
+        if(!userId){
+            const error = new CustomError("User not found", 404);
+            throw error;
+        }
+        const { showOnlineStatus } = req.body;
+        
+        const user = await User.findByIdAndUpdate(
+            userId, 
+            { 'isOnline.showOnlineStatus': showOnlineStatus }, 
+            { new: true }
+        );
+        
+        if (!user) {
+            const error = new CustomError('User not found', 404);
+            throw error;
+        }
+        
+        res.status(200).json({
+            success: true,
+            message: 'Online visibility updated',
+            data: null
+        });
+    } catch (err) {
+        next(err);
+    }
+}
+
+export const deleteAccount = async (req: Request<{}, any, deleteAccountBody>, res: Response, next: NextFunction) => {
+    try {
+        const userId = req.user?.userId;
+        if (!userId) {
+            const error = new CustomError("User not found", 404);
+            throw error;
+        }
+
+        const { password } = req.body;
+        if (!password) {
+            const error = new CustomError("Password is required to delete account", 400);
+            throw error;
+        }
+
+        const user = await User.findById(userId);
+        if (!user) {
+            const error = new CustomError("User not found", 404);
+            throw error;
+        }
+
+        const isPasswordCorrect = await bcrypt.compare(password, user.password);
+        if (!isPasswordCorrect) {
+            const error = new CustomError("Invalid password", 401);
+            throw error;
+        }
+
+        // Begin deletion process
+        // 1. Remove friend relationships
+        await User.updateMany(
+            { friends: userId },
+            { $pull: { friends: userId } }
+        );
+
+        // 2. Remove pending friend requests
+        await FriendRequest.deleteMany({
+            $or: [{ sender: userId }, { receiver: userId }]
+        });
+
+        // 4. Delete the user account
+        await User.findByIdAndDelete(userId);
+
+        res.status(200).json({
+            success: true,
+            message: "Account deleted successfully",
+            data: null
+        });
+    } catch (err) {
         next(err);
     }
 }

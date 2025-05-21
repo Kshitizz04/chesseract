@@ -21,7 +21,10 @@ export interface GetUserResponse  {
         },
         profilePicture?: string;
         bio?: string;
-        isOnline: boolean;
+        isOnline: {
+            isOnline: boolean;
+            showOnlineStatus: boolean;
+        };
         country: string;
         createdAt: string;
         friendStatus: number; // 0: not friends, 1: friends, 2: requested
@@ -33,4 +36,12 @@ export interface EditProfileBody {
     profilePicture?: string;
     bio?: string;
     country?: string;
+}
+
+export interface updateOnlineVisibilityBody {
+    showOnlineStatus: boolean;
+}
+
+export interface deleteAccountBody {
+    password: string;
 }
