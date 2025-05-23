@@ -6,12 +6,14 @@ import { FaHandshake, FaRobot } from "react-icons/fa6"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import playImage from "@/assets/play-game.png"
+import { useToast } from "@/contexts/ToastContext"
 
 const Play = () => {
     const [size, setSize] = useState(0);
 
     const router = useRouter();
     const containerRef = useRef<HTMLDivElement>(null);
+    const {showToast} = useToast();
 
     useEffect(() => {
         const updateSize = () => {
@@ -30,6 +32,10 @@ const Play = () => {
         
         return () => window.removeEventListener('resize', updateSize);
     }, []);
+
+    const handlePlayFriend = () => {
+        showToast("This feature is not available yet", "info");
+    }
 
     return(
         <div className="page flex justify-around max-md:flex-col rounded-md gap-2">
@@ -58,7 +64,7 @@ const Play = () => {
                 </div>
                 <div
                     className="mb-4 w-full rounded-md bg-accent-200 pb-[3px] cursor-pointer"
-                    onClick={() => router.push('play/friends')}
+                    onClick={handlePlayFriend}
                 >
                     <div className="flex h-full w-full justify-center py-4 rounded-md gap-2 items-center bg-bg-300">
                         <FaHandshake size={50} className="text-[#ffdbac]"/>

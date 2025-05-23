@@ -17,9 +17,9 @@ function TimeSelector({selectedTime, setTime}: TimeSelectorProps) {
     const {showToast} = useToast();
 
     const timeArray: {type: TimeFormats, times:string[], icon: JSX.Element}[] = [
-        {type: "bullet", times: ["1|0", "2|0", "2|1"], icon: <GiBulletBill />},
-        {type: "blitz", times: ["3|2", "5|0", "5|3"], icon: <SiStackblitz />},
-        {type: "rapid", times: ["10|0", "10|5", "15|0"], icon: <IoTimerOutline />},
+        {type: "bullet", times: ["1|0", "2|0", "2|1"], icon: <GiBulletBill className="text-[#ffdbac]" size={40}/>},
+        {type: "blitz", times: ["3|2", "5|0", "5|3"], icon: <SiStackblitz className="text-yellow-500" size={40}/>},
+        {type: "rapid", times: ["10|0", "10|5", "15|0"], icon: <IoTimerOutline className="text-[#81B64C]" size={40}/>},
     ]
 
     const determineTimeFormat = (initial: number): "bullet" | "blitz" | "rapid" => {

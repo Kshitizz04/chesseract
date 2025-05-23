@@ -277,21 +277,21 @@ const PuzzleRush = () => {
 						<div className="w-full space-y-2">
 							<div className="flex justify-between items-center px-3 py-2 bg-bg-200 rounded-md">
 								<div className="flex items-center gap-2">
-									<GiBurningSkull className="text-accent-200" />
+									<GiBurningSkull className="text-orange-500" size={30} />
 									<span className="text-md">Survival</span>
 								</div>
 								<span className="font-bold">{highscores.survival}</span>
 							</div>
 							<div className="flex justify-between items-center px-3 py-2 bg-bg-200 rounded-md">
 								<div className="flex items-center gap-2">
-									<SiStackblitz className="text-accent-200" />
+									<SiStackblitz className="text-yellow-500" size={30} />
 									<span className="text-md">3 Minute</span>
 								</div>
 								<span className="font-bold">{highscores.threeMinute}</span>
 							</div>
 							<div className="flex justify-between items-center px-3 py-2 bg-bg-200 rounded-md">
 								<div className="flex items-center gap-2">
-									<IoTimerOutline className="text-accent-200" />
+									<IoTimerOutline className="text-[#81B64C]" size={30} />
 									<span className="text-md">5 Minute</span>
 								</div>
 								<span className="font-bold">{highscores.fiveMinute}</span>
@@ -305,7 +305,7 @@ const PuzzleRush = () => {
 							bg={`${gameMode === "survival" ? "bg-bg-200 text-accent-200" : "bg-bg-100"} hover:bg-bg-200`}
 						>
 							<div className="flex items-center gap-4">
-								<GiBurningSkull size={20} />Survival
+								<GiBurningSkull className="text-orange-500" size={40} />Survival
 							</div>
 						</Button>
 						<Button
@@ -313,7 +313,7 @@ const PuzzleRush = () => {
 							bg={`${gameMode === "3min" ? "bg-bg-200 text-accent-200" : "bg-bg-100"} hover:bg-bg-200`}
 						>
 							<div className="flex items-center gap-4">
-								<SiStackblitz size={20}/>  3 Minutes
+								<SiStackblitz className="text-yellow-500" size={40}/>  3 Minutes
 							</div>
 						</Button>
 						<Button
@@ -321,7 +321,7 @@ const PuzzleRush = () => {
 							bg={`${gameMode === "5min" ? "bg-bg-200 text-accent-200" : "bg-bg-100"} hover:bg-bg-200`}
 						>
 							<div className="flex items-center gap-4">
-								<IoTimerOutline size={20}/>  5 Minutes
+								<IoTimerOutline className="text-[#81B64C]" size={40}/>  5 Minutes
 							</div>
 						</Button>
 					</div>

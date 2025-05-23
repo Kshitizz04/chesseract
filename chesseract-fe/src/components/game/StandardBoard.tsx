@@ -3,7 +3,7 @@ import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { Chessboard } from 'react-chessboard';
 import { Piece, PromotionPieceOption, Square } from 'react-chessboard/dist/chessboard/types';
 import SocketService from '@/SocketService';
-import { boardColors, BoardStyleData } from '@/models/BoardStyleData';
+import { boardColors } from '@/models/BoardStyleData';
 import { useLayout } from '@/contexts/useLayout';
 
 interface StandardBoardProps {
@@ -423,19 +423,19 @@ const StandardBoard = ({
                 onPieceDrop={handleDrop}
                 onSquareClick={handleClick}
                 onPromotionPieceSelect={handlePromotionPieceSelection}
+                showPromotionDialog={showPromotionDialog}
+                promotionToSquare={promotionToSquare}
                 customDarkSquareStyle={boardColor.dark}
                 customLightSquareStyle={boardColor.light}
                 customSquareStyles={boardStyle.showLegalMoves ? {...optionSquares, ...moveSquares} : {...moveSquares}}
+                customPremoveDarkSquareStyle={boardColor.premoveDark}
+                customPremoveLightSquareStyle={boardColor.premoveLight}
                 animationDuration={200}
                 arePremovesAllowed={true}
                 clearPremovesOnRightClick={true}
                 showBoardNotation={boardStyle.showCoordinates}
                 boardOrientation={playerColor === "b" ? "black" : "white"}
-                showPromotionDialog={showPromotionDialog}
                 promotionDialogVariant='default'
-                promotionToSquare={promotionToSquare}
-                customPremoveDarkSquareStyle={boardColor.premoveDark}
-                customPremoveLightSquareStyle={boardColor.premoveLight}
             />
         </div>
     );

@@ -1,7 +1,7 @@
 import RightModalLayer from '@/components/modals/RightModalLayer';
 import { useLayout } from '@/contexts/useLayout';
 import { useEffect, useState } from 'react';
-import { FiLogOut, FiTrash2, FiEye, FiEyeOff, FiMoon, FiSun, FiLock } from 'react-icons/fi';
+import { FiLogOut, FiTrash2, FiEye, FiEyeOff, FiMoon, FiSun } from 'react-icons/fi';
 import Button from '@/components/utilities/CustomButton';
 import { useToast } from '@/contexts/ToastContext';
 import { FaChessBoard } from 'react-icons/fa';
