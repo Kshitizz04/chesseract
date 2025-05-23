@@ -60,6 +60,7 @@ const Bot = () => {
     }, []);
 
     const startGame = () => {
+        resetStates();
         if(Math.floor(Math.random() * 2) === 0){
             setMyColor("w");
         }else{
@@ -82,8 +83,28 @@ const Bot = () => {
         setResultMessage (0,"You resigned the game")
     }
 
+    const resetStates = ()=>{
+        setGameStarted(false);
+        setResult(null);
+        setMyColor("w");
+        setIsViewingHistory(false);
+        setHistoryFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+        setCurrentPosition("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+        chessRef.current = new Chess();
+    }
+
+    const handleUndo = ()=>{
+        if(chessRef.current.turn() !== myColor){
+            chessRef.current.undo();
+        }else{
+            chessRef.current.undo();
+            chessRef.current.undo();
+        }
+        setCurrentPosition(chessRef.current.fen());
+    }
+
     return (
-        <div className="page flex justify-around max-md:flex-col rounded-md gap-2">
+        <div className="page flex flex-col md:flex-row flex-grow justify-around gap-2">
             {/* Main Section */}
             <div className="flex flex-col justify-center h-full w-full md:w-2/3"
                 ref={containerRef}
@@ -151,10 +172,11 @@ const Bot = () => {
                         handleViewHistory={handleViewHistory}
                         currentPosition={currentPosition}
                         onResign={handleResign}
+                        handleUndo={handleUndo}
                     />
                 )}
             </div>
-            {result && <ResultModal result={result.result} message={result.message} onClose={() => setResult(null)} />}
+            {result && <ResultModal result={result.result} message={result.message} playAgain={startGame} onClose={() => setResult(null)} />}
         </div>
     );
 };

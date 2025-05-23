@@ -11,6 +11,8 @@ const API_ENDPOINTS = {
         getAll : (query: string) => `${API_BASE_URL}/users?query=${query}`, //get
         getById : (id: string) => `${API_BASE_URL}/users/${id}`, //get
         editProfile : `${API_BASE_URL}/users`,  //put
+        updateOnlineVisibility: `${API_BASE_URL}/users/online-visibility`, //put
+        deleteAccount: `${API_BASE_URL}/users`, //delete
     },
     game: {
         getUserGames: (userId: string, format: TimeFormats | null, limit: number | null, page:number | null) => `${API_BASE_URL}/games/game-history/${userId}?format=${format}&limit=${limit}&page=${page}`, //get

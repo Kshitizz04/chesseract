@@ -12,6 +12,7 @@ import TimeSelector from "@/components/game/TimeSelector";
 import { useToast } from "@/contexts/ToastContext";
 import SocketService from "@/SocketService";
 import FindingMatchModal from "@/components/modals/FindingMatchModal";
+import { usePathname, useRouter } from "next/navigation";
 
 const Online = () => {
     const [gameStarted, setGameStarted] = useState(false);
@@ -27,10 +28,14 @@ const Online = () => {
     const [currentGameId, setCurrentGameId] = useState<string | null>(null);
     const [playerColor, setPlayerColor] = useState<"w" | "b">("w");
     const [size, setSize] = useState(0);
+    const [processingComplete, setProcessingComplete] = useState(false);
 
     const userId = getLocalStorage("userId");
     const chessRef = useRef(new Chess());
     const containerRef = useRef<HTMLDivElement>(null);
+    const router = useRouter();
+    const pathname = usePathname();
+    const prevPathnameRef = useRef(pathname)
 
     const { showToast } = useToast();
 
@@ -65,12 +70,53 @@ const Online = () => {
         }
 
         return () => {
-            // Cancel matchmaking if component unmounts while searching
-            if (findingMatch) {
+            if(findingMatch){
                 SocketService.emit("cancel_matchmaking", { userId });
             }
         };
-    });
+    },[findingMatch]);
+
+    //handle disconnections
+    useEffect(() => {
+        if (prevPathnameRef.current !== pathname) {
+            handleDisconnection();
+        }
+        prevPathnameRef.current = pathname;
+
+        const handleUnload = () => {
+            handleDisconnection();
+        };
+
+        const handleNavClick = (event: MouseEvent) => {
+            // Find if the click was on an anchor tag or its children
+            let target = event.target as Node;
+            let anchorElement: HTMLAnchorElement | null = null;
+            while (target instanceof Element) {
+                if (target.tagName === 'A') {
+                    anchorElement = target as HTMLAnchorElement;
+                    break;
+                }
+                target = target.parentNode as Node;
+            }
+                    
+            // If we have an anchor and it's internal link
+            if (anchorElement && anchorElement.href && anchorElement.href.startsWith(window.location.origin)) {
+                handleDisconnection();
+                const targetHref = anchorElement.getAttribute('href');
+                const urlPath = new URL(targetHref || '', window.location.origin).pathname;
+                router.push(urlPath);
+            }
+        };
+
+        window.addEventListener("beforeunload", handleUnload);
+        document.addEventListener('click', handleNavClick);
+
+        return () => {
+            window.removeEventListener("beforeunload", handleUnload);
+            document.removeEventListener('click', handleNavClick);
+        };
+    }, [pathname, gameStarted, currentGameId]);
+
 
     //load user data from local storage
     useEffect(()=>{
@@ -110,8 +156,7 @@ const Online = () => {
 
         // Listen for game start event
         SocketService.on("game_start", () => {
-            setGameStarted(true);
-            setFindingMatch(false);
+            setProcessingComplete(true);
         });
 
         // Listen for opponent disconnected
@@ -163,11 +208,17 @@ const Online = () => {
             setGameStarted(false);
         });
 
+        SocketService.on("game_error", (data) => {
+            showToast(data.message, "error");
+            resetStates();
+        })
+
         // Clean up listeners
         return () => {
             SocketService.off("match_found");
             SocketService.off("matchmaking_error");
             SocketService.off("game_ended");
+            SocketService.off("game_error");
         };
     }, [userData.rating, playerColor]);
 
@@ -175,6 +226,26 @@ const Online = () => {
     const handleViewHistory = (isViewing: boolean, historyFen: string) => {
         setIsViewingHistory(isViewing);
         setHistoryFen(historyFen);
+    }
+
+    const handleDisconnection = () => {
+        console.log("Disconnected from game", gameStarted, currentGameId);
+        if(gameStarted){
+            setResult({result: 0, message: "You left the game!"});
+
+            if(currentGameId){
+                SocketService.emit("game_over", {
+                    gameId: currentGameId,
+                    winner: playerColor === "w" ? "black" : "white",
+                    reason: "disconnection",
+                    fen: chessRef.current.fen(),
+                    pgn: chessRef.current.pgn(),
+                    moves: chessRef.current.history()
+                });
+            }
+        }
+        SocketService.disconnect();
+        resetStates();
     }
 
     const setResultMessage = (result: 0 | 1 | 2, message: string) => {
@@ -216,6 +287,10 @@ const Online = () => {
         }
     }
 
+    const closeMatchmakingAndStartGame = ()=>{
+        setFindingMatch(false);
+        setGameStarted(true);
+    }
 
     const handleTimeSelect = (type: "bullet" | "blitz" | "rapid", time: string) => {
         setTime({type, time});
@@ -225,14 +300,13 @@ const Online = () => {
         // Join the game room
         if (currentGameId) {
             SocketService.joinGame(currentGameId, userId as string);
-            setFindingMatch(false);
         }
     }
 
     const handleResign = ()=>{
         const winner = playerColor === "w" ? "black" : "white";
-        setResult({result: 0, message: "Resignation!"});
-        setGameStarted(false);
+        // setResult({result: 0, message: "Resignation!"});
+        // setGameStarted(false);
         if (currentGameId) {
                         // Report game over to server
             SocketService.emit("game_over", {
@@ -275,6 +349,7 @@ const Online = () => {
         setIsMyTurn(true);
         chessRef.current.reset();
         setCurrentPosition(chessRef.current.fen());
+        setProcessingComplete(false);
     }
 
     return (
@@ -338,14 +413,16 @@ const Online = () => {
                     </Button>
                 )}
             </div>
-            {result && <ResultModal result={result.result} message={result.message} onClose={() => setResult(null)} />}
+            {result && <ResultModal result={result.result} message={result.message} onClose={() => setResult(null)} playAgain={handlePlay}/>}
             {findingMatch && 
             <FindingMatchModal
                 onCancel={handleCancelMatchmaking}
                 userData={userData}
                 opponentData={currentGameId ? opponentData : null}
                 onJoinGame={handleJoinGame}
+                closeAfterJoin={closeMatchmakingAndStartGame}
                 timeControl={`${time.time} ${time.type}`}
+                processingComplete={processingComplete}
             />}
         </div>
     );

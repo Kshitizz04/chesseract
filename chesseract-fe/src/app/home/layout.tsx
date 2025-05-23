@@ -6,7 +6,7 @@ import NotificationPanel from "@/components/modals/NotificationPanel";
 import SettingsPanel from "@/components/modals/SettingsPanel";
 import SideBar from "@/components/Sidebar";
 import { useLayout } from "@/contexts/useLayout";
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 import NavigationLoader from '@/components/NavigationLoader';
 
 type LayoutProps = {
@@ -18,7 +18,12 @@ const Layout = ({ children }: LayoutProps) => {
         isSideBarOpen,
         toggleSideBar,
         authData,
+        refreshNotifications,
     } = useLayout();
+
+    useEffect(() => {
+        refreshNotifications()
+    }, [authData]);
 
     return (
         <>

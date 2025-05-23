@@ -123,7 +123,7 @@ export const refreshToken = async (req: Request, res: Response, next: NextFuncti
                 }
             });
         } catch (err) {
-            const error = new CustomError('Invalid token', 401);
+            const error = new CustomError('Session expired. Please log in again.', 401);
             throw error;
         }
     } catch (err) {

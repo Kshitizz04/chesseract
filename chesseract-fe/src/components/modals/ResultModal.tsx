@@ -6,9 +6,10 @@ interface ResultModalProps {
     result: 0 | 1 | 2; // 0 = lost, 1 = won, 2 = drawn
     message: string; // Reason for the result
     onClose: () => void; // Callback to close the modal
+    playAgain: () => void; 
 }
 
-const ResultModal = ({ result, message, onClose }: ResultModalProps) => {
+const ResultModal = ({ result, message, onClose, playAgain }: ResultModalProps) => {
     const getTitle = () => {
         console.log("Result:", result);
         switch (result) {
@@ -31,7 +32,7 @@ const ResultModal = ({ result, message, onClose }: ResultModalProps) => {
                     <p className="mb-6">{message}</p>
                 </div>
                 <CustomButton
-                    onClick={()=>{}}
+                    onClick={()=>{onClose(); playAgain();}}
                     className="m-2 bg-bg-100"
                 >
                     Play Again

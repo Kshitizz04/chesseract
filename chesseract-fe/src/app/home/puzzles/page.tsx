@@ -6,12 +6,14 @@ import { useRouter } from "next/navigation"
 import { GiBattleGear, GiPuzzle } from "react-icons/gi"
 import Image from "next/image"
 import playPuzzle from "@/assets/play-puzzle.png"
+import { useToast } from "@/contexts/ToastContext"
 
 const Puzzle = () => {
     const [size, setSize] = useState(0);
 
     const router = useRouter();
     const containerRef = useRef<HTMLDivElement>(null);
+    const {showToast} = useToast();
 
     useEffect(() => {
         const updateSize = () => {
@@ -30,6 +32,10 @@ const Puzzle = () => {
         
         return () => window.removeEventListener('resize', updateSize);
     }, []);
+
+    const handlePuzzleBattle = () => {
+        showToast("This feature is not available yet", "info");
+    }
 
     return(
         <div className="page flex justify-around max-md:flex-col rounded-md gap-2">
@@ -59,7 +65,7 @@ const Puzzle = () => {
                 </div>
                 <div
                     className="mb-4 w-full rounded-md bg-accent-200 pb-[3px] cursor-pointer"
-                    onClick={() => router.push('puzzles/puzzle-battle')}
+                    onClick={handlePuzzleBattle}
                 >
                     <div className="flex h-full w-full justify-center py-4 rounded-md gap-2 items-center bg-bg-300">
                         <GiBattleGear size={50} className="text-[#81B64C]"/>
@@ -71,7 +77,7 @@ const Puzzle = () => {
                 </div>
                 <div
                     className="mb-4 w-full rounded-md bg-accent-200 pb-[3px] cursor-pointer"
-                    onClick={() => router.push('puzzles/daily-puzzle')}
+                    onClick={handlePuzzleBattle}
                 >
                     <div className="flex h-full w-full justify-center py-4 rounded-md gap-2 items-center bg-bg-300">
                         <FaPuzzlePiece size={50} className="text-gradient-end"/>

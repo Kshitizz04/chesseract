@@ -3,13 +3,14 @@ import { Chess } from 'chess.js';
 import Button from '@/components/utilities/CustomButton';
 import { BsFillFlagFill } from 'react-icons/bs';
 import { MdArrowForwardIos, MdOutlineArrowBackIos } from 'react-icons/md';
-import { FaSoundcloud } from 'react-icons/fa';
+import { FaUndoAlt } from 'react-icons/fa';
 
 interface ControlsProps {
     chess: Chess;
     handleViewHistory: (isViewing: boolean, historyFen: string) => void;
     currentPosition: string;
     onResign: () => void;
+    handleUndo?: () => void;
 }
 
 const Controls = ({
@@ -17,6 +18,7 @@ const Controls = ({
     handleViewHistory,
     currentPosition,
     onResign,
+    handleUndo,
 }: ControlsProps) => {
     const [history, setHistory] = useState<string[]>([]);
     const positionHistoryRef = useRef<Record<number, string>>({});
@@ -33,10 +35,6 @@ const Controls = ({
         setCurrentMoveIndex(history.length - 1);
     },[history])
 
-    const handleUndo = () => {
-        console.log("Resign clicked");
-    }
-
     const handleViewLastMove = () => {
         if(currentMoveIndex <= 0) return;
         handleViewHistory(true, positionHistoryRef.current[currentMoveIndex-1]);
@@ -45,6 +43,11 @@ const Controls = ({
 
     const handleViewNextMove = () => {
         if(currentMoveIndex >= history.length - 1) return;
+        if(currentMoveIndex === history.length - 2){
+            handleViewHistory(false, chess.fen());
+            setCurrentMoveIndex((prev)=>prev+1)
+            return;
+        }
         handleViewHistory(true, positionHistoryRef.current[currentMoveIndex+1]);
         setCurrentMoveIndex((prev)=>prev+1)
     }
@@ -135,13 +138,13 @@ const Controls = ({
                     <BsFillFlagFill/>
                     <p>Resign</p>
                 </Button>
-                <Button
+                {handleUndo && <Button
                     onClick={handleUndo}
                     className='flex gap-2 items-center bg-bg-100 justify-center'
                 >
-                    <FaSoundcloud />
+                    <FaUndoAlt />
                     <p>Undo</p>
-                </Button>
+                </Button>}
             </div>
         </div>
     );
