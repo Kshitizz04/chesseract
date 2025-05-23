@@ -1,7 +1,7 @@
 import { Chess } from 'chess.js';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { Chessboard } from 'react-chessboard';
-import { Piece, Square } from 'react-chessboard/dist/chessboard/types';
+import { Piece, PromotionPieceOption, Square } from 'react-chessboard/dist/chessboard/types';
 import SocketService from '@/SocketService';
 import { boardColors, BoardStyleData } from '@/models/BoardStyleData';
 import { useLayout } from '@/contexts/useLayout';
@@ -35,7 +35,10 @@ const StandardBoard = ({
 }: StandardBoardProps) => {
     const [optionSquares, setOptionSquares] = useState<Record<string, React.CSSProperties>>({});
     const [moveFrom, setMoveFrom] = useState<Square | null>(null);
+    const [moveTo, setMoveTo] = useState<Square | null>(null);
     const [moveSquares, setMoveSquares] = useState({});
+    const [showPromotionDialog, setShowPromotionDialog] = useState(false);
+    const [promotionToSquare, setPromotionToSquare] = useState<Square | null>(null);
 
     const {boardStyle} = useLayout();
     const boardColor = boardColors[boardStyle.style];
@@ -61,10 +64,13 @@ const StandardBoard = ({
                 
                 // Highlight the move
                 const highlightSquares = {
-                    [data.move.from]: { backgroundColor: 'rgba(255, 255, 0, 0.4)' },
-                    [data.move.to]: { backgroundColor: 'rgba(255, 255, 0, 0.4)' }
+                    [data.move.from]: boardColor.lastMove,
+                    [data.move.to]: boardColor.lastMove
                 };
                 setMoveSquares(highlightSquares);
+                setMoveFrom(null);
+                setMoveTo(null);
+                setOptionSquares({});
                 
                 // Update the position
                 setPosition(chess.fen());
@@ -85,7 +91,7 @@ const StandardBoard = ({
         return () => {
             SocketService.off("opponent_move");
         };
-    }, [,gameId, chess]);
+    }, [gameId, chess, boardColor]);
     
     // Check if game is over
     const checkGameOver = () => {
@@ -105,6 +111,10 @@ const StandardBoard = ({
                     moves: chess.history()
                 });
             }
+            setOptionSquares({});
+            setMoveSquares({});
+            setMoveFrom(null);
+            setMoveTo(null);
             return true;
         }
         
@@ -127,6 +137,10 @@ const StandardBoard = ({
                     pgn: chess.pgn()
                 });
             }
+            setOptionSquares({});
+            setMoveSquares({});
+            setMoveFrom(null);
+            setMoveTo(null);
             return true;
         }
         
@@ -148,14 +162,19 @@ const StandardBoard = ({
         if (piece[0] !== playerColor || !gameStarted || isViewingHistory) {
             return false;
         }
+
+        if (piece[0] === "w" && piece[1] === "P" && targetSquare[1] === "8" || piece[0] === "b" && piece[1] === "P" && targetSquare[1] === "1") {
+            setPromotionToSquare(targetSquare);
+            setShowPromotionDialog(true);
+            return false;
+        }
         
         try {
-            
             // Attempt to make the move
             const move = chess.move({
                 from: sourceSquare,
                 to: targetSquare,
-                promotion: 'q' // Always promote to queen for simplicity
+                promotion: piece[1].toLowerCase() || "q" // Always promote to queen for simplicity
             });
             
             // If the move is valid
@@ -165,10 +184,14 @@ const StandardBoard = ({
                 
                 // Highlight the move
                 const highlightSquares = {
-                    [sourceSquare]: { backgroundColor: 'rgba(255, 255, 0, 0.4)' },
-                    [targetSquare]: { backgroundColor: 'rgba(255, 255, 0, 0.4)' }
+                    [sourceSquare]: boardColor.lastMove,
+                    [targetSquare]: boardColor.lastMove
                 };
                 setMoveSquares(highlightSquares);
+                setOptionSquares({});
+                setMoveFrom(null);
+                setMoveTo(null);
+                setPromotionToSquare(null);
                 
                 // Handle online game specifics
                 if (gameId) {
@@ -195,105 +218,196 @@ const StandardBoard = ({
             
             return false;
         } catch (error) {
-            console.error("Error making move:", error);
+            console.log("Error making move:", error);
+            setMoveFrom(null);
+            setMoveTo(null);
+            setOptionSquares({});
+            setPromotionToSquare(null);
             return false;
         }
     };
 
     // Handle square click (for click-based moves)
     const handleClick = (square: Square) => {
-        // Clear previous highlights
-        setOptionSquares({});
-        
         // Don't allow moves if not player's turn in online mode
-        if (!gameStarted) return;
+        if (!gameStarted || isViewingHistory || chess.turn()!==playerColor) return false;
         
         // Check if we already selected a piece to move
-        if (moveFrom === null) {
+        if (!moveFrom) {
             const piece = chess.get(square);
-            
-            // If there's a piece and it's the player's turn
-            if (piece) {
-                    // Only allow selecting pieces of the player's color
-                    if (piece.color !== playerColor) return;
-                
+            if (piece && piece.color === playerColor) {                                               
                 setMoveFrom(square);
-                
-                // Highlight valid moves
-                const validMoves = getValidMoves(square);
-                const newOptionSquares: Record<string, React.CSSProperties> = {};
-                
-                // Highlight the selected square
-                newOptionSquares[square] = {
-                    backgroundColor: 'rgba(255, 255, 0, 0.4)',
-                    borderRadius: '50%',
-                };
-                
-                // Highlight valid move squares
-                validMoves.forEach(move => {
-                    newOptionSquares[move] = {
-                        background: 'radial-gradient(circle, rgba(0,0,0,.1) 25%, transparent 25%)',
-                        borderRadius: '50%',
-                    };
-                    
-                    // If there's an opponent piece, show capture highlight
-                    const pieceOnTarget = chess.get(move);
-                    if (pieceOnTarget) {
-                        newOptionSquares[move] = {
-                            background: 'radial-gradient(circle, rgba(0,0,0,.1) 25%, transparent 25%)',
-                            borderRadius: '50%',
-                            boxShadow: 'inset 0 0 0 2px rgba(255, 0, 0, 0.7)',
-                        };
-                    }
-                });
-                
-                setOptionSquares(newOptionSquares);
+                setMoveTo(null);
+                highlightOptionSquares(square);
             }
-        } else {
-            // Attempt to make a move
-            const move = chess.move({
-                from: moveFrom,
-                to: square,
-                promotion: 'q' // Always promote to queen for simplicity
+            return false;
+        } 
+
+        if(!moveTo){
+            const moves = chess.moves({
+                square: moveFrom,
+                verbose: true
             });
-            
-            if (move) {
-                // Update position
-                setPosition(chess.fen());
-                
-                // Highlight the move
-                const highlightSquares = {
-                    [moveFrom]: { backgroundColor: 'rgba(255, 255, 0, 0.4)' },
-                    [square]: { backgroundColor: 'rgba(255, 255, 0, 0.4)' }
-                };
-                setMoveSquares(highlightSquares);
-                
-                // Handle online game specifics
-                if (gameId) {
-                    // Send move to server
-                    SocketService.emit("move", {
-                        gameId,
-                        move: {
-                            from: moveFrom,
-                            to: square,
-                            promotion: move.promotion
-                        },
-                        fen: chess.fen()
-                    });
-                    
-                    // Switch turns
-                    setIsMyTurn(false);
+            const foundMove = moves.find(m => m.from === moveFrom && m.to === square);
+            if(!foundMove){
+                const piece = chess.get(square);
+                if (piece && piece.color === playerColor) {                                       
+                    setMoveFrom(square);
+                    highlightOptionSquares(square);
+                } else{
+                    setMoveFrom(null);
+                    setMoveTo(null);
+                    setOptionSquares({});
                 }
-                
-                // Check if game is over
-                checkGameOver();
+                return false;
             }
-            
-            // Reset move state
-            setMoveFrom(null);
-            setOptionSquares({});
+
+            setMoveTo(square);
+            if (foundMove.color === "w" && foundMove.piece === "p" && square[1] === "8" || foundMove.color === "b" && foundMove.piece === "p" && square[1] === "1") {
+                setPromotionToSquare(square);
+                setShowPromotionDialog(true);
+                return false;
+            }
+
+            try{
+                const move = chess.move({
+                    from: moveFrom,
+                    to: square,
+                    promotion: 'q'
+                })
+                if(move){
+                    setPosition(chess.fen());
+                    
+                    // Highlight the move
+                    const highlightSquares = {
+                        [moveFrom]: boardColor.lastMove,
+                        [square]: boardColor.lastMove
+                    };
+                    setMoveSquares(highlightSquares);
+                    setMoveFrom(null);
+                    setMoveTo(null);
+                    setOptionSquares({});
+                    
+                    // Handle online game specifics
+                    if (gameId) {
+                        // Send move to server
+                        SocketService.emit("move", {
+                            gameId,
+                            move: {
+                                from: moveFrom,
+                                to: square,
+                                promotion: move.promotion
+                            },
+                            fen: chess.fen()
+                        });
+                        
+                        // Switch turns
+                        setIsMyTurn(false);
+                    }
+                    
+                    // Check if game is over after move
+                    checkGameOver();
+                    
+                    return true;
+                }
+                return false;
+            }catch(error){
+                console.log("Error making move:", error);
+                const piece = chess.get(square);
+                if (piece && piece.color === playerColor) {                                       
+                    setMoveFrom(square);
+                    setMoveTo(null);
+                    highlightOptionSquares(square);
+                }
+                return false;
+            }
         }
-    };
+    }
+
+    const handlePromotionPieceSelection = (piece: PromotionPieceOption | undefined, promoteFromSquare: Square | undefined, promotToSquare: Square | undefined) => {
+        const from = promoteFromSquare || moveFrom;
+        const to = promotToSquare || moveTo;
+        if(piece && from && to){
+            try{
+                const move = chess.move({
+                    from,
+                    to,
+                    promotion: piece[1].toLowerCase() as 'q' | 'n' | 'r' | 'b' || "q"
+                })
+                if(move){
+                    setPosition(chess.fen());
+                    
+                    // Highlight the move
+                    const highlightSquares = {
+                        [from]: boardColor.lastMove,
+                        [to]: boardColor.lastMove
+                    };
+                    setMoveSquares(highlightSquares);
+                    setMoveFrom(null);
+                    setMoveTo(null);
+                    setOptionSquares({});
+                    
+                    // Handle online game specifics
+                    if (gameId) {
+                        // Send move to server
+                        SocketService.emit("move", {
+                            gameId,
+                            move: {
+                                from: from,
+                                to: to,
+                                promotion: move.promotion
+                            },
+                            fen: chess.fen()
+                        });
+                        
+                        // Switch turns
+                        setIsMyTurn(false);
+                    }
+                    
+                    // Check if game is over after move
+                    checkGameOver();
+                    setShowPromotionDialog(false);
+                    return true;
+                }
+                setShowPromotionDialog(false);
+                return false;
+            }catch(error){
+                console.log("Error making move:", error);
+                setMoveFrom(null);
+                setMoveTo(null);
+                setOptionSquares({});
+                setShowPromotionDialog(false);
+                return false;
+            }
+        }
+        else{
+            console.log("Could not make move, From or To is null");
+            setMoveFrom(null);
+            setMoveTo(null);
+            setOptionSquares({});
+            setShowPromotionDialog(false);
+            return false;
+        }
+
+    }
+
+    const highlightOptionSquares = (square: Square)=>{
+        const validMoves = getValidMoves(square);
+        const newOptionSquares: Record<string, React.CSSProperties> = {};
+
+        newOptionSquares[square] = boardColor.lastMove;
+
+        validMoves.forEach(move => {
+            newOptionSquares[move] = boardColor.optionSquares;
+            
+            const pieceOnTarget = chess.get(move);
+            if (pieceOnTarget) {
+                newOptionSquares[move] = boardColor.capture;
+            }
+        });
+        
+        setOptionSquares(newOptionSquares);
+    }
 
     return ( 
         <div 
@@ -308,13 +422,20 @@ const StandardBoard = ({
                 position={isViewingHistory ? historyFen : position}
                 onPieceDrop={handleDrop}
                 onSquareClick={handleClick}
+                onPromotionPieceSelect={handlePromotionPieceSelection}
                 customDarkSquareStyle={boardColor.dark}
                 customLightSquareStyle={boardColor.light}
                 customSquareStyles={boardStyle.showLegalMoves ? {...optionSquares, ...moveSquares} : {...moveSquares}}
                 animationDuration={200}
                 arePremovesAllowed={true}
+                clearPremovesOnRightClick={true}
                 showBoardNotation={boardStyle.showCoordinates}
                 boardOrientation={playerColor === "b" ? "black" : "white"}
+                showPromotionDialog={showPromotionDialog}
+                promotionDialogVariant='default'
+                promotionToSquare={promotionToSquare}
+                customPremoveDarkSquareStyle={boardColor.premoveDark}
+                customPremoveLightSquareStyle={boardColor.premoveLight}
             />
         </div>
     );

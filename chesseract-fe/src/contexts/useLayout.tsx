@@ -91,7 +91,7 @@ export const LayoutProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                 }
             } else{
                 const error = res.message || "An error occurred";
-                showToast(error, "error");
+                console.log("error while authenticating", error);
                 router.push("/auth/sign-in");
             }
         } catch (error) {
@@ -104,7 +104,6 @@ export const LayoutProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
 
     useEffect(() => {
-        refreshNotifications();
         getRefreshToken();
     }, []);
 

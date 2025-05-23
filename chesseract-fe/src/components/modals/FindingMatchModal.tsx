@@ -20,6 +20,8 @@ interface FindingMatchModalProps {
   opponentData: OpponentData | null;
   onJoinGame: () => void;
   timeControl: string;
+  closeAfterJoin: () => void;
+  processingComplete: boolean;
 }
 
 const FindingMatchModal: React.FC<FindingMatchModalProps> = ({
@@ -27,7 +29,9 @@ const FindingMatchModal: React.FC<FindingMatchModalProps> = ({
   userData,
   opponentData,
   onJoinGame,
-  timeControl
+  timeControl,
+  closeAfterJoin,
+  processingComplete,
 }) => {
   const [showOpponent, setShowOpponent] = useState(false);
   const [countdown, setCountdown] = useState(3);
@@ -35,13 +39,13 @@ const FindingMatchModal: React.FC<FindingMatchModalProps> = ({
   const [shouldJoinGame, setShouldJoinGame] = useState(false);
 
   useEffect(() => {
-    if (shouldJoinGame) {
-      const joinTimer = setTimeout(() => {
-        onJoinGame();
+    if (shouldJoinGame && processingComplete) {
+      const gameStartTimer = setTimeout(() => {
+        closeAfterJoin();
       }, 0);
-      return () => clearTimeout(joinTimer);
+      return () => clearTimeout(gameStartTimer);
     }
-  }, [shouldJoinGame, onJoinGame]);
+  }, [shouldJoinGame, processingComplete]);
 
   useEffect(() => {
     if (opponentData) {
@@ -58,6 +62,7 @@ const FindingMatchModal: React.FC<FindingMatchModalProps> = ({
   }, [opponentData]);
 
   useEffect(() => {
+    onJoinGame();
     if (showOpponent && countdown > 0) {
       const timer = setTimeout(() => {
         if (countdown <= 1) {

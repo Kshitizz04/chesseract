@@ -4,7 +4,7 @@ import { FaChessKnight, FaChessKing } from "react-icons/fa6"
 import { GiPuzzle } from "react-icons/gi"
 import { FiUsers } from "react-icons/fi"
 import { IoStatsChartSharp } from "react-icons/io5"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import Avatar from "@/components/utilities/Avatar"
 import { useLayout } from "@/contexts/useLayout"
 import getUserGames, { GetGameHistoryData } from "@/services/getUserGames"
@@ -28,9 +28,10 @@ const Home = () => {
     
     const router = useRouter();
     const userId = getLocalStorage('userId')
-    const limit = 10;
+    const limit = 5;
     const {authData} = useLayout()
     const {showToast} = useToast()
+    const historyTabRef = useRef(historyTab);
 
     const selectHistoryTab = (tab: string) => {
 		setHistoryTab(tab);
@@ -57,8 +58,24 @@ const Home = () => {
 				setLoadingGameHistory(false);
 			}
 		}
+
+        if(historyTabRef.current === historyTab){
+            fetchGameHistory(historyTab);
+        } else{
+            historyTabRef.current = historyTab;
+            if(page !== 1){
+                setPage(1);
+            } else if(page === 1){
+                fetchGameHistory(historyTab);
+            }
+        }
+
 		fetchGameHistory(historyTab);
 	},[page, historyTab]);
+
+    useEffect(()=>{
+        setPage(1);
+    },[historyTab]);
 
     useEffect(()=>{
 		const fetchRatingHistory = async () => {

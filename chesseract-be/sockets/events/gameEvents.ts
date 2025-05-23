@@ -65,7 +65,7 @@ export default function registerGameEvents(io: Server, socket: Socket): void {
     // Relay move to the opponent
     socket.to(gameId).emit("opponent_move", data);
     
-    console.log(`Move in game ${gameId}: ${data.move.from} to ${data.move.to}`);
+    console.log(`Move in game ${gameId}: ${data.move.from} to ${data.move.to} promotion: ${data.move.promotion || null}`);
   });
   
   // Handle game over event - winner reports the result
@@ -75,7 +75,7 @@ export default function registerGameEvents(io: Server, socket: Socket): void {
     reason: ResultReason,
     fen: string,
     pgn: string,
-    moves: string[]
+    moves: string[] 
   }) => {
     const { gameId, winner, reason, moves, fen, pgn } = data;
     
@@ -172,7 +172,7 @@ export default function registerGameEvents(io: Server, socket: Socket): void {
       }
 
       // Broadcast game result to all players in the room
-      socket.to(gameId).emit("game_ended", { winner, reason, blackRatingChange, whiteRatingChange });
+      io.to(gameId).emit("game_ended", { winner, reason, blackRatingChange, whiteRatingChange });
       
     } catch (error) {
       console.error("Error saving game result:", error);
@@ -189,7 +189,7 @@ export default function registerGameEvents(io: Server, socket: Socket): void {
       console.log(`Player ${socket.id} disconnected from game ${gameId}`);
       
       // Notify the opponent about disconnection
-      socket.to(gameId).emit("opponent_disconnected");
+      socket.to(gameId).emit("opponent_disconnected", {info: "Opponent has disconnected"});
       
       // Remove from the player-game tracking map
       playerGameMap.delete(socket.id);
